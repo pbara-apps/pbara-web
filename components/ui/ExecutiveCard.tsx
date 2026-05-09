@@ -2,6 +2,7 @@ import Image from "next/image";
 import { HiOutlineBuildingOffice2 } from "react-icons/hi2";
 import { AvatarPlaceholder } from "./AvatarPlaceholder";
 import type { Executive } from "@/types";
+import { cn } from "@heroui/react";
 
 interface ExecutiveCardProps {
   executive: Executive;
@@ -9,25 +10,33 @@ interface ExecutiveCardProps {
   variant?: "default" | "officer";
 }
 
-export function ExecutiveCard({ executive, variant = "default" }: ExecutiveCardProps) {
+export function ExecutiveCard({
+  executive,
+  variant = "default",
+}: ExecutiveCardProps) {
   const hasImage = Boolean(executive.image);
 
   if (variant === "officer") {
     return (
       <article className="group bg-white dark:bg-slate-800 p-1 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all overflow-hidden">
         <div className="relative aspect-[3/4] overflow-hidden rounded-lg mb-4 border-4 border-[#D4AF37]/30">
-          {hasImage ? (
-            <div
-              className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-500"
-              style={{ backgroundImage: `url(${executive.image})` }}
-              role="img"
-              aria-label={`Portrait of ${executive.name}`}
-            />
+          <div
+            className={cn(
+              "absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-500",
+              !executive.image && "grayscale",
+            )}
+            style={{
+              backgroundImage: `url(${executive.image ?? "/images/ra-logo.png"})`,
+            }}
+            role="img"
+            aria-label={`Portrait of ${executive.name}`}
+          />
+          {/* {hasImage ? (
           ) : (
             <div className="absolute inset-0 flex items-center justify-center bg-primary/10">
               <AvatarPlaceholder name={executive.name} size="lg" />
             </div>
-          )}
+          )} */}
         </div>
         <div className="px-4 pb-4">
           <h3 className="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight">
@@ -60,12 +69,18 @@ export function ExecutiveCard({ executive, variant = "default" }: ExecutiveCardP
         )}
       </div>
       <div className="p-4 bg-surface">
-        <h3 className="font-heading font-bold text-text-dark">{executive.name}</h3>
+        <h3 className="font-heading font-bold text-text-dark">
+          {executive.name}
+        </h3>
         <p className="text-gold text-sm uppercase tracking-wider mt-1 small-caps">
           {executive.position}
         </p>
         <p className="text-text-muted text-sm mt-1 flex items-center justify-center gap-1">
-          <HiOutlineBuildingOffice2 size={14} className="shrink-0" aria-hidden />
+          <HiOutlineBuildingOffice2
+            size={14}
+            className="shrink-0"
+            aria-hidden
+          />
           {executive.church}
         </p>
       </div>
