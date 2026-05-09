@@ -40,6 +40,17 @@ const AURORA_STYLES = `
     50%       { opacity: 1; }
   }
 
+  /* Subtle horizontal drift so the dark vignette "breathes" and more photo/smoke shows through in waves */
+  @keyframes _vignetteDrift {
+    0%   { transform: translateX(0%); }
+    100% { transform: translateX(-4%); }
+  }
+
+  ._vignette-drift {
+    animation: _vignetteDrift 22s ease-in-out infinite alternate;
+    will-change: transform;
+  }
+
   ._smoke-track {
     animation: _smokeX 18s linear infinite;
     will-change: transform;
@@ -122,7 +133,7 @@ export function HeroSection() {
 
   return (
     <section
-      className="relative min-h-screen flex flex-col text-white overflow-hidden"
+      className="-mt-16 pt-16 relative min-h-screen flex flex-col text-white overflow-hidden"
       aria-labelledby="hero-heading"
     >
       <style dangerouslySetInnerHTML={{ __html: AURORA_STYLES }} />
@@ -258,7 +269,7 @@ export function HeroSection() {
             className="_smoke-track-reverse absolute top-0 bottom-0"
             style={{
               left: 0,
-              width: "300%",
+              width: "0%",
               background: `
                 linear-gradient(
                   to right,
@@ -306,16 +317,21 @@ export function HeroSection() {
           />
         </div>
 
-        {/* Layer 5 — strong left vignette so text is always readable */}
+        {/* Layer 5 — left vignette (drifts slowly so smoke/photo can show through variably) */}
         <div
-          className="absolute inset-0"
-          style={{
-            zIndex: 5,
-            background:
-              "linear-gradient(to right, rgba(8,14,38,0.95) 0%, rgba(10,18,46,0.85) 18%, rgba(12,22,54,0.55) 40%, rgba(12,22,54,0.20) 60%, transparent 80%)",
-          }}
+          className="absolute inset-0 overflow-hidden"
+          style={{ zIndex: 5 }}
           aria-hidden
-        />
+        >
+          <div
+            className="_vignette-drift absolute top-0 bottom-0 left-0"
+            style={{
+              width: "118%",
+              background:
+                "linear-gradient(to right, rgba(8,14,38,0.82) 0%, rgba(10,18,46,0.68) 18%, rgba(12,22,54,0.42) 40%, rgba(12,22,54,0.14) 58%, transparent 82%)",
+            }}
+          />
+        </div>
 
         {/* Layer 6 — bottom fade into next section */}
         <div

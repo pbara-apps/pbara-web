@@ -1,6 +1,7 @@
 "use client";
 
 import type { PastOfficer } from "@/types";
+import { cn } from "@heroui/react";
 
 interface PastOfficersTableProps {
   officers: PastOfficer[];
@@ -9,7 +10,10 @@ interface PastOfficersTableProps {
 export function PastOfficersTable({ officers }: PastOfficersTableProps) {
   return (
     <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm">
-      <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700" aria-label="Past officers">
+      <table
+        className="min-w-full divide-y divide-slate-200 dark:divide-slate-700"
+        aria-label="Past officers"
+      >
         <thead className="bg-primary/5 dark:bg-primary/10">
           <tr>
             <th
@@ -51,8 +55,15 @@ export function PastOfficersTable({ officers }: PastOfficersTableProps) {
                 {o.post}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-xs">
-                <span className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded-full">
-                  {o.status}
+                <span
+                  className={cn(
+                    "px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded-full",
+                    o.status === "Completed"
+                      ? "bg-green-100 dark:bg-green-700"
+                      : "bg-red-100 dark:bg-red-700",
+                  )}
+                >
+                  {o.status === "Completed" ? "Completed" : "Active"}
                 </span>
               </td>
             </tr>

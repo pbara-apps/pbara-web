@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import Image from "next/image";
 import { AboutPageContent } from "@/components/sections/AboutPageContent";
 import { patrons } from "@/data/patrons";
@@ -12,7 +11,14 @@ export const metadata: Metadata = {
     title: "About Us | PBA Royal Ambassadors",
     url: "https://pbara.org.ng/about",
   },
-  keywords: ["About", "Heritage", "Vision", "Mission", "Patrons", "Royal Ambassadors"],
+  keywords: [
+    "About",
+    "Vision",
+    "Mission",
+    "Cardinal objectives",
+    "Patrons",
+    "Royal Ambassadors",
+  ],
 };
 
 export default function AboutPage() {
@@ -53,16 +59,6 @@ export default function AboutPage() {
           <p className="text-white/90 mt-2 max-w-2xl text-base md:text-lg">
             Our heritage, vision, and mission to develop godly young men.
           </p>
-          <nav
-            className="mt-6 text-sm text-white/80"
-            aria-label="Breadcrumb"
-          >
-            <Link href="/" className="hover:text-gold transition-colors">
-              Home
-            </Link>
-            <span className="mx-2">/</span>
-            <span className="text-gold">About</span>
-          </nav>
         </div>
       </section>
 

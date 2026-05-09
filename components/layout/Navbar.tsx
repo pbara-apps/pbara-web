@@ -4,6 +4,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { cn } from "@heroui/react";
+import { useScrollSize } from "@/hooks/useScrollSize";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -16,14 +18,31 @@ const navLinks = [
   { href: "/contact", label: "Contact" },
 ];
 
+/** Pixels scrolled before the bar switches from “over hero” to solid primary. */
+const SCROLL_SOLID_THRESHOLD = 48;
+
 export function Navbar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { scrollY } = useScrollSize();
+
+  const isHome = pathname === "/";
+  const overHero =
+    isHome && scrollY <= SCROLL_SOLID_THRESHOLD && !mobileOpen;
 
   return (
-    <header className="sticky top-0 z-50 bg-primary text-white shadow-md">
+    <header
+      className={cn(
+        "sticky top-0 z-50 text-white transition-colors duration-300 ease-out",
+        overHero
+          ? "bg-transparent shadow-none"
+          : "bg-primary shadow-md",
+      )}
+    >
       <nav
-        className="max-w-7xl mx-auto px-4 flex items-center justify-between h-16 md:h-18"
+        className={cn(
+          "max-w-7xl mx-auto px-4 flex items-center justify-between h-16 md:h-18",
+        )}
         aria-label="Main navigation"
       >
         {/* Logo */}

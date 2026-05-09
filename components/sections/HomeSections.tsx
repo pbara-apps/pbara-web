@@ -8,6 +8,7 @@ import { HiOutlineMegaphone } from "react-icons/hi2";
 import { HiOutlineShieldCheck } from "react-icons/hi2";
 import type { Executive } from "@/types";
 import type { NewsItem } from "@/types";
+import { cn } from "@heroui/react";
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -83,7 +84,10 @@ export function HomeSections({ executives, bulletins }: HomeSectionsProps) {
                       src={imageSrc}
                       width={192}
                       height={192}
-                      className="w-full h-full object-cover grayscal group-hover:grayscale-0 transition-all duration-500"
+                      className={cn(
+                        "w-full h-full object-cover group-hover:grayscale-0 transition-all duration-500",
+                        !exec.image && "grayscale",
+                      )}
                     />
                   </div>
                   <div>
@@ -127,9 +131,9 @@ export function HomeSections({ executives, bulletins }: HomeSectionsProps) {
             </div>
             <Link
               href="/news"
-              className="bg-white border border-slate-200 text-primary px-6 py-2 rounded font-bold text-sm shadow-sm hover:shadow-md transition-all uppercase tracking-wider min-h-[44px] inline-flex items-center justify-center touch-manipulation"
+              className="bg-white border border-slate-200 text-primary px-6 py-2 rounded-full font-bold text-sm shadow-sm hover:shadow-md hover:scale-105 transition-all uppercase tracking-wider min-h-[44px] inline-flex items-center justify-center touch-manipulation"
             >
-              Archive
+              See All <FiArrowRight size={16} aria-hidden />
             </Link>
           </div>
 

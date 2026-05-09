@@ -143,7 +143,11 @@ export default function ContactPage() {
         <aside className="space-y-6">
           <div className="bg-white rounded-xl border p-6 flex gap-4">
             <div className="bg-gray-200 rounded-lg p-2 w-12 h-12 flex items-center justify-center">
-              <FiPhone size={28} className="text-primary shrink-0" aria-hidden />
+              <FiPhone
+                size={28}
+                className="text-primary shrink-0"
+                aria-hidden
+              />
             </div>
             <div>
               <h3 className="font-heading font-bold text-text-dark">Call Us</h3>
@@ -167,8 +171,11 @@ export default function ContactPage() {
                 Email Us
               </h3>
               <p className="text-text-muted text-sm mt-1">
-                <a href="mailto:info@pba-ra.org" className="hover:text-gold">
-                  info@pba-ra.org
+                <a
+                  href="mailto:pbara2024@gmail.com"
+                  className="hover:text-gold"
+                >
+                  pbara2024@gmail.com
                 </a>
                 <br />
                 <a href="mailto:admin@pba-ra.org" className="hover:text-gold">
