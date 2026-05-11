@@ -1,6 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { FiArrowRight, FiCalendar, FiChevronLeft, FiChevronRight, FiExternalLink, FiMapPin, FiShare2 } from "react-icons/fi";
+import {
+  FiArrowRight,
+  FiCalendar,
+  FiChevronLeft,
+  FiChevronRight,
+  FiExternalLink,
+  FiMapPin,
+  FiShare2,
+} from "react-icons/fi";
 import { HiOutlineShieldCheck } from "react-icons/hi2";
 import { upcomingEvents, pastEvents } from "@/data/events";
 
@@ -67,7 +75,7 @@ export default function EventsPage() {
             />
             <div
               className="absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: `url('${HERO_IMAGE}')` }}
+              style={{ backgroundImage: `url('/images/event-cv.jpeg')` }}
               role="img"
               aria-label="Christian youth gathering in a large hall for ceremony"
             />
@@ -88,10 +96,16 @@ export default function EventsPage() {
       </div>
 
       {/* Upcoming Programs Section */}
-      <section className="px-4 md:px-10 lg:px-40 py-10" aria-labelledby="upcoming-heading">
+      <section
+        className="px-4 md:px-10 lg:px-40 py-10"
+        aria-labelledby="upcoming-heading"
+      >
         <div className="flex items-center justify-between mb-8 border-l-4 border-accent-gold pl-4">
           <div>
-            <h2 id="upcoming-heading" className="text-2xl font-bold tracking-tight">
+            <h2
+              id="upcoming-heading"
+              className="text-2xl font-bold tracking-tight"
+            >
               Upcoming Programs
             </h2>
             <p className="text-slate-500 dark:text-slate-400">
@@ -108,17 +122,22 @@ export default function EventsPage() {
 
         <div className="grid gap-6">
           {upcomingEvents.map((event) => {
-            const hasIso = Boolean(event.date && event.date.length >= 10 && event.date.includes("-"));
+            const hasIso = Boolean(
+              event.date && event.date.length >= 10 && event.date.includes("-"),
+            );
             const { day, month, year } = hasIso
               ? formatIsoDateParts(event.date)
               : { day: "--", month: "", year: "" };
             const categoryLabel =
-              event.category === "Golden Ambassador" ? "Golden Jubilee" : event.category;
+              event.category === "Golden Ambassador"
+                ? "Golden Jubilee"
+                : event.category;
             const leftBg =
               event.id === "1"
                 ? "bg-primary/10 dark:bg-primary/20"
                 : "bg-slate-50 dark:bg-slate-800";
-            const leftDayColor = event.id === "1" ? "text-primary" : "text-slate-400";
+            const leftDayColor =
+              event.id === "1" ? "text-primary" : "text-slate-400";
             const rightImage = UPCOMING_IMAGES[event.id];
 
             return (
@@ -129,7 +148,9 @@ export default function EventsPage() {
                 <div
                   className={`md:w-1/4 ${leftBg} flex flex-col items-center justify-center p-6 text-center border-r border-slate-100 dark:border-slate-800`}
                 >
-                  <span className={`${leftDayColor} font-bold text-5xl`}>{day}</span>
+                  <span className={`${leftDayColor} font-bold text-5xl`}>
+                    {day}
+                  </span>
                   <span className="text-slate-600 dark:text-slate-300 font-bold text-xl uppercase">
                     {month}
                   </span>
@@ -145,7 +166,11 @@ export default function EventsPage() {
                         {categoryLabel}
                       </span>
                       <span className="flex items-center text-xs text-slate-500">
-                        <FiMapPin size={14} className="mr-1 shrink-0" aria-hidden />
+                        <FiMapPin
+                          size={14}
+                          className="mr-1 shrink-0"
+                          aria-hidden
+                        />
                         {event.venue}
                       </span>
                     </div>
@@ -177,7 +202,11 @@ export default function EventsPage() {
                 <div className="hidden lg:block w-1/3 relative">
                   <div
                     className="absolute inset-0 bg-cover bg-center"
-                    style={rightImage ? { backgroundImage: `url('${rightImage}')` } : undefined}
+                    style={
+                      rightImage
+                        ? { backgroundImage: `url('${rightImage}')` }
+                        : undefined
+                    }
                     role={rightImage ? "img" : undefined}
                     aria-label={rightImage ? "Event image" : undefined}
                   />
@@ -189,10 +218,16 @@ export default function EventsPage() {
       </section>
 
       {/* Past Events Archive Section */}
-      <section className="px-4 md:px-10 lg:px-40 py-16 bg-slate-100 dark:bg-slate-900/50" aria-labelledby="archive-heading">
+      <section
+        className="px-4 md:px-10 lg:px-40 py-16 bg-slate-100 dark:bg-slate-900/50"
+        aria-labelledby="archive-heading"
+      >
         <div className="flex items-center justify-between mb-10">
           <div>
-            <h2 id="archive-heading" className="text-2xl font-bold tracking-tight">
+            <h2
+              id="archive-heading"
+              className="text-2xl font-bold tracking-tight"
+            >
               Past Events Archive
             </h2>
             <p className="text-slate-500 dark:text-slate-400">
@@ -219,9 +254,13 @@ export default function EventsPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {pastEvents.map((event) => {
-            const image = ARCHIVE_IMAGES[event.id];
+            const image = event.image ?? ARCHIVE_IMAGES[event.id];
             const cta =
-              event.id === "3" ? "View Gallery" : event.id === "4" ? "View Summary" : "Read Report";
+              event.id === "3"
+                ? "View Gallery"
+                : event.id === "4"
+                  ? "View Summary"
+                  : "Read Report";
             return (
               <div
                 key={event.id}
@@ -230,7 +269,9 @@ export default function EventsPage() {
                 <div className="aspect-video relative">
                   <div
                     className="absolute inset-0 bg-cover bg-center"
-                    style={image ? { backgroundImage: `url('${image}')` } : undefined}
+                    style={
+                      image ? { backgroundImage: `url('${image}')` } : undefined
+                    }
                     role={image ? "img" : undefined}
                     aria-label={image ? "Event photo" : undefined}
                   />
@@ -266,18 +307,25 @@ export default function EventsPage() {
       </section>
 
       {/* Newsletter / Call to Action */}
-      <section className="px-4 md:px-10 lg:px-40 py-20" aria-labelledby="newsletter-heading">
+      <section
+        className="px-4 md:px-10 lg:px-40 py-20"
+        aria-labelledby="newsletter-heading"
+      >
         <div className="bg-primary rounded-2xl p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8 overflow-hidden relative">
           <div className="absolute -right-20 -top-20 opacity-10" aria-hidden>
             <HiOutlineShieldCheck size={300} />
           </div>
           <div className="relative z-10 max-w-xl text-center md:text-left">
-            <h2 id="newsletter-heading" className="text-3xl font-bold text-white mb-4">
+            <h2
+              id="newsletter-heading"
+              className="text-3xl font-bold text-white mb-4"
+            >
               Never miss an update
             </h2>
             <p className="text-slate-100 text-lg">
-              Subscribe to our monthly newsletter to get the latest announcements,
-              program schedules, and motivational content delivered to your inbox.
+              Subscribe to our monthly newsletter to get the latest
+              announcements, program schedules, and motivational content
+              delivered to your inbox.
             </p>
           </div>
           <div className="relative z-10 w-full md:w-auto">

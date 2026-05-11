@@ -7,7 +7,8 @@ export const upcomingEvents: EventItem[] = [
     category: "Golden Ambassador",
     date: "2024-08-15",
     venue: "Baptist Camp Grounds",
-    description: "A week-long camp focused on spiritual growth, outdoor activities, and leadership development for all age groups.",
+    description:
+      "A week-long camp focused on spiritual growth, outdoor activities, and leadership development for all age groups.",
     status: "open",
     isPast: false,
   },
@@ -17,7 +18,8 @@ export const upcomingEvents: EventItem[] = [
     category: "Training",
     date: "2024-09-05",
     venue: "Association Headquarters",
-    description: "Intensive workshop for chapter commanders and counselors on discipline, program delivery, and youth mentorship.",
+    description:
+      "Intensive workshop for chapter commanders and counselors on discipline, program delivery, and youth mentorship.",
     status: "open",
     isPast: false,
   },
@@ -26,13 +28,15 @@ export const upcomingEvents: EventItem[] = [
 export const pastEvents: EventItem[] = [
   {
     id: "3",
-    title: "Recognition Awards Night",
+    title: "Patrons investiture ceremony",
     category: "Ceremony",
-    date: "July 2024",
-    venue: "Association Hall",
-    description: "Annual awards ceremony honoring outstanding ambassadors and chapters.",
+    date: "September 2025",
+    venue: "Gateway Baptist Church, Alagbado, Lagos",
+    description:
+      "Annual awards ceremony honoring outstanding ambassadors and chapters.",
     status: "completed",
     isPast: true,
+    image: "/images/patrons.jpeg",
   },
   {
     id: "4",
@@ -40,7 +44,8 @@ export const pastEvents: EventItem[] = [
     category: "Sports",
     date: "May 2024",
     venue: "Community Stadium",
-    description: "Friendly competition fostering teamwork and physical fitness across chapters.",
+    description:
+      "Friendly competition fostering teamwork and physical fitness across chapters.",
     status: "completed",
     isPast: true,
   },
@@ -50,7 +55,8 @@ export const pastEvents: EventItem[] = [
     category: "Outreach",
     date: "April 2024",
     venue: "Local Communities",
-    description: "Multi-chapter community service initiative serving the needy.",
+    description:
+      "Multi-chapter community service initiative serving the needy.",
     status: "completed",
     isPast: true,
   },

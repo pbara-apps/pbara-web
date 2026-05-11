@@ -3,7 +3,7 @@ import type { Patron } from "@/types";
 export const patrons: Patron[] = [
   {
     id: "1",
-    name: "Deacon Samuel Adebayo",
+    name: "Deacon Adeoye",
     role: "Grand Patron",
     quote: "Guiding the next generation with wisdom and faith.",
     description: "Long-standing supporter of RA programs.",
@@ -11,7 +11,7 @@ export const patrons: Patron[] = [
   {
     id: "2",
     name: "Rev. Dr. Joseph Okafor",
-    role: "Spiritual Father",
+    role: "Patron",
     quote: "Building godly character through the Word and discipline.",
     description: "Provides spiritual oversight to the association.",
   },
