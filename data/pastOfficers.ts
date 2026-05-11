@@ -1,8 +1,44 @@
 import type { PastOfficer } from "@/types";
 
 export const pastOfficers: PastOfficer[] = [
-  { id: "1", name: "Bro. Solomon Grant", post: "Director", yearStart: 2021, yearEnd: 2023, status: "Completed" },
-  { id: "2", name: "Bro. Nathaniel Moses", post: "President", yearStart: 2019, yearEnd: 2021, status: "Completed" },
-  { id: "3", name: "Bro. Felix Olatunde", post: "Secretary", yearStart: 2017, yearEnd: 2019, status: "Completed" },
-  { id: "4", name: "Bro. Timothy Adeyemi", post: "Treasurer", yearStart: 2015, yearEnd: 2017, status: "Completed" },
+  {
+    id: "1",
+    name: "Coun. Ayodele A. Bello",
+    post: "Director",
+    yearStart: 2022,
+    yearEnd: 2025,
+    status: "Completed",
+  },
+  {
+    id: "1",
+    name: "Amb. Olatunji Oluwafisayo",
+    post: "Assistant Director",
+    yearStart: 2022,
+    yearEnd: 2025,
+    status: "Completed",
+  },
+  {
+    id: "2",
+    name: "Amb. Bolaji Ojedokun",
+    post: "Secretary",
+    yearStart: 2022,
+    yearEnd: 2025,
+    status: "Completed",
+  },
+  {
+    id: "3",
+    name: "Amb. Kayode Olagbenro",
+    post: "Treasurer",
+    yearStart: 2022,
+    yearEnd: 2025,
+    status: "Completed",
+  },
+  {
+    id: "4",
+    name: "Amb. Tomiwo Taiwo",
+    post: "Mission officer",
+    yearStart: 2022,
+    yearEnd: 2025,
+    status: "Completed",
+  },
 ];

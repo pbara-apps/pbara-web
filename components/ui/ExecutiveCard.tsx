@@ -19,7 +19,7 @@ export function ExecutiveCard({
   if (variant === "officer") {
     return (
       <article className="group bg-white dark:bg-slate-800 p-1 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all overflow-hidden">
-        <div className="relative aspect-[3/4] overflow-hidden rounded-lg mb-4 border-4 border-[#D4AF37]/30">
+        <div className="relative aspect-[1.2] overflow-hidden rounded-lg mb-4 border-4 border-[#D4AF37]/30">
           <div
             className={cn(
               "absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-500",
@@ -31,12 +31,6 @@ export function ExecutiveCard({
             role="img"
             aria-label={`Portrait of ${executive.name}`}
           />
-          {/* {hasImage ? (
-          ) : (
-            <div className="absolute inset-0 flex items-center justify-center bg-primary/10">
-              <AvatarPlaceholder name={executive.name} size="lg" />
-            </div>
-          )} */}
         </div>
         <div className="px-4 pb-4">
           <h3 className="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight">

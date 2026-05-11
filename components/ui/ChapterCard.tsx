@@ -22,10 +22,13 @@ export function ChapterCard({ chapter }: ChapterCardProps) {
             aria-label={imageAlt}
           />
         ) : (
-          <div className="absolute inset-0 bg-slate-200 dark:bg-slate-700" aria-hidden />
+          <div
+            className="absolute inset-0 bg-slate-200 dark:bg-slate-700"
+            aria-hidden
+          />
         )}
         {chapter.status === "active" && (
-          <div className="absolute top-4 right-4 bg-accent-gold text-white text-[10px] font-black px-3 py-1 rounded-full uppercase">
+          <div className="absolute top-4 right-4 bg-green-200 text-green-600 text-[10px] font-black px-3 py-1 rounded-full uppercase">
             Active
           </div>
         )}
@@ -35,7 +38,9 @@ export function ChapterCard({ chapter }: ChapterCardProps) {
           <h3 className="text-navy-deep dark:text-white text-xl font-bold">
             {chapter.churchName}
           </h3>
-          <p className="text-primary font-semibold text-sm">{chapter.chapterName}</p>
+          <p className="text-primary font-semibold text-sm">
+            {chapter.chapterName}
+          </p>
         </div>
         <div className="flex items-center gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
           <div className="size-10 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-400 overflow-hidden shrink-0">
@@ -43,7 +48,7 @@ export function ChapterCard({ chapter }: ChapterCardProps) {
           </div>
           <div className="flex flex-col min-w-0">
             <span className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500">
-              Commander
+              Councilors
             </span>
             <span className="text-sm font-bold text-navy-deep dark:text-slate-200">
               {chapter.commander}

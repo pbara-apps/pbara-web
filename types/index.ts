@@ -35,7 +35,7 @@ export interface Chapter {
   churchName: string;
   image?: string;
   commander: string;
-  unit: "primary" | "junior" | "senior";
+  unit: "general" | "junior" | "senior";
   status: "active" | "inactive";
 }
 

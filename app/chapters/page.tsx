@@ -9,16 +9,19 @@ import type { Chapter } from "@/types";
 
 type UnitFilter = "all" | "primary" | "junior" | "senior";
 
-function filterChapters(chaptersList: Chapter[], filter: UnitFilter): Chapter[] {
+function filterChapters(
+  chaptersList: Chapter[],
+  filter: UnitFilter,
+): Chapter[] {
   if (filter === "all") return chaptersList;
   return chaptersList.filter((c) => c.unit === filter);
 }
 
 const TABS: { key: UnitFilter; label: string }[] = [
   { key: "all", label: "All Chapters" },
-  { key: "primary", label: "Primary Units" },
-  { key: "junior", label: "Junior Units" },
-  { key: "senior", label: "Senior Units" },
+  // { key: "primary", label: "Primary Units" },
+  // { key: "junior", label: "Junior Units" },
+  // { key: "senior", label: "Senior Units" },
 ];
 
 export default function ChaptersPage() {
@@ -38,13 +41,18 @@ export default function ChaptersPage() {
             Our Chapters and Units
           </h1>
           <p className="text-slate-600 dark:text-slate-400 text-lg max-w-2xl">
-            Discover the dedicated Royal Ambassador local units fostering leadership and spiritual growth across our Baptist Association.
+            Discover the dedicated Royal Ambassador local units fostering
+            leadership and spiritual growth across our Baptist Association.
           </p>
         </div>
       </div>
 
       {/* Filter Tabs */}
-      <div className="mb-10 border-b border-slate-200 dark:border-slate-800" role="tablist" aria-label="Filter chapters by unit type">
+      <div
+        className="mb-10 border-b border-slate-200 dark:border-slate-800"
+        role="tablist"
+        aria-label="Filter chapters by unit type"
+      >
         <div className="flex flex-wrap gap-8">
           {TABS.map(({ key, label }) => {
             const isActive = filter === key;
@@ -61,7 +69,9 @@ export default function ChaptersPage() {
                     : "border-transparent text-slate-500 dark:text-slate-400 hover:text-primary"
                 }`}
               >
-                <span className="text-sm font-bold uppercase tracking-wider">{label}</span>
+                <span className="text-sm font-bold uppercase tracking-wider">
+                  {label}
+                </span>
               </button>
             );
           })}
@@ -82,18 +92,25 @@ export default function ChaptersPage() {
           <div
             className="absolute inset-0 opacity-10 pointer-events-none"
             style={{
-              backgroundImage: "radial-gradient(circle at 2px 2px, white 1px, transparent 0)",
+              backgroundImage:
+                "radial-gradient(circle at 2px 2px, white 1px, transparent 0)",
               backgroundSize: "24px 24px",
             }}
             aria-hidden
           />
           <div className="relative z-10 flex flex-col gap-4 items-center">
-            <HiOutlineBuildingOffice2 size={48} className="text-accent-gold shrink-0" aria-hidden />
+            <HiOutlineBuildingOffice2
+              size={48}
+              className="text-accent-gold shrink-0"
+              aria-hidden
+            />
             <h2 className="tracking-tight text-3xl md:text-4xl font-black max-w-[720px]">
               Don&apos;t see your chapter?
             </h2>
             <p className="text-slate-300 text-lg font-normal max-w-[600px]">
-              If your local church has an RA unit but it is not listed here, please contact the Association Commander to register your unit today.
+              If your local church has an RA unit but it is not listed here,
+              please contact the Association Commander to register your unit
+              today.
             </p>
           </div>
           <div className="relative z-10 flex flex-wrap justify-center gap-4">

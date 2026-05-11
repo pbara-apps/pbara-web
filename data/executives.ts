@@ -2,37 +2,77 @@ import type { Executive } from "@/types";
 
 export const executives: Executive[] = [
   {
-    id: "1",
+    id: crypto.randomUUID(),
     name: "Coun. Ikechukwu Mgbeme",
     position: "Director",
     church: "Victory Baptist Church, Lagos",
     bio: "Leading the association with vision and dedication.",
     image: "/images/ik.png",
   },
-
   {
-    id: "2",
+    id: crypto.randomUUID(),
+    name: "Amb. Samuel Oloyede",
+    position: "A. Director",
+    church: "Peculiar People Baptist Church",
+    bio: "Leading the association with vision and dedication.",
+    image: undefined,
+  },
+  {
+    id: crypto.randomUUID(),
     name: "Amb. Emmanuel Jokotoye",
     position: "Secretary",
     church: "Infinite Baptist Church",
     bio: "Documentation and communication across the association.",
     image: undefined,
   },
+
   {
-    id: "3",
-    name: "Amb. Emmanuel",
+    id: crypto.randomUUID(),
+    name: "Amb. Adebayo Favour",
+    position: "Recording Secetary",
+    church: "Gateway Baptist Church",
+    bio: "Documentation and communication across the association.",
+    image: undefined,
+  },
+  {
+    id: crypto.randomUUID(),
+    name: "Amb. Taiwo Adeopa",
+    position: "Financial Secretary",
+    church: "Victory Baptist Church",
+    bio: "Recording income and expenditure, issuing receipts, and preparing financial reports for the association.",
+    image: undefined,
+  },
+  {
+    id: crypto.randomUUID(),
+    name: "Amb. Emmanuel Akinteye",
     position: "Treasurer",
     church: "Emmanuel Baptist Church",
     bio: "Financial stewardship and resource management.",
     image: undefined,
   },
   {
-    id: "4",
+    id: crypto.randomUUID(),
     name: "Amb. John Adeoye",
     position: "Parade Commander",
     church: "King of Glory Baptist Church",
     bio: "Leading the parade and ensuring the smooth running of the association.",
     image: "/images/co.jpeg",
+  },
+  {
+    id: crypto.randomUUID(),
+    name: "Amb. Damilare Ojeleke",
+    position: "A. Parade Commander",
+    church: "Blessed Baptist Church",
+    bio: "Leading the parade and ensuring the smooth running of the association.",
+    image: "/images/damilare.png",
+  },
+  {
+    id: crypto.randomUUID(),
+    name: "Amb. Adegbola oKESHINA",
+    position: "Mission Officer",
+    church: "Blessed Baptist Church",
+    bio: "Overseeing the mission and outreach programs of the association.",
+    image: undefined,
   },
 ];
 
