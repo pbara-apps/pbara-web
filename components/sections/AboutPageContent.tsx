@@ -196,7 +196,7 @@ export function AboutPageContent() {
               <div className="py-6 px-8 rounded-xl bg-primary text-white text-center">
                 Helping boys in personal spiritual development and discipleship.
               </div>
-              <div className="absolute w-16 h-6 bg-white rounded-full left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2" />
+              <div className="absolute w-16 h-6 bg-[#f5f6fa] rounded-full left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2" />
               <div className="py-6 px-8 rounded-xl bg-primary text-white text-center">
                 Ensuring educational and career development of boys.
               </div>
@@ -205,7 +205,7 @@ export function AboutPageContent() {
               <div className="py-6 px-8 rounded-xl bg-primary text-white text-center">
                 Promoting personal and corporate discipline and cohesion.
               </div>
-              <div className="absolute w-16 h-6 bg-white rounded-full left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2" />
+              <div className="absolute w-16 h-6 bg-[#f5f6fa] rounded-full left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2" />
               <div className="py-6 px-8 rounded-xl bg-primary text-white text-center">
                 Enabling members personality, potentiality and dignity
                 development.
@@ -215,7 +215,7 @@ export function AboutPageContent() {
               <div className="py-6 px-8 rounded-xl bg-primary text-white text-center">
                 Equipping members for mission action.
               </div>
-              <div className="absolute w-16 h-6 bg-white rounded-full left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2" />
+              <div className="absolute w-16 h-6 bg-[#f5f6fa] rounded-full left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2" />
               <div className="py-6 px-8 rounded-xl bg-primary text-white text-center">
                 Promoting social awareness, responsibility and responsiveness.
               </div>

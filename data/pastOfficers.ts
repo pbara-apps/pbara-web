@@ -2,7 +2,7 @@ import type { PastOfficer } from "@/types";
 
 export const pastOfficers: PastOfficer[] = [
   {
-    id: "1",
+    id: crypto.randomUUID(),
     name: "Coun. Ayodele A. Bello",
     post: "Director",
     yearStart: 2021,
@@ -10,7 +10,7 @@ export const pastOfficers: PastOfficer[] = [
     status: "Completed",
   },
   {
-    id: "1",
+    id: crypto.randomUUID(),
     name: "Amb. Olatunji Oluwafisayo",
     post: "Assistant Director",
     yearStart: 2021,
@@ -18,7 +18,7 @@ export const pastOfficers: PastOfficer[] = [
     status: "Completed",
   },
   {
-    id: "2",
+    id: crypto.randomUUID(),
     name: "Amb. Bolaji Ojedokun",
     post: "Secretary",
     yearStart: 2021,
@@ -26,7 +26,7 @@ export const pastOfficers: PastOfficer[] = [
     status: "Completed",
   },
   {
-    id: "3",
+    id: crypto.randomUUID(),
     name: "Amb. Kayode Olagbenro",
     post: "Treasurer",
     yearStart: 2021,
@@ -34,7 +34,7 @@ export const pastOfficers: PastOfficer[] = [
     status: "Completed",
   },
   {
-    id: "4",
+    id: crypto.randomUUID(),
     name: "Amb. Tomiwo Taiwo",
     post: "Mission officer",
     yearStart: 2021,
