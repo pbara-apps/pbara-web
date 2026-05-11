@@ -23,9 +23,6 @@ export const metadata: Metadata = {
   keywords: ["Events", "Programs", "Camps", "Training", "RA calendar"],
 };
 
-const HERO_IMAGE =
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuCj6gzYe5ce-HVecEy5_U-L__Sy883vsHYA0rHDv9lF-TOzBQ2UPe92HMmuL5fh1-ZtpXuc-jTUD7aJYeXKhEiNli6fX2DuuByjuJQynwVyscU6rdGD45ao6BuqV1e1dFw5LGoR1poxuYDhL5-JuLz4W1p_whh2MemUXLyYGpnWE0_nUc5Ua-ZQZY-DTyqX9AGAv4Kezx-Min6bHz77C7mL-3_xTt-HXXnf5bpLa0W1LrWpt7BmnlkdJYjgyXSaDukgnEowQQfKCvw";
-
 const UPCOMING_IMAGES: Record<string, string> = {
   "1": "https://lh3.googleusercontent.com/aida-public/AB6AXuB99MhOLoBFMOWcAcIzkvFtMkvJUAHCLR8GCyC9xSdhfEGcJPK7oFXucX-1GERDH7anSfiJQ0NRG0hvOHyrPS1PBbiphemSOCRCb9qwEP1UYFBBgafaOd8CB-fWaOAZdRcWFPHx3HabxFwKUHKmcp9dhrO2x-N8_wxQu5DEtUG94hkGdT17bBYJbH6_YsV7KohTidZe3JpjReg65T6KjVggzEVGgB9yewEWVwlv2UqcrzerBuihjhUXKFfbHN7ToRlTOjeGfdP7yDA",
   "2": "https://lh3.googleusercontent.com/aida-public/AB6AXuBG65GwJ63uM-Ruu-fOZVbR2vTpek_VheMFMUVpwcjjDD7iPTGH3gORygquTjkfj2cbXL4mzWsSWoQsowlwahPsSEc88XoCVEkCabNbJJCB1OWPYOC1AXx24NAU960b8fPlbuKsSsstQT2b24xMdfpnrZ3W2CtEDnm9Bkz4Z9Hqj558jbZVCmzsqQqzoJppuU7e4ht72kSwKza5-sUkxAIQJN349zo85CW8ypmXEx8wOi8xmFsIye7pD3s21rzRzRybiDaNlZi8uNg",

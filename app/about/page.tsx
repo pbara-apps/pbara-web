@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { AboutPageContent } from "@/components/sections/AboutPageContent";
-import { patrons } from "@/data/patrons";
+// import { patrons } from "@/data/patrons";
 
 export const metadata: Metadata = {
   title: "About Us",
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 };
 
 export default function AboutPage() {
-  const aboutPatrons = patrons.slice(0, 3);
+  // const aboutPatrons = patrons.slice(0, 3);
 
   return (
     <>
@@ -62,7 +62,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <AboutPageContent patrons={aboutPatrons} />
+      <AboutPageContent />
     </>
   );
 }
