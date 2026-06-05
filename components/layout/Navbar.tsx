@@ -27,16 +27,13 @@ export function Navbar() {
   const { scrollY } = useScrollSize();
 
   const isHome = pathname === "/";
-  const overHero =
-    isHome && scrollY <= SCROLL_SOLID_THRESHOLD && !mobileOpen;
+  const overHero = isHome && scrollY <= SCROLL_SOLID_THRESHOLD && !mobileOpen;
 
   return (
     <header
       className={cn(
         "sticky top-0 z-50 text-white transition-colors duration-300 ease-out",
-        overHero
-          ? "bg-transparent shadow-none"
-          : "bg-primary shadow-md",
+        overHero ? "bg-transparent shadow-none" : "bg-primary shadow-md",
       )}
     >
       <nav
@@ -58,9 +55,6 @@ export function Navbar() {
             height={40}
             className="rounded-full object-contain"
           />
-          {/* <span className="font-heading font-semibold text-sm md:text-base whitespace-nowrap">
-            PBA — Royal Ambassadors
-          </span> */}
           <div className="flex flex-col">
             <h2 className="text-slate-100 dark:text-slate-100 text-lg font-bold leading-tight tracking-tight">
               RA Pentecost
