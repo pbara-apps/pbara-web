@@ -148,7 +148,7 @@ export default function ExecutiveAdminPage() {
                 aria-label="Executive actions"
                 onAction={(key) => {
                   if (key === "edit") {
-                    openDrawer("edit-executive", exec);
+                    openDrawer("edit-executive", { body: exec });
                   }
                 }}
               >
@@ -317,7 +317,7 @@ export default function ExecutiveAdminPage() {
           }}
           onRowAction={(key) => {
             const exec = filtered.find((e) => e.id === key);
-            if (exec) openDrawer("edit-executive", exec);
+            if (exec) openDrawer("edit-executive", { body: exec });
           }}
           classNames={{
             th: "bgbackground/60 text-[11px] font-semibold uppercase tracking-[0.08em] text-text-muted py-3",

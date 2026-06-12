@@ -46,7 +46,7 @@ const kpis = [
     value: "15",
     icon: LuCalendar,
     trend: "flat" as const,
-    trendValue: "0%",
+    trendValue: "",
   },
   {
     label: "Published News",
@@ -149,20 +149,19 @@ export default function AdminDashboardPage() {
         </p>
       </header>
 
-      <section
-        aria-label="Key metrics"
-        className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:gap-5"
-      >
-        {kpis.map((k) => (
-          <KpiCard key={k.label} {...k} />
-        ))}
-      </section>
-
-      <section className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-6">
-        <div className="lg:col-span-2">
+      <section className="grid grid-cols-3 gap-4">
+        <div className="col-span-2 space-y-6">
+          <div
+            aria-label="Key metrics"
+            className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:gap-5"
+          >
+            {kpis.map((k) => (
+              <KpiCard key={k.label} {...k} />
+            ))}
+          </div>
           <ActivityFeed entries={activity} />
         </div>
-        <div className="flex flex-col gap-6">
+        <div className="space-y-6">
           <DirectorDeskPreview
             title="Shepherding Through Digital Transformation"
             excerpt="In this new age of connectivity, we must ensure our message remains as pure as the day it was first spoken. Our digital tools serve not only to manage but to unify, to disciple, and to send."

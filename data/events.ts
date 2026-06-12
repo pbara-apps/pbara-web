@@ -1,4 +1,22 @@
 import type { EventItem } from "@/types";
+import { HiOutlineBuildingOffice2 } from "react-icons/hi2";
+import {
+  FiUsers,
+  FiCalendar,
+  // FiAward
+} from "react-icons/fi";
+
+export const stats = [
+  {
+    end: 21,
+    label: "Active Chapters",
+    suffix: "+",
+    icon: HiOutlineBuildingOffice2,
+  },
+  { end: 500, label: "Total Ambassadors", suffix: "+", icon: FiUsers },
+  { end: 14, label: "Years of Impact", suffix: "+", icon: FiCalendar },
+  // { end: 15, label: "Awards Won", suffix: "+", icon: FiAward },
+];
 
 export const upcomingEvents: EventItem[] = [
   {

@@ -50,7 +50,7 @@ export function Navbar() {
         >
           <Image
             src="/images/ra-logo.png"
-            alt="Royal Ambassadors of Nigeria official logo, circular emblem with shield, crown, wheel, torch and laurel wreath"
+            alt="RA logo"
             width={40}
             height={40}
             className="rounded-full object-contain"

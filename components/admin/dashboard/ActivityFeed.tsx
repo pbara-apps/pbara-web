@@ -45,7 +45,7 @@ interface ActivityFeedProps {
 
 export function ActivityFeed({ entries, onViewAll }: ActivityFeedProps) {
   return (
-    <section className="flex h-full flex-col rounded-2xl border border-text-dark/[0.05] bg-surface shadow-[0_1px_2px_rgba(27,36,82,0.04)]">
+    <section className="flex flex-col rounded-2xl borde border-text-dark/[0.05] bg-surface shadow">
       <header className="flex items-center justify-between border-b border-text-dark/[0.05] px-5 py-4">
         <div>
           <h2 className="text-xl font-semibold tracking-tight text-primary">

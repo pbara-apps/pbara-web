@@ -78,7 +78,7 @@ export function Sidebar({
           >
             <h1 className="truncate text-base font-bold text-white">RAPBA</h1>
             <p className="truncate text-[11px] uppercase tracking-wider text-white/50">
-              Institutional Admin
+              Organization Admin
             </p>
           </div>
           <button
@@ -92,7 +92,7 @@ export function Sidebar({
         </div>
 
         <nav
-          className="flex-1 space-y-3 overflow-y-auto overflow-x-hidden px-3 [scrollbar-color:rgba(255,255,255,0.15)_transparent] [scrollbar-width:thin]"
+          className="flex-1 space-y-3 overflow-y-auto overflow-x-hidden px-3 [scrollbar-color:rgba(255,255,255,0.15)_transparent] [scrollbar-width:thin] mt-8"
           aria-label="Primary"
         >
           {adminNav.map((item) => (

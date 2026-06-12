@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { Button } from "@heroui/react";
+import { stats } from "@/data/events";
 
 const HERO_IMAGES = [
   "/images/image2.jpg",
@@ -13,13 +14,6 @@ const HERO_IMAGES = [
 ];
 
 const FALLBACK_IMAGE = "/images/ra-logo.png";
-
-const STATS = [
-  { end: 120, label: "Active Chapters", suffix: "+" },
-  { end: 5000, label: "Total Ambassadors", suffix: "+" },
-  { end: 50, label: "Years of Impact", suffix: "+" },
-  { end: 15, label: "Awards Won", suffix: "+" },
-];
 
 // The trick: we create a gradient that is 300% wide, then animate
 // its X position from 0% to -66.66% — this makes it look like the
@@ -410,7 +404,7 @@ export function HeroSection() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="mt-12 pt-8 border-t border-gold/40 grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-0 lg:flex lg:justify-between"
           >
-            {STATS.map((stat, i) => (
+            {stats.map((stat, i) => (
               <div
                 key={stat.label}
                 className={`relative flex flex-col items-center min-h-[44px] justify-center ${

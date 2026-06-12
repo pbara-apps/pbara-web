@@ -10,7 +10,8 @@ export type DrawerView =
   | "create-news"
   | "edit-news"
   | "create-event"
-  | "edit-event";
+  | "edit-event"
+  | "edit-director-desk";
 
 export type DrawerSize =
   | "xs"
@@ -31,35 +32,39 @@ interface DrawerOptions {
   placement?: DrawerPlacement;
 }
 
+type DrawerBody = Record<string, unknown>;
+
 interface DrawerState {
   view: DrawerView | null;
-  payload: unknown;
-  size: DrawerSize;
-  placement: DrawerPlacement;
-  openDrawer: <T = unknown>(
+  body: DrawerBody;
+  config: {
+    size: DrawerSize;
+    placement: DrawerPlacement;
+  };
+  openDrawer: (
     view: DrawerView,
-    payload?: T,
-    options?: DrawerOptions,
+    options?: { config?: DrawerOptions; body?: DrawerBody },
   ) => void;
   closeDrawer: () => void;
 }
 
 export const useDrawer = create<DrawerState>((set) => ({
   view: null,
-  payload: undefined,
-  size: "md",
-  placement: "right",
-  openDrawer: (view, payload, options) =>
-    set({
+  body: {},
+  config: {
+    size: "md",
+    placement: "right",
+  },
+  openDrawer: (view, options) =>
+    set((state) => ({
       view,
-      payload,
-      size: options?.size ?? "md",
-      placement: options?.placement ?? "right",
-    }),
+      body: { ...state.body, ...(options?.body ?? {}) },
+      config: { ...state.config, ...(options?.config ?? {}) },
+    })),
   closeDrawer: () =>
     set({
       view: null,
-      payload: undefined,
+      body: {},
     }),
 }));
 
@@ -70,6 +75,6 @@ export const useDrawer = create<DrawerState>((set) => ({
  * const exec = useDrawerPayload<AdminExecutive>();
  * ```
  */
-export function useDrawerPayload<T>() {
-  return useDrawer((s) => s.payload as T | undefined);
+export function useDrawerBody<T>() {
+  return useDrawer((s) => s.body as T);
 }

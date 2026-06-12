@@ -1,3 +1,5 @@
+"use client";
+import { useDrawer } from "@/store/useDrawer";
 import { Button } from "@heroui/react";
 import { LuArrowRight, LuPencil, LuQuote } from "react-icons/lu";
 
@@ -14,6 +16,15 @@ export function DirectorDeskPreview({
   badge = "Editorial",
   onRead,
 }: DirectorDeskPreviewProps) {
+  const openDrawer = useDrawer((s) => s.openDrawer);
+
+  const handleEdit = () => {
+    openDrawer("edit-director-desk", {
+      config: {
+        size: "3xl",
+      },
+    });
+  };
   return (
     <article className="overflow-hidden rounded-2xl border border-text-dark/[0.05] bg-surface shadow-[0_1px_2px_rgba(27,36,82,0.04)]">
       <div className="relative h-36 overflow-hidden bg-gradient-to-br from-primary via-[#1B2452] to-[#040e3d]">
@@ -37,6 +48,7 @@ export function DirectorDeskPreview({
               radius="full"
               size="sm"
               startContent={<LuPencil size={16} />}
+              onPress={handleEdit}
             >
               Edit
             </Button>
