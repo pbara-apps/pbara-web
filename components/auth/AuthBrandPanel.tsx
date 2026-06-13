@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { LuLandmark } from "react-icons/lu";
 
 export function AuthBrandPanel() {
   return (
@@ -21,34 +20,33 @@ export function AuthBrandPanel() {
         className="absolute inset-x-0 bottom-0 h-72 bg-gradient-to-t from-[#040e3d] via-[#040e3d]/40 to-transparent"
       />
 
-      <div className="relative z-10 flex max-w-md flex-col items-center text-center">
+      <div className="absolute w-2 h-1/2 bg-white -rotate-[45deg] bottom-0 left-5" />
+      <div className="absolute w-2 h-1/2 bg-white rotate-45 top-0 right-0" />
+
+      <div className="relative z-10 flex max-w-md flex-col gap-y-8 items-center text-center">
         <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">
           Royal Ambassadors
         </h1>
-        <div className="mb-8 flex h-32 w-32 items-center justify-center rounded-full border border-white/10 bg-white/[0.06] shadow-2xl backdrop-blur-sm">
-          <Image
-            src="/images/ra-logo.png"
-            alt="RA logo"
-            width={22}
-            height={22}
-            className="rounded-full object-contain"
-          />
-        </div>
+        <Image
+          src="/images/ra-logo.png"
+          alt="RA logo"
+          width={150}
+          height={150}
+          className="rounded-full object-cover"
+        />
 
         <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">
           Pentecost Baptist Association
         </h1>
-        <p className="mt-2 text-xs font-semibold uppercase tracking-[0.32em] text-gold/80">
-          Institutional Administration
-        </p>
 
-        <p className="mt-8 max-w-sm text-base italic leading-relaxed text-gold/85">
-          &ldquo;Thy word is a lamp unto my feet, and a light unto my
-          path.&rdquo;
-        </p>
-        <p className="mt-2 text-xs font-medium uppercase tracking-[0.18em] text-white/40">
-          Psalm 119:105
-        </p>
+        <div>
+          <p className="mt-8 max-w-sm text-base italic leading-relaxed text-gold">
+            We are Ambassadors for Christ
+          </p>
+          <p className="mt-2 text-xs font-medium uppercase tracking-[0.18em] text-white/90">
+            2 Corinthians 5:20
+          </p>
+        </div>
 
         <div className="mt-10 h-px w-24 bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
       </div>

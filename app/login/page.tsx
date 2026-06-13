@@ -8,7 +8,6 @@ import Image from "next/image";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import {
   LuArrowRight,
-  LuCircleAlert,
   LuCircleHelp,
   LuEye,
   LuEyeOff,
@@ -16,6 +15,12 @@ import {
   LuMail,
 } from "react-icons/lu";
 import { AuthBrandPanel } from "@/components/auth/AuthBrandPanel";
+import {
+  errorToast,
+  successToast,
+} from "@/components/shared/toast-notification/toast-notification";
+import { useLogin } from "@/service/apis/auth";
+import useCurrentUser from "@/hooks/useCurrentUser";
 
 interface LoginFormValues {
   email: string;
@@ -28,32 +33,42 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export default function LoginPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<LoginFormValues>({
     mode: "onTouched",
     defaultValues: { email: "", password: "", remember: false },
   });
 
+  const { mutateAsync: login, isPending: isLoginPending } = useLogin();
+  const { setCurrentUser } = useCurrentUser();
+
   const onSubmit: SubmitHandler<LoginFormValues> = async (data) => {
-    setSubmitError(null);
     try {
-      // TODO: replace with real call to POST /api/auth/login
-      await new Promise((r) => setTimeout(r, 700));
-      if (data.password === "fail") {
-        throw new Error("Invalid email or password.");
-      }
+      //send request to server to login
+      const payload = {
+        email: data.email,
+        password: data.password,
+      };
+      const response = await login(payload);
+      console.log(response);
+      setCurrentUser(response);
       router.push("/admin");
+      successToast("Login successful", "Sign in successful");
     } catch (err) {
-      setSubmitError(
-        err instanceof Error
-          ? err.message
-          : "Sign in failed. Please try again.",
-      );
+      console.log(err);
+      const e = err as {
+        response?: { data?: { message?: string } };
+        message?: string;
+      };
+      const errMessage =
+        e?.response?.data?.message ||
+        e?.message ||
+        "Sign in failed. Please try again.";
+      errorToast(errMessage, "Sign in failed");
     }
   };
 
@@ -83,15 +98,15 @@ export default function LoginPage() {
           <div className="aurora-blob-2 absolute -bottom-32 -left-24 h-[300px] w-[300px] rounded-full bg-gradient-to-br from-gold/15 to-transparent blur-3xl" />
         </div>
 
-        <div className="relative z-10 w-full max-w-[440px]">
+        <div className="relative z-10 w-full max-w-xl">
           <div className="mb-8 flex flex-col items-center text-center lg:hidden">
-            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-[#040e3d] text-white shadow-lg">
+            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl">
               <Image
                 src="/images/ra-logo.png"
                 alt="RA logo"
-                width={22}
-                height={22}
-                className="rounded-full object-contain"
+                width={100}
+                height={100}
+                className="rounded-full object-cover"
               />
             </div>
             <h1 className="text-3xl font-bold tracking-tight text-primary">
@@ -102,29 +117,19 @@ export default function LoginPage() {
             </h3>
           </div>
 
-          <div className="rounded-2xl border border-text-dark/[0.05] bg-surface p-6 shadow-[0_1px_2px_rgba(27,36,82,0.04),0_8px_24px_rgba(27,36,82,0.06)] sm:p-8">
+          <div className="rounded-2xl borde border-text-dark/[0.05] bg-surface p-6 sm:p-8">
             <header className="mb-6 sm:mb-8">
-              <h2 className="text-2xl font-bold tracking-tight text-primary sm:text-3xl">
+              <h2 className="text-2xl font-bold tracking-tight text-primary sm:text-5xl">
                 Welcome Back
               </h2>
-              <p className="mt-1.5 text-sm text-text-muted">
+              <p className="mt-1.5 text-base text-text-muted">
                 Access the Institutional Administration Portal.
               </p>
             </header>
 
-            {submitError && (
-              <div
-                role="alert"
-                className="mb-5 flex items-start gap-2 rounded-lg border border-rose-200/60 bg-rose-50 px-3 py-2.5 text-sm text-rose-700"
-              >
-                <LuCircleAlert size={16} className="mt-0.5 shrink-0" />
-                <span>{submitError}</span>
-              </div>
-            )}
-
             <form
               onSubmit={handleSubmit(onSubmit)}
-              className="space-y-5"
+              className="flex flex-col gap-y-8 mt-16"
               noValidate
             >
               <Input
@@ -203,25 +208,22 @@ export default function LoginPage() {
                 type="submit"
                 radius="md"
                 size="lg"
-                isLoading={isSubmitting}
+                isLoading={isLoginPending}
                 endContent={
-                  !isSubmitting ? <LuArrowRight size={18} /> : undefined
+                  !isLoginPending ? <LuArrowRight size={18} /> : undefined
                 }
                 className={cn(
                   "group w-full bg-primary py-3 text-base font-semibold text-white shadow-md transition-all",
                   "hover:bg-[#040e3d] active:scale-[0.99]",
                 )}
               >
-                {isSubmitting ? "Signing in…" : "Sign In"}
+                Sign In
               </Button>
             </form>
 
             <footer className="mt-8 border-t border-text-dark/[0.05] pt-5 text-center">
               <p className="text-sm text-text-muted">
                 Authorized personnel only.
-              </p>
-              <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-text-muted/70">
-                System Version 4.2.0-stable
               </p>
             </footer>
           </div>
@@ -242,12 +244,10 @@ export default function LoginPage() {
 }
 
 const inputCx = {
-  label: "text-xs font-semibold !text-text-dark",
+  label: "font-semibold !text-text-dark",
   inputWrapper: cn(
     "border-text-dark/15 bg-background/40 transition-all",
     "data-[hover=true]:border-text-dark/25 data-[hover=true]:bg-background/60",
-    "group-data-[focus=true]:border-gold/60 group-data-[focus=true]:bg-surface",
-    "group-data-[focus=true]:ring-4 group-data-[focus=true]:ring-gold/15",
   ),
   input: "text-sm placeholder:text-text-muted",
   errorMessage: "text-xs",

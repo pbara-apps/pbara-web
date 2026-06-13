@@ -1,28 +1,28 @@
 "use client";
+import { useGetAdminDirectorDesk } from "@/service/apis/admin";
 import { useDrawer } from "@/store/useDrawer";
 import { Button } from "@heroui/react";
 import { LuArrowRight, LuPencil, LuQuote } from "react-icons/lu";
 
 export interface DirectorDeskPreviewProps {
-  title: string;
-  excerpt: string;
   badge?: string;
   onRead?: () => void;
 }
 
 export function DirectorDeskPreview({
-  title,
-  excerpt,
   badge = "Editorial",
   onRead,
 }: DirectorDeskPreviewProps) {
   const openDrawer = useDrawer((s) => s.openDrawer);
+
+  const { data: directorDesk } = useGetAdminDirectorDesk();
 
   const handleEdit = () => {
     openDrawer("edit-director-desk", {
       config: {
         size: "3xl",
       },
+      body: directorDesk,
     });
   };
   return (
@@ -58,10 +58,10 @@ export function DirectorDeskPreview({
 
       <div className="p-5">
         <h4 className="text-base font-semibold tracking-tight text-primary">
-          {title}
+          {directorDesk?.title}
         </h4>
         <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-text-muted">
-          {excerpt}
+          {directorDesk?.description}
         </p>
         <button
           type="button"

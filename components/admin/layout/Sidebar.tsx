@@ -6,6 +6,7 @@ import { cn } from "@heroui/react";
 import { LuChevronLeft, LuLogOut, LuX } from "react-icons/lu";
 import { adminFooterNav, adminNav, isNavActive, type NavItem } from "./nav";
 import Image from "next/image";
+import useCurrentUser from "@/hooks/useCurrentUser";
 
 interface SidebarProps {
   collapsed: boolean;
@@ -21,6 +22,9 @@ export function Sidebar({
   onToggleCollapse,
 }: SidebarProps) {
   const pathname = usePathname();
+
+  const { user } = useCurrentUser();
+  const splitterUserName = user?.name?.split(" ") || [];
 
   return (
     <>
@@ -126,8 +130,9 @@ export function Sidebar({
             )}
           >
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-gold to-[#E8C96A] text-sm font-bold text-primary shadow-inner">
-              SA
+              {splitterUserName[1][0] + splitterUserName[2][0]}
             </div>
+
             <div
               className={cn(
                 "min-w-0 flex-1 transition-[opacity,width] duration-200",
@@ -136,7 +141,7 @@ export function Sidebar({
               )}
             >
               <p className="truncate text-sm font-medium text-white">
-                Rev. Samuel Adebayo
+                {user?.name}
               </p>
               <p className="truncate text-[11px] text-white/50">
                 Primary Admin

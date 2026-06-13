@@ -21,6 +21,7 @@ import {
   type QuickAction,
 } from "@/components/admin/dashboard/QuickActions";
 import { SystemStatus } from "@/components/admin/dashboard/SystemStatus";
+import WelcomeHeader from "@/components/admin/dashboard/WelcomeHeader";
 
 export const metadata = {
   title: "Dashboard",
@@ -129,25 +130,7 @@ const quickActions: QuickAction[] = [
 export default function AdminDashboardPage() {
   return (
     <div className="space-y-6 lg:space-y-8">
-      <header className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-primary sm:text-3xl">
-            Welcome back, Rev. Samuel
-          </h1>
-          <p className="mt-1 text-sm text-text-muted">
-            Here&apos;s what&apos;s happening across PBA Royal Ambassadors
-            today.
-          </p>
-        </div>
-        <p className="text-xs font-medium uppercase tracking-wider text-text-muted">
-          {new Date().toLocaleDateString("en-NG", {
-            weekday: "long",
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-          })}
-        </p>
-      </header>
+      <WelcomeHeader />
 
       <section className="grid grid-cols-3 gap-4">
         <div className="col-span-2 space-y-6">
@@ -162,10 +145,7 @@ export default function AdminDashboardPage() {
           <ActivityFeed entries={activity} />
         </div>
         <div className="space-y-6">
-          <DirectorDeskPreview
-            title="Shepherding Through Digital Transformation"
-            excerpt="In this new age of connectivity, we must ensure our message remains as pure as the day it was first spoken. Our digital tools serve not only to manage but to unify, to disciple, and to send."
-          />
+          <DirectorDeskPreview />
           <QuickActions actions={quickActions} />
           <SystemStatus />
         </div>

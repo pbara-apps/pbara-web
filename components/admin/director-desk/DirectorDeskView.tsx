@@ -21,8 +21,10 @@ import {
   LuUpload,
 } from "react-icons/lu";
 import { useDrawerBody } from "@/store/useDrawer";
+import Image from "next/image";
 
 export interface DirectorDeskBody {
+  image?: string | null;
   title?: string;
   description?: string;
   portrait?: string | null;
@@ -37,7 +39,7 @@ const DirectorDeskView = ({ onClose }: DirectorDeskViewProps) => {
   const [title, setTitle] = useState(initial?.title ?? "");
   const [description, setDescription] = useState(initial?.description ?? "");
   const [portrait, setPortrait] = useState<string | null>(
-    initial?.portrait ?? null,
+    initial?.image ?? null,
   );
   const [saving, setSaving] = useState(false);
   const [dragOver, setDragOver] = useState(false);
@@ -94,13 +96,7 @@ const DirectorDeskView = ({ onClose }: DirectorDeskViewProps) => {
                 alt="Director portrait preview"
                 className="h-full w-full object-cover"
               />
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                className="sr-only"
-                onChange={(e) => handleFiles(e.target.files)}
-              />
+
               <div className="absolute inset-0 flex items-end justify-end gap-2 bg-gradient-to-t from-black/60 via-black/10 to-transparent p-4 opacity-0 transition-opacity group-hover:opacity-100">
                 <Button
                   size="sm"
@@ -248,13 +244,7 @@ const inputCx = {
   input: "text-sm placeholder:text-text-muted",
 };
 
-function FormatBtn({
-  label,
-  icon,
-}: {
-  label: string;
-  icon: React.ReactNode;
-}) {
+function FormatBtn({ label, icon }: { label: string; icon: React.ReactNode }) {
   return (
     <button
       type="button"

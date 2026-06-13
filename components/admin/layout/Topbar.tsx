@@ -49,9 +49,6 @@ export function Topbar({ onOpenMobileSidebar }: TopbarProps) {
             placeholder="Search anything…"
             className="w-full rounded-lg border border-text-dark/10 bg-background/70 py-2 pl-9 pr-12 text-sm text-text-dark placeholder:text-text-muted transition-all focus:border-gold/40 focus:bg-surface focus:outline-none focus:ring-4 focus:ring-gold/10"
           />
-          <kbd className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 rounded border border-text-dark/10 bg-surface px-1.5 py-0.5 text-[10px] font-medium text-text-muted">
-            ⌘K
-          </kbd>
         </div>
 
         <button
@@ -71,14 +68,14 @@ export function Topbar({ onOpenMobileSidebar }: TopbarProps) {
           <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-gold ring-2 ring-surface" />
         </button>
 
-        <div className="flex h-9 items-center gap-2 rounded-full bg-background/70 pl-1 pr-3 ring-1 ring-text-dark/[0.06]">
+        {/* <div className="flex h-9 items-center gap-2 rounded-full bg-background/70 pl-1 pr-3 ring-1 ring-text-dark/[0.06]">
           <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-primary to-[#040e3d] text-xs font-bold text-white">
             SA
           </div>
           <span className="hidden text-xs font-medium text-text-dark sm:inline">
             Rev. Samuel
           </span>
-        </div>
+        </div> */}
       </div>
     </header>
   );
