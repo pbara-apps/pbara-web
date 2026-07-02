@@ -14,6 +14,9 @@ import { upcomingEvents, pastEvents } from "@/data/events";
 
 export const metadata: Metadata = {
   title: "Events and Programs",
+  alternates: {
+    canonical: "/events",
+  },
   description:
     "Upcoming Royal Ambassadors events, camps, training workshops, and past events archive. Strengthening faith and discipline through fellowship and service.",
   openGraph: {
@@ -181,6 +184,7 @@ export default function EventsPage() {
 
                   <div className="mt-6 flex items-center gap-4">
                     <button
+                      disabled
                       type="button"
                       className="flex items-center gap-2 px-6 py-2.5 bg-accent-gold text-slate-900 font-bold rounded-lg hover:brightness-110 transition-all"
                     >

@@ -21,21 +21,32 @@ export const stats = [
 export const upcomingEvents: EventItem[] = [
   {
     id: "1",
+    title: "Inter-chapter football competition",
+    category: "Golden Ambassador",
+    date: "2026-07-12",
+    venue: "Oke odo high senior school ile epo, lagos",
+    description:
+      "The competition is open to all chapters of the association. Pentecost Baptist association participated in the competition",
+    status: "open",
+    isPast: false,
+  },
+  {
+    id: "2",
     title: "Annual Royal Ambassadors Camp",
     category: "Golden Ambassador",
-    date: "2024-08-15",
-    venue: "Baptist Camp Grounds",
+    date: "2026-08-06",
+    venue: "First Baptist Church, Badagry",
     description:
       "A week-long camp focused on spiritual growth, outdoor activities, and leadership development for all age groups.",
     status: "open",
     isPast: false,
   },
   {
-    id: "2",
-    title: "Leadership Training Workshop",
+    id: "3",
+    title: "National Leadership Training Conference",
     category: "Training",
-    date: "2024-09-05",
-    venue: "Association Headquarters",
+    date: "2026-10-05",
+    venue: "Royal Ambassadors of Nigeria",
     description:
       "Intensive workshop for chapter commanders and counselors on discipline, program delivery, and youth mentorship.",
     status: "open",

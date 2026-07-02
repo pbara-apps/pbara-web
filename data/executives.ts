@@ -15,7 +15,7 @@ export const executives: Executive[] = [
     position: "A. Director",
     church: "Peculiar People Baptist Church",
     bio: "Leading the association with vision and dedication.",
-    image: undefined,
+    image: "/images/samuel-oloyede.jpeg",
   },
   {
     id: crypto.randomUUID(),
@@ -32,7 +32,7 @@ export const executives: Executive[] = [
     position: "Recording Secetary",
     church: "Gateway Baptist Church",
     bio: "Documentation and communication across the association.",
-    image: undefined,
+    image: "/images/favour-adebayo.jpeg",
   },
   {
     id: crypto.randomUUID(),

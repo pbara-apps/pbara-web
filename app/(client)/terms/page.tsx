@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Terms of Service",
+  alternates: {
+    canonical: "/terms",
+  },
   description: "Terms of service for PBA Royal Ambassadors website.",
 };
 

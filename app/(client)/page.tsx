@@ -1,9 +1,19 @@
+import type { Metadata } from "next";
 import { HeroSection } from "@/components/sections/HeroSection";
 import { StatsBar } from "@/components/sections/StatsBar";
 import { DirectorDesk } from "@/components/sections/DirectorDesk";
 import { HomeSections } from "@/components/sections/HomeSections";
 import { executives } from "@/data/executives";
 import { newsItems } from "@/data/news";
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    url: "https://pbara.org.ng",
+  },
+};
 
 export default function HomePage() {
   const bulletins = [

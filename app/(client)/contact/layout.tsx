@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Contact Us",
+  alternates: {
+    canonical: "/contact",
+  },
   description:
     "Contact the Royal Ambassadors headquarters. Send a message or find our address, phone, and email.",
   openGraph: {

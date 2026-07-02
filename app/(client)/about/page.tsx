@@ -5,6 +5,9 @@ import { AboutPageContent } from "@/components/sections/AboutPageContent";
 
 export const metadata: Metadata = {
   title: "About Us",
+  alternates: {
+    canonical: "/about",
+  },
   description:
     "Learn about the Royal Ambassadors of Nigeria, our heritage, vision, mission, and the Pentecost Baptist Association RA. Meet our patrons and discover how we develop young men for Christ.",
   openGraph: {

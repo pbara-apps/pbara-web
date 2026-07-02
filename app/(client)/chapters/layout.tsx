@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Chapters and Units",
+  alternates: {
+    canonical: "/chapters",
+  },
   description:
     "Discover Royal Ambassador chapters and units across the Pentecost Baptist Association. Find a chapter near you.",
   openGraph: {

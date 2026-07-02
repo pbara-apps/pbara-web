@@ -5,6 +5,9 @@ import { newsItems } from "@/data/news";
 
 export const metadata: Metadata = {
   title: "News and Press",
+  alternates: {
+    canonical: "/news",
+  },
   description:
     "Official announcements, program updates, and leadership insights from the Royal Ambassadors paramilitary Christian youth organization.",
   openGraph: {

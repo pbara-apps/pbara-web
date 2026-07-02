@@ -12,6 +12,9 @@ import { cn } from "@heroui/react";
 
 export const metadata: Metadata = {
   title: "Executive Leadership and Patrons",
+  alternates: {
+    canonical: "/executives",
+  },
   description:
     "Meet the dedicated officers and patrons guiding the Royal Ambassadors of Pentecost Baptist Association. Our leadership is committed to fostering spiritual growth and discipline.",
   openGraph: {
@@ -29,7 +32,7 @@ export default function ExecutivesPage() {
       <div className="flex flex-col gap-8 md:flex-row items-center mb-16">
         <div
           className="w-full md:w-1/2 aspect-video bg-cover bg-center rounded-xl shadow-lg border-4 border-white dark:border-slate-800"
-          style={{ backgroundImage: `url("${executivesHeroImage}")` }}
+          style={{ backgroundImage: `url("/images/patrons.jpeg")` }}
           role="img"
           aria-label="Group of professional Christian leaders in conference room"
         />
