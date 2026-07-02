@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
-import { NewsPageContent } from "@/components/sections/NewsPageContent";
-import { newsItems } from "@/data/news";
+import { PublicNewsPage } from "@/components/sections/PublicNewsPage";
 
 export const metadata: Metadata = {
   title: "News and Press",
@@ -17,18 +15,6 @@ export const metadata: Metadata = {
   keywords: ["News", "Press", "Announcements", "RA updates", "Bulletin"],
 };
 
-function NewsLoading() {
-  return (
-    <div className="min-h-screen bg-background flex items-center justify-center">
-      <p className="text-text-muted">Loading...</p>
-    </div>
-  );
-}
-
 export default function NewsPage() {
-  return (
-    <Suspense fallback={<NewsLoading />}>
-      <NewsPageContent news={newsItems} />
-    </Suspense>
-  );
+  return <PublicNewsPage />;
 }

@@ -19,7 +19,17 @@ http.interceptors.request.use((config) => {
   }
   return config;
 });
-http.interceptors.response.use((response) => {
-  return response?.data;
-});
+http.interceptors.response.use(
+  (response) => response?.data,
+  (error) => {
+    if (error?.response?.status === 401 && typeof window !== "undefined") {
+      const path = window.location.pathname;
+      if (path.startsWith("/admin")) {
+        localStorage.removeItem("pbara-auth-session");
+        window.location.href = "/login";
+      }
+    }
+    return Promise.reject(error?.response?.data ?? error);
+  },
+);
 export default http;

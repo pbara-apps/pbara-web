@@ -10,7 +10,7 @@ import {
   Spinner,
 } from "@heroui/react";
 import { useMemo, useState } from "react";
-import { LuNewspaper, LuPlus, LuSearch } from "react-icons/lu";
+import { LuCalendar, LuPlus, LuSearch } from "react-icons/lu";
 import { AdminContentCard } from "@/components/admin/shared/AdminContentCard";
 import { AdminPageHeader } from "@/components/admin/shared/AdminPageHeader";
 import { BulkActionBar } from "@/components/admin/shared/BulkActionBar";
@@ -20,25 +20,25 @@ import {
   successToast,
 } from "@/components/shared/toast-notification/toast-notification";
 import {
-  useDeleteNews,
-  useDeleteNewsBulk,
-  useGetNews,
-} from "@/service/apis/news";
+  useDeleteEvent,
+  useDeleteEventsBulk,
+  useGetEvents,
+} from "@/service/apis/event";
 import { useDrawer } from "@/store/useDrawer";
-import type { AdminNews, NewsStatus } from "@/types/admin";
-import { NEWS_CATEGORIES, NEWS_STATUSES } from "@/types/admin";
+import type { AdminEvent, EventStatus } from "@/types/admin";
+import { EVENT_CATEGORIES, EVENT_STATUSES } from "@/types/admin";
 
 const PAGE_SIZE = 9;
 
-export default function NewsAdminPage() {
+export default function EventAdminPage() {
   const openDrawer = useDrawer((s) => s.openDrawer);
-  const { data: items = [], isLoading, isError, refetch } = useGetNews();
-  const deleteOne = useDeleteNews();
-  const deleteBulk = useDeleteNewsBulk();
+  const { data: items = [], isLoading, isError, refetch } = useGetEvents();
+  const deleteOne = useDeleteEvent();
+  const deleteBulk = useDeleteEventsBulk();
 
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<string>("all");
-  const [status, setStatus] = useState<NewsStatus | "all">("all");
+  const [status, setStatus] = useState<EventStatus | "all">("all");
   const [page, setPage] = useState(1);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [deleteTarget, setDeleteTarget] = useState<{ ids: string[]; label: string } | null>(null);
@@ -51,15 +51,15 @@ export default function NewsAdminPage() {
       if (!q) return true;
       return (
         item.title.toLowerCase().includes(q) ||
-        item.excerpt.toLowerCase().includes(q) ||
-        item.category.toLowerCase().includes(q)
+        item.venue.toLowerCase().includes(q) ||
+        item.description.toLowerCase().includes(q)
       );
     });
   }, [items, search, category, status]);
 
   const pages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const pageItems = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-  const publishedCount = items.filter((i) => i.status === "published").length;
+  const upcomingCount = items.filter((i) => i.status === "open").length;
 
   const toggleSelect = (id: string, checked: boolean) => {
     setSelected((prev) => {
@@ -75,7 +75,7 @@ export default function NewsAdminPage() {
     try {
       if (deleteTarget.ids.length === 1) await deleteOne.mutateAsync(deleteTarget.ids[0]);
       else await deleteBulk.mutateAsync(deleteTarget.ids);
-      successToast("News deleted.");
+      successToast("Event deleted.");
       setSelected(new Set());
       setDeleteTarget(null);
     } catch (err) {
@@ -83,64 +83,35 @@ export default function NewsAdminPage() {
     }
   };
 
-  const cardProps = (item: AdminNews) => ({
-    id: item.id,
-    title: item.title,
-    subtitle: item.excerpt,
-    image: item.image,
-    chips: [
-      { label: item.category },
-      {
-        label: item.status,
-        color: item.status === "published" ? ("success" as const) : ("warning" as const),
-      },
-    ],
-    selected: selected.has(item.id),
-    onSelect: toggleSelect,
-    onEdit: () => openDrawer("edit-news", { body: item }),
-    onDelete: () => setDeleteTarget({ ids: [item.id], label: item.title }),
-    onClick: () => openDrawer("edit-news", { body: item }),
-    fallbackIcon: <LuNewspaper size={32} />,
-  });
-
   return (
     <div className="space-y-6">
       <AdminPageHeader
-        title="News & Announcements"
-        description="Publish bulletins, press releases, and association updates."
-        actionLabel="Create Article"
-        onAction={() => openDrawer("create-news")}
+        title="Events"
+        description="Manage upcoming programmes, ceremonies, and past event archives."
+        actionLabel="Create Event"
+        onAction={() => openDrawer("create-event")}
         stats={
           <>
-            <Chip size="sm" variant="flat" className="bg-primary/10 text-primary">{items.length} articles</Chip>
-            <Chip size="sm" variant="flat" className="bg-emerald-100 text-emerald-700">{publishedCount} published</Chip>
+            <Chip size="sm" variant="flat" className="bg-primary/10 text-primary">{items.length} events</Chip>
+            <Chip size="sm" variant="flat" className="bg-emerald-100 text-emerald-700">{upcomingCount} upcoming</Chip>
           </>
         }
       />
 
       <section className="flex flex-wrap gap-3 rounded-xl border border-text-dark/[0.05] bg-surface p-3">
-        <Input
-          placeholder="Search news…"
-          value={search}
-          onValueChange={(v) => { setSearch(v); setPage(1); }}
-          startContent={<LuSearch size={16} className="text-text-muted" />}
-          variant="flat"
-          radius="full"
-          className="min-w-[240px] flex-1"
-          classNames={{ inputWrapper: "bg-background/60 border border-text-dark/[0.06]", input: "text-sm" }}
-        />
+        <Input placeholder="Search events…" value={search} onValueChange={(v) => { setSearch(v); setPage(1); }} startContent={<LuSearch size={16} className="text-text-muted" />} variant="flat" radius="full" className="min-w-[240px] flex-1" classNames={{ inputWrapper: "bg-background/60 border border-text-dark/[0.06]", input: "text-sm" }} />
         <Select selectedKeys={[category]} onSelectionChange={(keys) => { setCategory(Array.from(keys)[0] as string); setPage(1); }} className="w-44" variant="flat" radius="md" aria-label="Category">
           <SelectItem key="all">All Categories</SelectItem>
           <>
-            {NEWS_CATEGORIES.map((c) => (
+            {EVENT_CATEGORIES.map((c) => (
               <SelectItem key={c}>{c}</SelectItem>
             ))}
           </>
         </Select>
-        <Select selectedKeys={[status]} onSelectionChange={(keys) => { setStatus(Array.from(keys)[0] as NewsStatus | "all"); setPage(1); }} className="w-36" variant="flat" radius="md" aria-label="Status">
+        <Select selectedKeys={[status]} onSelectionChange={(keys) => { setStatus(Array.from(keys)[0] as EventStatus | "all"); setPage(1); }} className="w-36" variant="flat" radius="md" aria-label="Status">
           <SelectItem key="all">All Status</SelectItem>
           <>
-            {NEWS_STATUSES.map((s) => (
+            {EVENT_STATUSES.map((s) => (
               <SelectItem key={s} className="capitalize">{s}</SelectItem>
             ))}
           </>
@@ -153,15 +124,34 @@ export default function NewsAdminPage() {
         <div className="py-20 text-center"><Button onPress={() => refetch()}>Retry</Button></div>
       ) : pageItems.length === 0 ? (
         <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-text-dark/10 py-20">
-          <LuNewspaper size={32} className="text-primary/40" />
-          <p className="text-sm text-text-muted">No news articles yet.</p>
-          <Button startContent={<LuPlus size={16} />} className="bg-primary text-white" onPress={() => openDrawer("create-news")}>Create Article</Button>
+          <LuCalendar size={32} className="text-primary/40" />
+          <p className="text-sm text-text-muted">No events scheduled yet.</p>
+          <Button startContent={<LuPlus size={16} />} className="bg-primary text-white" onPress={() => openDrawer("create-event")}>Create Event</Button>
         </div>
       ) : (
         <>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
             {pageItems.map((item) => (
-              <AdminContentCard key={item.id} {...cardProps(item)} />
+              <AdminContentCard
+                key={item.id}
+                id={item.id}
+                title={item.title}
+                subtitle={`${item.date} · ${item.venue}`}
+                image={item.image}
+                chips={[
+                  { label: item.category },
+                  {
+                    label: item.status,
+                    color: item.status === "open" ? "success" : item.status === "cancelled" ? "danger" : "default",
+                  },
+                ]}
+                selected={selected.has(item.id)}
+                onSelect={toggleSelect}
+                onEdit={() => openDrawer("edit-event", { body: item })}
+                onDelete={() => setDeleteTarget({ ids: [item.id], label: item.title })}
+                onClick={() => openDrawer("edit-event", { body: item })}
+                fallbackIcon={<LuCalendar size={32} />}
+              />
             ))}
           </div>
           <div className="flex justify-center pt-2">
@@ -170,8 +160,8 @@ export default function NewsAdminPage() {
         </>
       )}
 
-      <BulkActionBar count={selected.size} entityLabel="Article" onClear={() => setSelected(new Set())} onDelete={() => setDeleteTarget({ ids: Array.from(selected), label: `${selected.size} articles` })} deleting={deleteBulk.isPending} />
-      <ConfirmDialog isOpen={!!deleteTarget} title="Delete news" message={`Remove ${deleteTarget?.label ?? "selected articles"}?`} loading={deleteOne.isPending || deleteBulk.isPending} onClose={() => setDeleteTarget(null)} onConfirm={handleDelete} />
+      <BulkActionBar count={selected.size} entityLabel="Event" onClear={() => setSelected(new Set())} onDelete={() => setDeleteTarget({ ids: Array.from(selected), label: `${selected.size} events` })} deleting={deleteBulk.isPending} />
+      <ConfirmDialog isOpen={!!deleteTarget} title="Delete event" message={`Remove ${deleteTarget?.label ?? "selected events"}?`} loading={deleteOne.isPending || deleteBulk.isPending} onClose={() => setDeleteTarget(null)} onConfirm={handleDelete} />
     </div>
   );
 }

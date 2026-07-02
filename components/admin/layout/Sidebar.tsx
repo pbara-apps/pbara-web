@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@heroui/react";
 import { LuChevronLeft, LuLogOut, LuX } from "react-icons/lu";
 import { adminFooterNav, adminNav, isNavActive, type NavItem } from "./nav";
@@ -32,8 +32,9 @@ export function Sidebar({
   onToggleCollapse,
 }: SidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
 
-  const { user } = useCurrentUser();
+  const { user, removeCurrentUser } = useCurrentUser();
   const userInitials = getUserInitials(user?.name);
 
   return (
@@ -159,6 +160,10 @@ export function Sidebar({
             </div>
             <button
               type="button"
+              onClick={() => {
+                removeCurrentUser();
+                router.replace("/login");
+              }}
               className={cn(
                 "shrink-0 rounded-md p-1.5 text-white/60 transition-colors hover:bg-white/10 hover:text-white",
                 collapsed && "lg:hidden",

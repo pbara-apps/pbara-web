@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { FiVideo, FiImage, FiDownload, FiFilter, FiZoomIn, FiPlay, FiChevronRight, FiFileText, FiCalendar, FiShield } from "react-icons/fi";
 import { MdPalette } from "react-icons/md";
 import { downloads } from "@/data/downloads";
+import { useGetPublicGallery } from "@/service/apis/gallery";
 import type { DownloadItem } from "@/types";
 
 const HERO_IMAGE =
@@ -37,6 +38,29 @@ type TabKey = "videos" | "photos" | "downloads";
 
 export function MediaPageContent() {
   const [tab, setTab] = useState<TabKey>("photos");
+  const { data: photosData } = useGetPublicGallery("photo");
+  const { data: videosData } = useGetPublicGallery("video");
+
+  const galleryImages = useMemo(() => {
+    if (photosData && photosData.length > 0) {
+      return photosData.map((item) => ({ src: item.url, alt: item.alt || item.title }));
+    }
+    return GALLERY_IMAGES;
+  }, [photosData]);
+
+  const videos = useMemo(() => {
+    if (videosData && videosData.length > 0) {
+      return videosData.map((item) => ({
+        id: item.id,
+        title: item.title,
+        date: item.category,
+        duration: "—",
+        image: item.url,
+        imageAlt: item.alt || item.title,
+      }));
+    }
+    return VIDEOS;
+  }, [videosData]);
 
   return (
     <main className="flex-1 max-w-7xl mx-auto w-full px-4 md:px-20 py-8">
@@ -109,7 +133,7 @@ export function MediaPageContent() {
             </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {VIDEOS.map((v) => (
+            {videos.map((v) => (
               <div key={v.id} className="group cursor-pointer">
                 <div className="relative aspect-video rounded-xl overflow-hidden mb-3 shadow-md border border-slate-200 dark:border-slate-800">
                   <div
@@ -155,7 +179,7 @@ export function MediaPageContent() {
               </button>
             </div>
             <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
-              {GALLERY_IMAGES.map((img, i) => (
+              {galleryImages.map((img, i) => (
                 <div
                   key={i}
                   className="break-inside-avoid relative group rounded-lg overflow-hidden border border-primary/10"

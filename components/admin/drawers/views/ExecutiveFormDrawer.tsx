@@ -9,24 +9,22 @@ import {
   Input,
   Select,
   SelectItem,
-  Switch,
   Textarea,
-  cn,
 } from "@heroui/react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { LuCamera, LuMail, LuPhone, LuTrash2 } from "react-icons/lu";
 import {
-  LuCamera,
-  LuLink,
-  LuList,
-  LuMail,
-  LuPhone,
-  LuTrash2,
-} from "react-icons/lu";
+  errorToast,
+  successToast,
+} from "@/components/shared/toast-notification/toast-notification";
+import { useGetChapters } from "@/service/apis/church";
 import {
-  EXECUTIVE_CHAPTERS,
-  EXECUTIVE_ROLES,
-  type AdminExecutive,
-} from "@/types/admin";
+  useCreateExecutive,
+  useUpdateExecutive,
+} from "@/service/apis/executive";
+import { useGetOffices } from "@/service/apis/office";
+import type { AdminExecutive, ExecutiveFormPayload } from "@/types/admin";
+import { EXECUTIVE_STATUSES } from "@/types/admin";
 
 interface ExecutiveFormDrawerProps {
   mode: "create" | "edit";
@@ -34,45 +32,97 @@ interface ExecutiveFormDrawerProps {
   onClose: () => void;
 }
 
-const blankExec: AdminExecutive = {
-  id: "",
-  name: "",
-  email: "",
-  phone: "",
-  role: "",
-  chapter: "",
-  status: "draft",
-  bio: "",
-  visible: true,
-  image: null,
-};
+const currentYear = new Date().getFullYear();
+
+function toForm(initial?: AdminExecutive): ExecutiveFormPayload & { id?: string } {
+  return {
+    id: initial?.id,
+    name: initial?.name ?? "",
+    email: initial?.email ?? "",
+    phone: initial?.phone ?? "",
+    office_id: initial?.officeId ?? "",
+    church_id: initial?.churchId ?? "",
+    start_year: initial?.startYear ?? currentYear,
+    end_year: initial?.endYear ?? null,
+    status: initial?.status ?? "active",
+    description: initial?.description ?? "",
+    image: initial?.image ?? null,
+    password: "",
+    title: "Director's Desk",
+  };
+}
 
 export function ExecutiveFormDrawer({
   mode,
   initial,
   onClose,
 }: ExecutiveFormDrawerProps) {
-  const [form, setForm] = useState<AdminExecutive>(initial ?? blankExec);
-  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState(toForm(initial));
+  const { data: offices = [], isLoading: officesLoading } = useGetOffices();
+  const { data: chapters = [], isLoading: chaptersLoading } = useGetChapters();
+  const createExecutive = useCreateExecutive();
+  const updateExecutive = useUpdateExecutive();
 
   useEffect(() => {
-    setForm(initial ?? blankExec);
+    setForm(toForm(initial));
   }, [initial]);
 
-  const update = <K extends keyof AdminExecutive>(
-    key: K,
-    value: AdminExecutive[K],
-  ) => setForm((f) => ({ ...f, [key]: value }));
+  const update = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) =>
+    setForm((f) => ({ ...f, [key]: value }));
+
+  const saving = createExecutive.isPending || updateExecutive.isPending;
+  const isCreate = mode === "create";
+
+  const chapterOptions = useMemo(
+    () =>
+      chapters.map((c) => ({
+        id: c.id,
+        label: `${c.chapter} · ${c.name}`,
+      })),
+    [chapters],
+  );
 
   const handleSave = async () => {
-    setSaving(true);
-    // TODO: replace with API call
-    await new Promise((r) => setTimeout(r, 600));
-    setSaving(false);
-    onClose();
-  };
+    if (!form.name.trim() || !form.office_id || !form.church_id || !form.phone.trim()) {
+      errorToast("Please complete all required fields.", "Validation");
+      return;
+    }
 
-  const isCreate = mode === "create";
+    const payload: ExecutiveFormPayload = {
+      name: form.name.trim(),
+      email: form.email?.trim() || undefined,
+      phone: form.phone.trim(),
+      office_id: form.office_id,
+      church_id: form.church_id,
+      start_year: Number(form.start_year),
+      end_year: form.end_year ? Number(form.end_year) : null,
+      status: form.status,
+      description: form.description.trim() || "—",
+      image: form.image,
+      title: form.title,
+    };
+
+    if (isCreate) {
+      payload.password = form.password?.trim() || "password";
+    } else if (form.password?.trim()) {
+      payload.password = form.password.trim();
+    }
+
+    try {
+      if (isCreate) {
+        await createExecutive.mutateAsync(payload);
+        successToast("Executive created successfully.");
+      } else if (initial?.id) {
+        await updateExecutive.mutateAsync({ id: initial.id, body: payload });
+        successToast("Executive updated successfully.");
+      }
+      onClose();
+    } catch (err) {
+      const message =
+        (err as { message?: string })?.message ?? "Unable to save executive.";
+      errorToast(message, "Save failed");
+    }
+  };
 
   return (
     <>
@@ -81,13 +131,12 @@ export function ExecutiveFormDrawer({
           {isCreate ? "Add New Executive" : "Edit Executive"}
         </h3>
         <p className="text-xs text-text-muted">
-          {isCreate
-            ? "Create a new executive profile and assign permissions."
-            : "Update profile, role assignment, and public visibility."}
+          Assign office, chapter, and contact details. Active executives appear on
+          the public site.
         </p>
       </DrawerHeader>
 
-      <DrawerBody className="space-y-6 px-6 py-6">
+      <DrawerBody className="space-y-5 px-6 py-6">
         <section className="flex items-center gap-5">
           <div className="relative">
             <Avatar
@@ -101,18 +150,24 @@ export function ExecutiveFormDrawer({
             />
             <button
               type="button"
-              className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full bg-gold text-primary shadow-lg ring-4 ring-surface transition-transform hover:scale-105"
+              className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full bg-gold text-primary shadow-lg ring-4 ring-surface"
               aria-label="Upload photo"
             >
               <LuCamera size={14} />
             </button>
           </div>
-          <div className="space-y-1">
-            <p className="text-sm font-semibold text-text-dark">
-              Profile Picture
-            </p>
-            <p className="text-xs text-text-muted">JPG or PNG. Max size 2MB.</p>
-            {form.image && (
+          <div className="space-y-2">
+            <Input
+              label="Image URL"
+              labelPlacement="outside"
+              placeholder="https://…"
+              value={form.image ?? ""}
+              onValueChange={(v) => update("image", v || null)}
+              variant="bordered"
+              radius="md"
+              classNames={inputCx}
+            />
+            {form.image ? (
               <button
                 type="button"
                 onClick={() => update("image", null)}
@@ -120,7 +175,7 @@ export function ExecutiveFormDrawer({
               >
                 <LuTrash2 size={12} /> Remove photo
               </button>
-            )}
+            ) : null}
           </div>
         </section>
 
@@ -138,21 +193,22 @@ export function ExecutiveFormDrawer({
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Select
-            label="Role"
+            label="Office / Role"
             labelPlacement="outside"
-            placeholder="Select role"
-            selectedKeys={form.role ? [form.role] : []}
+            placeholder="Select office"
+            selectedKeys={form.office_id ? [form.office_id] : []}
             onSelectionChange={(keys) => {
               const v = Array.from(keys)[0] as string | undefined;
-              update("role", v ?? "");
+              update("office_id", v ?? "");
             }}
             variant="bordered"
             radius="md"
             isRequired
+            isLoading={officesLoading}
             classNames={selectCx}
           >
-            {EXECUTIVE_ROLES.map((r) => (
-              <SelectItem key={r}>{r}</SelectItem>
+            {offices.map((office) => (
+              <SelectItem key={office.id}>{office.name}</SelectItem>
             ))}
           </Select>
 
@@ -160,55 +216,83 @@ export function ExecutiveFormDrawer({
             label="Chapter"
             labelPlacement="outside"
             placeholder="Select chapter"
-            selectedKeys={form.chapter ? [form.chapter] : []}
+            selectedKeys={form.church_id ? [form.church_id] : []}
             onSelectionChange={(keys) => {
               const v = Array.from(keys)[0] as string | undefined;
-              update("chapter", v ?? "");
+              update("church_id", v ?? "");
             }}
             variant="bordered"
             radius="md"
             isRequired
+            isLoading={chaptersLoading}
             classNames={selectCx}
           >
-            {EXECUTIVE_CHAPTERS.map((c) => (
-              <SelectItem key={c}>{c}</SelectItem>
+            {chapterOptions.map((chapter) => (
+              <SelectItem key={chapter.id}>{chapter.label}</SelectItem>
             ))}
           </Select>
         </div>
 
-        <div>
-          <label className="mb-2 block text-xs font-semibold text-text-dark">
-            Professional Bio
-          </label>
-          <div className="overflow-hidden rounded-lg border border-text-dark/15 bg-background/40 transition-colors focus-within:border-gold/60">
-            <div className="flex items-center gap-1 border-b border-text-dark/10 bg-background/60 px-2 py-1.5">
-              <FormatBtn label="Bold" abbr="B" weight="bold" />
-              <FormatBtn label="Italic" abbr="I" weight="italic" />
-              <FormatBtn label="List" icon={<LuList size={14} />} />
-              <FormatBtn label="Link" icon={<LuLink size={14} />} />
-            </div>
-            <Textarea
-              minRows={4}
-              value={form.bio ?? ""}
-              onValueChange={(v) => update("bio", v)}
-              placeholder="A short professional bio…"
-              variant="flat"
-              classNames={{
-                inputWrapper: "bg-transparent shadow-none",
-                input: "text-sm",
-              }}
-            />
-          </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <Input
+            type="number"
+            label="Start Year"
+            labelPlacement="outside"
+            value={String(form.start_year)}
+            onValueChange={(v) => update("start_year", Number(v) || currentYear)}
+            variant="bordered"
+            radius="md"
+            classNames={inputCx}
+          />
+          <Input
+            type="number"
+            label="End Year"
+            labelPlacement="outside"
+            placeholder="Optional"
+            value={form.end_year ? String(form.end_year) : ""}
+            onValueChange={(v) => update("end_year", v ? Number(v) : null)}
+            variant="bordered"
+            radius="md"
+            classNames={inputCx}
+          />
+          <Select
+            label="Status"
+            labelPlacement="outside"
+            selectedKeys={[form.status]}
+            onSelectionChange={(keys) => {
+              const v = Array.from(keys)[0] as typeof form.status | undefined;
+              if (v) update("status", v);
+            }}
+            variant="bordered"
+            radius="md"
+            classNames={selectCx}
+          >
+            {EXECUTIVE_STATUSES.map((status) => (
+              <SelectItem key={status} className="capitalize">
+                {status}
+              </SelectItem>
+            ))}
+          </Select>
         </div>
 
-        <section className="space-y-3">
-          <p className="text-xs font-semibold text-text-dark">
-            Social Connections
-          </p>
+        <Textarea
+          label="Bio / Description"
+          labelPlacement="outside"
+          minRows={4}
+          value={form.description}
+          onValueChange={(v) => update("description", v)}
+          placeholder="Professional bio shown on the public site…"
+          variant="bordered"
+          classNames={inputCx}
+        />
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Input
             type="email"
+            label="Email"
+            labelPlacement="outside"
             placeholder="email@pba.org"
-            value={form.email}
+            value={form.email ?? ""}
             onValueChange={(v) => update("email", v)}
             variant="bordered"
             radius="md"
@@ -217,34 +301,30 @@ export function ExecutiveFormDrawer({
           />
           <Input
             type="tel"
+            label="Phone"
+            labelPlacement="outside"
             placeholder="+234 803 123 4567"
-            value={form.phone ?? ""}
+            value={form.phone}
             onValueChange={(v) => update("phone", v)}
             variant="bordered"
             radius="md"
+            isRequired
             startContent={<LuPhone size={16} className="text-text-muted" />}
             classNames={inputCx}
           />
-        </section>
+        </div>
 
-        <section className="flex items-center justify-between rounded-xl border border-primary/10 bg-primary/[0.03] p-4">
-          <div>
-            <p className="text-sm font-semibold text-primary">
-              Public Visibility
-            </p>
-            <p className="text-xs text-text-muted">
-              Allow this profile to appear on the public website.
-            </p>
-          </div>
-          <Switch
-            isSelected={form.visible ?? false}
-            onValueChange={(v) => update("visible", v)}
-            color="warning"
-            classNames={{
-              wrapper: "group-data-[selected=true]:bg-gold",
-            }}
-          />
-        </section>
+        <Input
+          type={isCreate ? "password" : "text"}
+          label={isCreate ? "Login Password" : "Reset Password (optional)"}
+          labelPlacement="outside"
+          placeholder={isCreate ? "Default: password" : "Leave blank to keep current"}
+          value={form.password ?? ""}
+          onValueChange={(v) => update("password", v)}
+          variant="bordered"
+          radius="md"
+          classNames={inputCx}
+        />
       </DrawerBody>
 
       <DrawerFooter className="border-t border-text-dark/[0.05] bg-background/40 px-6 py-4">
@@ -252,6 +332,7 @@ export function ExecutiveFormDrawer({
           variant="bordered"
           radius="md"
           onPress={onClose}
+          isDisabled={saving}
           className="border-text-dark/15 font-semibold text-text-dark"
         >
           Cancel
@@ -282,30 +363,3 @@ const selectCx = {
     "border-text-dark/15 bg-background/40 data-[hover=true]:border-text-dark/25 data-[focus=true]:border-gold/60 data-[open=true]:border-gold/60",
   value: "text-sm",
 };
-
-function FormatBtn({
-  label,
-  abbr,
-  weight,
-  icon,
-}: {
-  label: string;
-  abbr?: string;
-  weight?: "bold" | "italic";
-  icon?: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      className={cn(
-        "flex h-7 w-7 items-center justify-center rounded text-xs text-text-muted transition-colors hover:bg-text-dark/5 hover:text-text-dark",
-        weight === "bold" && "font-bold",
-        weight === "italic" && "italic",
-      )}
-      aria-label={label}
-      title={label}
-    >
-      {icon ?? abbr}
-    </button>
-  );
-}

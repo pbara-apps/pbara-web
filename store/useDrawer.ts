@@ -11,6 +11,8 @@ export type DrawerView =
   | "edit-news"
   | "create-event"
   | "edit-event"
+  | "create-gallery"
+  | "edit-gallery"
   | "edit-director-desk";
 
 export type DrawerSize =

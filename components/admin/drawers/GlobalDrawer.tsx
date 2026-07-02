@@ -2,9 +2,21 @@
 
 import { Drawer, DrawerContent } from "@heroui/react";
 import { useDrawer } from "@/store/useDrawer";
-import type { AdminExecutive } from "@/types/admin";
-import { ExecutiveFormDrawer } from "./views/ExecutiveFormDrawer";
+import type {
+  AdminChapter,
+  AdminEvent,
+  AdminExecutive,
+  AdminGalleryItem,
+  AdminNews,
+  AdminOffice,
+} from "@/types/admin";
 import DirectorDeskView from "../director-desk/DirectorDeskView";
+import { ChapterFormDrawer } from "./views/ChapterFormDrawer";
+import { EventFormDrawer } from "./views/EventFormDrawer";
+import { ExecutiveFormDrawer } from "./views/ExecutiveFormDrawer";
+import { GalleryFormDrawer } from "./views/GalleryFormDrawer";
+import { NewsFormDrawer } from "./views/NewsFormDrawer";
+import { OfficeFormDrawer } from "./views/OfficeFormDrawer";
 
 export function GlobalDrawer() {
   const view = useDrawer((s) => s.view);
@@ -37,7 +49,6 @@ export function GlobalDrawer() {
             {view === "create-executive" && (
               <ExecutiveFormDrawer mode="create" onClose={onClose} />
             )}
-
             {view === "edit-executive" && (
               <ExecutiveFormDrawer
                 mode="edit"
@@ -45,15 +56,59 @@ export function GlobalDrawer() {
                 onClose={onClose}
               />
             )}
+            {view === "create-office" && (
+              <OfficeFormDrawer mode="create" onClose={onClose} />
+            )}
+            {view === "edit-office" && (
+              <OfficeFormDrawer
+                mode="edit"
+                initial={body as unknown as AdminOffice | undefined}
+                onClose={onClose}
+              />
+            )}
+            {view === "create-church" && (
+              <ChapterFormDrawer mode="create" onClose={onClose} />
+            )}
+            {view === "edit-church" && (
+              <ChapterFormDrawer
+                mode="edit"
+                initial={body as unknown as AdminChapter | undefined}
+                onClose={onClose}
+              />
+            )}
+            {view === "create-news" && (
+              <NewsFormDrawer mode="create" onClose={onClose} />
+            )}
+            {view === "edit-news" && (
+              <NewsFormDrawer
+                mode="edit"
+                initial={body as unknown as AdminNews | undefined}
+                onClose={onClose}
+              />
+            )}
+            {view === "create-event" && (
+              <EventFormDrawer mode="create" onClose={onClose} />
+            )}
+            {view === "edit-event" && (
+              <EventFormDrawer
+                mode="edit"
+                initial={body as unknown as AdminEvent | undefined}
+                onClose={onClose}
+              />
+            )}
+            {view === "create-gallery" && (
+              <GalleryFormDrawer mode="create" onClose={onClose} />
+            )}
+            {view === "edit-gallery" && (
+              <GalleryFormDrawer
+                mode="edit"
+                initial={body as unknown as AdminGalleryItem | undefined}
+                onClose={onClose}
+              />
+            )}
             {view === "edit-director-desk" && (
               <DirectorDeskView onClose={onClose} />
             )}
-
-            {/* Add more views here as you create them:
-                {view === "create-office" && <OfficeFormDrawer mode="create" onClose={onClose} />}
-                {view === "create-news"   && <NewsFormDrawer    mode="create" onClose={onClose} />}
-                ...
-            */}
           </>
         )}
       </DrawerContent>

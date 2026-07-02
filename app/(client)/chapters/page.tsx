@@ -1,36 +1,24 @@
-"use client";
+import type { Metadata } from "next";
+import { ChaptersDirectory } from "@/components/sections/ChaptersDirectory";
 
-import { useState } from "react";
-import Link from "next/link";
-import { HiOutlineBuildingOffice2 } from "react-icons/hi2";
-import { ChapterCard } from "@/components/ui/ChapterCard";
-import { chapters } from "@/data/chapters";
-import type { Chapter } from "@/types";
-
-type UnitFilter = "all" | "primary" | "junior" | "senior";
-
-function filterChapters(
-  chaptersList: Chapter[],
-  filter: UnitFilter,
-): Chapter[] {
-  if (filter === "all") return chaptersList;
-  return chaptersList.filter((c) => c.unit === filter);
-}
-
-const TABS: { key: UnitFilter; label: string }[] = [
-  { key: "all", label: "All Chapters" },
-  // { key: "primary", label: "Primary Units" },
-  // { key: "junior", label: "Junior Units" },
-  // { key: "senior", label: "Senior Units" },
-];
+export const metadata: Metadata = {
+  title: "Chapters and Units",
+  alternates: {
+    canonical: "/chapters",
+  },
+  description:
+    "Discover Royal Ambassador local units fostering leadership and spiritual growth across our Baptist Association.",
+  openGraph: {
+    title: "Chapters & Units | PBA Royal Ambassadors",
+    description: "Local RA chapters and units across the association.",
+    url: "https://pbara.org.ng/chapters",
+  },
+  keywords: ["Chapters", "Units", "Royal Ambassadors", "PBA RA"],
+};
 
 export default function ChaptersPage() {
-  const [filter, setFilter] = useState<UnitFilter>("all");
-  const filtered = filterChapters(chapters, filter);
-
   return (
     <main className="flex-1 max-w-[1200px] mx-auto w-full px-6 py-10 md:py-16">
-      {/* Page Header Section */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-2 text-accent-gold font-bold uppercase tracking-widest text-xs">
@@ -47,88 +35,7 @@ export default function ChaptersPage() {
         </div>
       </div>
 
-      {/* Filter Tabs */}
-      <div
-        className="mb-10 border-b border-slate-200 dark:border-slate-800"
-        role="tablist"
-        aria-label="Filter chapters by unit type"
-      >
-        <div className="flex flex-wrap gap-8">
-          {TABS.map(({ key, label }) => {
-            const isActive = filter === key;
-            return (
-              <button
-                key={key}
-                type="button"
-                role="tab"
-                aria-selected={isActive}
-                onClick={() => setFilter(key)}
-                className={`flex flex-col items-center justify-center border-b-[3px] pb-3 transition-colors ${
-                  isActive
-                    ? "border-primary text-navy-deep dark:text-white"
-                    : "border-transparent text-slate-500 dark:text-slate-400 hover:text-primary"
-                }`}
-              >
-                <span className="text-sm font-bold uppercase tracking-wider">
-                  {label}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Chapters Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {filtered.map((chapter) => (
-          <ChapterCard key={chapter.id} chapter={chapter} />
-        ))}
-      </div>
-
-      {/* Registration Section */}
-      <div className="mt-20">
-        <div className="flex flex-col items-center justify-center gap-8 px-6 py-16 rounded-xl bg-navy-deep text-white text-center relative overflow-hidden">
-          {/* Subtle Background Pattern */}
-          <div
-            className="absolute inset-0 opacity-10 pointer-events-none"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at 2px 2px, white 1px, transparent 0)",
-              backgroundSize: "24px 24px",
-            }}
-            aria-hidden
-          />
-          <div className="relative z-10 flex flex-col gap-4 items-center">
-            <HiOutlineBuildingOffice2
-              size={48}
-              className="text-accent-gold shrink-0"
-              aria-hidden
-            />
-            <h2 className="tracking-tight text-3xl md:text-4xl font-black max-w-[720px]">
-              Don&apos;t see your chapter?
-            </h2>
-            <p className="text-slate-300 text-lg font-normal max-w-[600px]">
-              If your local church has an RA unit but it is not listed here,
-              please contact the Association Commander to register your unit
-              today.
-            </p>
-          </div>
-          <div className="relative z-10 flex flex-wrap justify-center gap-4">
-            <Link
-              href="/contact"
-              className="flex min-w-[180px] cursor-pointer items-center justify-center rounded-lg h-12 px-8 bg-accent-gold text-navy-deep text-base font-bold shadow-lg hover:shadow-accent-gold/30 transition-all"
-            >
-              <span>Register Chapter</span>
-            </Link>
-            <Link
-              href="/contact"
-              className="flex min-w-[180px] cursor-pointer items-center justify-center rounded-lg h-12 px-8 border-2 border-slate-600 text-white text-base font-bold hover:bg-slate-800 transition-all"
-            >
-              <span>Contact Admin</span>
-            </Link>
-          </div>
-        </div>
-      </div>
+      <ChaptersDirectory />
     </main>
   );
 }

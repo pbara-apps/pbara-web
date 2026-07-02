@@ -3,9 +3,8 @@ import Link from "next/link";
 import { MdMilitaryTech } from "react-icons/md";
 import { HiOutlineClock } from "react-icons/hi2";
 import { FiAward } from "react-icons/fi";
-import { ExecutiveCard } from "@/components/ui/ExecutiveCard";
 import { PastOfficersTable } from "@/components/ui/PastOfficersTable";
-import { executives } from "@/data/executives";
+import { CurrentExecutivesGrid } from "@/components/sections/CurrentExecutivesGrid";
 import { pastOfficers } from "@/data/pastOfficers";
 import { patrons } from "@/data/patrons";
 import { cn } from "@heroui/react";
@@ -81,11 +80,7 @@ export default function ExecutivesPage() {
             Current Executive Officers
           </h2>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {executives.map((exec) => (
-            <ExecutiveCard key={exec.id} executive={exec} variant="officer" />
-          ))}
-        </div>
+        <CurrentExecutivesGrid />
       </section>
 
       {/* Past Officers Table */}

@@ -54,20 +54,28 @@ export default function LoginPage() {
         password: data.password,
       };
       const response = await login(payload);
-      console.log(response);
-      setCurrentUser(response);
+      const user = response.user as {
+        _id?: string;
+        id?: string;
+        name: string;
+        email?: string;
+      };
+      setCurrentUser({
+        user: {
+          id: user._id ?? user.id ?? "",
+          name: user.name,
+          email: user.email ?? data.email,
+          role: "admin",
+          token: response.token,
+        },
+        token: response.token,
+      });
       router.push("/admin");
       successToast("Login successful", "Sign in successful");
     } catch (err) {
       console.log(err);
-      const e = err as {
-        response?: { data?: { message?: string } };
-        message?: string;
-      };
-      const errMessage =
-        e?.response?.data?.message ||
-        e?.message ||
-        "Sign in failed. Please try again.";
+      const e = err as { message?: string };
+      const errMessage = e?.message || "Sign in failed. Please try again.";
       errorToast(errMessage, "Sign in failed");
     }
   };

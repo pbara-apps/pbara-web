@@ -1,12 +1,17 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
+import type { AdminDashboardStats } from "@/types/admin-dashboard";
 import http from ".";
+
+export const adminKeys = {
+  dashboard: ["admin-dashboard"] as const,
+};
 
 export const useGetAdminDashboard = () => {
   return useQuery({
-    queryKey: ["admin-dashboard"],
+    queryKey: adminKeys.dashboard,
     queryFn: async () => {
       const res = await http.get("/admin/dashboard");
-      return res.data;
+      return res.data as AdminDashboardStats;
     },
   });
 };

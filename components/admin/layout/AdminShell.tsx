@@ -4,6 +4,7 @@ import { cn } from "@heroui/react";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { GlobalDrawer } from "../drawers/GlobalDrawer";
+import { AdminAuthGuard } from "../AdminAuthGuard";
 import { Sidebar } from "./Sidebar";
 import { Topbar } from "./Topbar";
 
@@ -75,7 +76,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       >
         <Topbar onOpenMobileSidebar={() => setMobileOpen(true)} />
         <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-          {children}
+          <AdminAuthGuard>{children}</AdminAuthGuard>
         </main>
       </div>
 
