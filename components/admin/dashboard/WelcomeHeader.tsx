@@ -5,13 +5,13 @@ import React from "react";
 
 const WelcomeHeader = () => {
   const { user } = useCurrentUser();
-  const splitterUserName = user?.name?.split(" ") || [];
+  const displayName = user?.name?.trim() || "User";
+
   return (
     <header className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-primary sm:text-3xl">
-          Welcome back,{" "}
-          {`${splitterUserName[0]} ${splitterUserName[1]}` || "User"}
+          Welcome back, {displayName}
         </h1>
         <p className="mt-1 text-sm text-text-muted">
           Here&apos;s what&apos;s happening across PBA Royal Ambassadors today.

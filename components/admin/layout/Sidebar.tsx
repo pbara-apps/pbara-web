@@ -8,6 +8,16 @@ import { adminFooterNav, adminNav, isNavActive, type NavItem } from "./nav";
 import Image from "next/image";
 import useCurrentUser from "@/hooks/useCurrentUser";
 
+function getUserInitials(name?: string | null) {
+  if (!name?.trim()) return "RA";
+
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "RA";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+
+  return `${parts[0][0] ?? ""}${parts[parts.length - 1][0] ?? ""}`.toUpperCase();
+}
+
 interface SidebarProps {
   collapsed: boolean;
   mobileOpen: boolean;
@@ -24,7 +34,7 @@ export function Sidebar({
   const pathname = usePathname();
 
   const { user } = useCurrentUser();
-  const splitterUserName = user?.name?.split(" ") || [];
+  const userInitials = getUserInitials(user?.name);
 
   return (
     <>
@@ -130,7 +140,7 @@ export function Sidebar({
             )}
           >
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-gold to-[#E8C96A] text-sm font-bold text-primary shadow-inner">
-              {splitterUserName[1][0] + splitterUserName[2][0]}
+              {userInitials}
             </div>
 
             <div

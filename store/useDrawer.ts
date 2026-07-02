@@ -32,7 +32,7 @@ interface DrawerOptions {
   placement?: DrawerPlacement;
 }
 
-type DrawerBody = Record<string, unknown>;
+type DrawerBody = object;
 
 interface DrawerState {
   view: DrawerView | null;
@@ -43,7 +43,7 @@ interface DrawerState {
   };
   openDrawer: (
     view: DrawerView,
-    options?: { config?: DrawerOptions; body?: DrawerBody },
+    options?: { config?: DrawerOptions; body?: object },
   ) => void;
   closeDrawer: () => void;
 }
@@ -58,7 +58,7 @@ export const useDrawer = create<DrawerState>((set) => ({
   openDrawer: (view, options) =>
     set((state) => ({
       view,
-      body: { ...state.body, ...(options?.body ?? {}) },
+      body: options?.body ?? {},
       config: { ...state.config, ...(options?.config ?? {}) },
     })),
   closeDrawer: () =>

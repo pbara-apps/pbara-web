@@ -21,7 +21,6 @@ import {
   LuUpload,
 } from "react-icons/lu";
 import { useDrawerBody } from "@/store/useDrawer";
-import Image from "next/image";
 
 export interface DirectorDeskBody {
   image?: string | null;
