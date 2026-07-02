@@ -30,9 +30,8 @@ export const adminNav: NavItem[] = [
   { label: "Gallery", href: "/admin/gallery", icon: LuImage },
   {
     label: "Messages",
-    href: "/admin/message",
+    href: "/admin/messages",
     icon: LuMessageSquare,
-    badge: 7,
   },
 ];
 

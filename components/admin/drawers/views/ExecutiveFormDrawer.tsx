@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Avatar,
   Button,
   DrawerBody,
   DrawerFooter,
@@ -12,11 +11,12 @@ import {
   Textarea,
 } from "@heroui/react";
 import { useEffect, useMemo, useState } from "react";
-import { LuCamera, LuMail, LuPhone, LuTrash2 } from "react-icons/lu";
+import { LuMail, LuPhone } from "react-icons/lu";
 import {
   errorToast,
   successToast,
 } from "@/components/shared/toast-notification/toast-notification";
+import { ImageUploadField } from "@/components/admin/shared/ImageUploadField";
 import { useGetChapters } from "@/service/apis/church";
 import {
   useCreateExecutive,
@@ -137,47 +137,13 @@ export function ExecutiveFormDrawer({
       </DrawerHeader>
 
       <DrawerBody className="space-y-5 px-6 py-6">
-        <section className="flex items-center gap-5">
-          <div className="relative">
-            <Avatar
-              src={form.image ?? undefined}
-              name={form.name || "?"}
-              size="lg"
-              className="h-20 w-20 ring-4 ring-surface"
-              classNames={{
-                base: "bg-gradient-to-br from-primary to-[#040e3d] text-white",
-              }}
-            />
-            <button
-              type="button"
-              className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full bg-gold text-primary shadow-lg ring-4 ring-surface"
-              aria-label="Upload photo"
-            >
-              <LuCamera size={14} />
-            </button>
-          </div>
-          <div className="space-y-2">
-            <Input
-              label="Image URL"
-              labelPlacement="outside"
-              placeholder="https://…"
-              value={form.image ?? ""}
-              onValueChange={(v) => update("image", v || null)}
-              variant="bordered"
-              radius="md"
-              classNames={inputCx}
-            />
-            {form.image ? (
-              <button
-                type="button"
-                onClick={() => update("image", null)}
-                className="inline-flex items-center gap-1 text-xs font-semibold text-rose-600 hover:underline"
-              >
-                <LuTrash2 size={12} /> Remove photo
-              </button>
-            ) : null}
-          </div>
-        </section>
+        <ImageUploadField
+          label="Profile Photo"
+          value={form.image}
+          onChange={(url) => update("image", url)}
+          folder="executives"
+          previewName={form.name || "Executive"}
+        />
 
         <Input
           label="Full Name"

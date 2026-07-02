@@ -59,13 +59,14 @@ export default function LoginPage() {
         id?: string;
         name: string;
         email?: string;
+        role?: "super_admin" | "admin" | "editor" | "viewer";
       };
       setCurrentUser({
         user: {
           id: user._id ?? user.id ?? "",
           name: user.name,
           email: user.email ?? data.email,
-          role: "admin",
+          role: user.role ?? "admin",
           token: response.token,
         },
         token: response.token,

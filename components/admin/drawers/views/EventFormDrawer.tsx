@@ -15,6 +15,7 @@ import {
   errorToast,
   successToast,
 } from "@/components/shared/toast-notification/toast-notification";
+import { ImageUploadField } from "@/components/admin/shared/ImageUploadField";
 import { useCreateEvent, useUpdateEvent } from "@/service/apis/event";
 import type { AdminEvent, EventFormPayload } from "@/types/admin";
 import { EVENT_CATEGORIES, EVENT_STATUSES } from "@/types/admin";
@@ -79,6 +80,13 @@ export function EventFormDrawer({ mode, initial, onClose }: EventFormDrawerProps
         </h3>
       </DrawerHeader>
       <DrawerBody className="space-y-4 px-6 py-6">
+        <ImageUploadField
+          label="Cover Image"
+          value={form.image}
+          onChange={(url) => setForm((f) => ({ ...f, image: url }))}
+          folder="events"
+          previewName={form.title || "Event"}
+        />
         <Input label="Title" labelPlacement="outside" value={form.title} onValueChange={(v) => setForm((f) => ({ ...f, title: v }))} variant="bordered" isRequired classNames={inputCx} />
         <Select label="Category" labelPlacement="outside" selectedKeys={[form.category]} onSelectionChange={(keys) => setForm((f) => ({ ...f, category: Array.from(keys)[0] as string }))} variant="bordered" classNames={selectCx}>
           {EVENT_CATEGORIES.map((c) => <SelectItem key={c}>{c}</SelectItem>)}
@@ -91,7 +99,6 @@ export function EventFormDrawer({ mode, initial, onClose }: EventFormDrawerProps
         </div>
         <Input label="Venue" labelPlacement="outside" value={form.venue} onValueChange={(v) => setForm((f) => ({ ...f, venue: v }))} variant="bordered" isRequired classNames={inputCx} />
         <Textarea label="Description" labelPlacement="outside" minRows={5} value={form.description} onValueChange={(v) => setForm((f) => ({ ...f, description: v }))} variant="bordered" isRequired classNames={inputCx} />
-        <Input label="Image URL" labelPlacement="outside" value={form.image ?? ""} onValueChange={(v) => setForm((f) => ({ ...f, image: v || null }))} variant="bordered" classNames={inputCx} />
       </DrawerBody>
       <DrawerFooter className="border-t border-text-dark/[0.05] px-6 py-4">
         <Button variant="bordered" onPress={onClose} isDisabled={saving}>Cancel</Button>

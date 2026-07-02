@@ -14,6 +14,7 @@ import {
   errorToast,
   successToast,
 } from "@/components/shared/toast-notification/toast-notification";
+import { ImageUploadField } from "@/components/admin/shared/ImageUploadField";
 import {
   useCreateGalleryItem,
   useUpdateGalleryItem,
@@ -60,7 +61,7 @@ export function GalleryFormDrawer({
 
   const handleSave = async () => {
     if (!form.title.trim() || !form.url.trim()) {
-      errorToast("Title and media URL are required.", "Validation");
+      errorToast("Title and media file are required.", "Validation");
       return;
     }
     try {
@@ -85,8 +86,15 @@ export function GalleryFormDrawer({
         </h3>
       </DrawerHeader>
       <DrawerBody className="space-y-4 px-6 py-6">
+        <ImageUploadField
+          label="Media"
+          value={form.url}
+          onChange={(url) => setForm((f) => ({ ...f, url: url ?? "" }))}
+          folder="gallery"
+          previewName={form.title || "Gallery"}
+          accept="media"
+        />
         <Input label="Title" labelPlacement="outside" value={form.title} onValueChange={(v) => setForm((f) => ({ ...f, title: v }))} variant="bordered" isRequired classNames={inputCx} />
-        <Input label="Media URL" labelPlacement="outside" value={form.url} onValueChange={(v) => setForm((f) => ({ ...f, url: v }))} variant="bordered" isRequired classNames={inputCx} />
         <Input label="Alt text" labelPlacement="outside" value={form.alt ?? ""} onValueChange={(v) => setForm((f) => ({ ...f, alt: v }))} variant="bordered" classNames={inputCx} />
         <Input label="Category" labelPlacement="outside" value={form.category ?? ""} onValueChange={(v) => setForm((f) => ({ ...f, category: v }))} variant="bordered" classNames={inputCx} />
         <div className="grid grid-cols-2 gap-4">

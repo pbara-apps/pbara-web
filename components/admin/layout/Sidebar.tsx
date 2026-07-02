@@ -7,6 +7,8 @@ import { LuChevronLeft, LuLogOut, LuX } from "react-icons/lu";
 import { adminFooterNav, adminNav, isNavActive, type NavItem } from "./nav";
 import Image from "next/image";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import { useGetUnreadMessageCount } from "@/service/apis/message";
+import { ROLE_LABELS } from "@/types/user";
 
 function getUserInitials(name?: string | null) {
   if (!name?.trim()) return "RA";
@@ -36,6 +38,13 @@ export function Sidebar({
 
   const { user, removeCurrentUser } = useCurrentUser();
   const userInitials = getUserInitials(user?.name);
+  const { data: unreadCount = 0 } = useGetUnreadMessageCount();
+
+  const navItems = adminNav.map((item) =>
+    item.href === "/admin/messages" && unreadCount > 0
+      ? { ...item, badge: unreadCount }
+      : item,
+  );
 
   return (
     <>
@@ -110,7 +119,7 @@ export function Sidebar({
           className="flex-1 space-y-3 overflow-y-auto overflow-x-hidden px-3 [scrollbar-color:rgba(255,255,255,0.15)_transparent] [scrollbar-width:thin] mt-8"
           aria-label="Primary"
         >
-          {adminNav.map((item) => (
+          {navItems.map((item) => (
             <SidebarLink
               key={item.href}
               item={item}
@@ -155,7 +164,7 @@ export function Sidebar({
                 {user?.name}
               </p>
               <p className="truncate text-[11px] text-white/50">
-                Primary Admin
+                {user?.role ? ROLE_LABELS[user.role] : "Admin"}
               </p>
             </div>
             <button
@@ -241,7 +250,7 @@ function SidebarLink({
       >
         {item.label}
       </span>
-      {item.badge && !collapsed && (
+      {item.badge != null && item.badge > 0 && !collapsed && (
         <span className="ml-auto rounded-full bg-gold/15 px-2 py-0.5 text-[10px] font-bold text-gold">
           {item.badge}
         </span>

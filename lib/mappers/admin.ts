@@ -4,6 +4,7 @@ import type {
   AdminEvent,
   AdminExecutive,
   AdminGalleryItem,
+  AdminMessage,
   AdminNews,
   AdminOffice,
 } from "@/types/admin";
@@ -26,6 +27,7 @@ type RawExecutive = {
   office?: PopulatedRef;
   church?: PopulatedRef;
   status: AdminExecutive["status"];
+  role?: AdminExecutive["role"];
   description?: string;
   image?: string | null;
   start_year: number;
@@ -66,6 +68,7 @@ export function mapExecutive(raw: RawExecutive): AdminExecutive {
     chapterName: raw.church?.chapter ?? "",
     churchName: raw.church?.name ?? "",
     status: raw.status,
+    role: raw.role ?? "admin",
     description: raw.description ?? "",
     image: raw.image ?? null,
     startYear: raw.start_year,
@@ -269,5 +272,48 @@ export function mapAudit(raw: RawAudit): AdminAuditEntry {
     actorName: raw.actor_name ?? "System",
     detail: raw.detail ?? null,
     timestamp,
+  };
+}
+
+type RawMessage = {
+  _id?: string;
+  id?: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone?: string | null;
+  subject: string;
+  message: string;
+  is_read?: boolean;
+  read_at?: string | Date | null;
+  createdAt?: string | Date;
+};
+
+export function mapMessage(raw: RawMessage): AdminMessage {
+  const createdAt =
+    raw.createdAt instanceof Date
+      ? raw.createdAt.toISOString()
+      : typeof raw.createdAt === "string"
+        ? raw.createdAt
+        : "";
+  const readAt =
+    raw.read_at instanceof Date
+      ? raw.read_at.toISOString()
+      : typeof raw.read_at === "string"
+        ? raw.read_at
+        : null;
+
+  return {
+    id: toId(raw),
+    firstName: raw.first_name,
+    lastName: raw.last_name,
+    fullName: `${raw.first_name} ${raw.last_name}`.trim(),
+    email: raw.email,
+    phone: raw.phone ?? null,
+    subject: raw.subject,
+    message: raw.message,
+    isRead: Boolean(raw.is_read),
+    readAt,
+    createdAt,
   };
 }

@@ -15,6 +15,7 @@ import {
   errorToast,
   successToast,
 } from "@/components/shared/toast-notification/toast-notification";
+import { ImageUploadField } from "@/components/admin/shared/ImageUploadField";
 import { useCreateNews, useUpdateNews } from "@/service/apis/news";
 import type { AdminNews, NewsFormPayload } from "@/types/admin";
 import { NEWS_CATEGORIES, NEWS_STATUSES } from "@/types/admin";
@@ -83,6 +84,13 @@ export function NewsFormDrawer({ mode, initial, onClose }: NewsFormDrawerProps) 
         </h3>
       </DrawerHeader>
       <DrawerBody className="space-y-4 px-6 py-6">
+        <ImageUploadField
+          label="Cover Image"
+          value={form.image}
+          onChange={(url) => setForm((f) => ({ ...f, image: url }))}
+          folder="news"
+          previewName={form.title || "News"}
+        />
         <Input label="Title" labelPlacement="outside" value={form.title} onValueChange={(v) => setForm((f) => ({ ...f, title: v }))} variant="bordered" isRequired classNames={inputCx} />
         <Input label="Slug (optional)" labelPlacement="outside" value={form.slug ?? ""} onValueChange={(v) => setForm((f) => ({ ...f, slug: v }))} variant="bordered" classNames={inputCx} />
         <Select label="Category" labelPlacement="outside" selectedKeys={[form.category]} onSelectionChange={(keys) => setForm((f) => ({ ...f, category: Array.from(keys)[0] as string }))} variant="bordered" classNames={selectCx}>
@@ -90,7 +98,6 @@ export function NewsFormDrawer({ mode, initial, onClose }: NewsFormDrawerProps) 
         </Select>
         <Textarea label="Excerpt" labelPlacement="outside" minRows={3} value={form.excerpt} onValueChange={(v) => setForm((f) => ({ ...f, excerpt: v }))} variant="bordered" isRequired classNames={inputCx} />
         <Textarea label="Content" labelPlacement="outside" minRows={6} value={form.content ?? ""} onValueChange={(v) => setForm((f) => ({ ...f, content: v }))} variant="bordered" classNames={inputCx} />
-        <Input label="Image URL" labelPlacement="outside" value={form.image ?? ""} onValueChange={(v) => setForm((f) => ({ ...f, image: v || null }))} variant="bordered" classNames={inputCx} />
         <div className="grid grid-cols-2 gap-4">
           <Input label="Author" labelPlacement="outside" value={form.author ?? ""} onValueChange={(v) => setForm((f) => ({ ...f, author: v }))} variant="bordered" classNames={inputCx} />
           <Input type="number" label="Read time (min)" labelPlacement="outside" value={String(form.read_time ?? 3)} onValueChange={(v) => setForm((f) => ({ ...f, read_time: Number(v) || 3 }))} variant="bordered" classNames={inputCx} />

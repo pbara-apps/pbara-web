@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Avatar,
   Button,
   DrawerBody,
   DrawerFooter,
@@ -11,11 +10,11 @@ import {
   SelectItem,
 } from "@heroui/react";
 import { useEffect, useState } from "react";
-import { LuCamera, LuTrash2 } from "react-icons/lu";
 import {
   errorToast,
   successToast,
 } from "@/components/shared/toast-notification/toast-notification";
+import { ImageUploadField } from "@/components/admin/shared/ImageUploadField";
 import { useCreateChapter, useUpdateChapter } from "@/service/apis/church";
 import type { AdminChapter, ChapterFormPayload } from "@/types/admin";
 import { CHAPTER_STATUSES } from "@/types/admin";
@@ -99,40 +98,13 @@ export function ChapterFormDrawer({
       </DrawerHeader>
 
       <DrawerBody className="space-y-5 px-6 py-6">
-        <section className="flex items-center gap-5">
-          <Avatar
-            src={form.image ?? undefined}
-            name={form.chapter || "?"}
-            size="lg"
-            className="h-20 w-20 ring-4 ring-surface"
-            classNames={{
-              base: "bg-gradient-to-br from-primary to-[#040e3d] text-white",
-            }}
-          />
-          <div className="flex-1 space-y-2">
-            <Input
-              label="Image URL"
-              labelPlacement="outside"
-              placeholder="https://…"
-              value={form.image ?? ""}
-              onValueChange={(v) =>
-                setForm((f) => ({ ...f, image: v || null }))
-              }
-              variant="bordered"
-              radius="md"
-              classNames={inputCx}
-            />
-            {form.image ? (
-              <button
-                type="button"
-                onClick={() => setForm((f) => ({ ...f, image: null }))}
-                className="inline-flex items-center gap-1 text-xs font-semibold text-rose-600 hover:underline"
-              >
-                <LuTrash2 size={12} /> Remove image
-              </button>
-            ) : null}
-          </div>
-        </section>
+        <ImageUploadField
+          label="Chapter Image"
+          value={form.image}
+          onChange={(url) => setForm((f) => ({ ...f, image: url }))}
+          folder="chapters"
+          previewName={form.chapter || "Chapter"}
+        />
 
         <Input
           label="Chapter Name"

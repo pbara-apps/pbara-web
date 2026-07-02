@@ -2,8 +2,13 @@
 
 import { useState } from "react";
 import { FiMapPin, FiPhone, FiMail, FiSend } from "react-icons/fi";
-import { Button } from "@heroui/react";
+import { Button, Spinner } from "@heroui/react";
 import type { FormEvent } from "react";
+import {
+  errorToast,
+  successToast,
+} from "@/components/shared/toast-notification/toast-notification";
+import { useSubmitContactMessage } from "@/service/apis/message";
 
 const subjectOptions = [
   "Membership Inquiry",
@@ -14,10 +19,35 @@ const subjectOptions = [
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [subject, setSubject] = useState(subjectOptions[0]);
+  const [message, setMessage] = useState("");
+  const submitMessage = useSubmitContactMessage();
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setSubmitted(true);
+
+    try {
+      await submitMessage.mutateAsync({
+        first_name: firstName.trim(),
+        last_name: lastName.trim(),
+        email: email.trim(),
+        phone: phone.trim() || undefined,
+        subject,
+        message: message.trim(),
+      });
+      setSubmitted(true);
+      successToast("Your message has been sent. We will get back to you soon.");
+    } catch (err) {
+      errorToast(
+        (err as { message?: string })?.message ??
+          "Unable to send your message. Please try again.",
+        "Send failed",
+      );
+    }
   }
 
   return (
@@ -34,7 +64,6 @@ export default function ContactPage() {
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-        {/* Left: Contact form */}
         <section aria-labelledby="form-heading">
           <h2 id="form-heading" className="sr-only">
             Send a message
@@ -55,8 +84,11 @@ export default function ContactPage() {
                   id="first-name"
                   type="text"
                   placeholder="John"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
                   className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-gold focus:border-gold outline-none"
                   required
+                  disabled={submitted}
                 />
               </div>
               <div>
@@ -70,8 +102,11 @@ export default function ContactPage() {
                   id="last-name"
                   type="text"
                   placeholder="Doe"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
                   className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-gold focus:border-gold outline-none"
                   required
+                  disabled={submitted}
                 />
               </div>
             </div>
@@ -86,8 +121,28 @@ export default function ContactPage() {
                 id="email"
                 type="email"
                 placeholder="john.doe@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-gold focus:border-gold outline-none"
                 required
+                disabled={submitted}
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="phone"
+                className="block text-sm font-medium text-text-dark mb-1"
+              >
+                Phone (optional)
+              </label>
+              <input
+                id="phone"
+                type="tel"
+                placeholder="+234 800 000 0000"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-gold focus:border-gold outline-none"
+                disabled={submitted}
               />
             </div>
             <div>
@@ -99,8 +154,11 @@ export default function ContactPage() {
               </label>
               <select
                 id="subject"
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
                 className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-gold focus:border-gold outline-none bg-white"
                 required
+                disabled={submitted}
               >
                 {subjectOptions.map((opt) => (
                   <option key={opt} value={opt}>
@@ -120,8 +178,11 @@ export default function ContactPage() {
                 id="message"
                 rows={5}
                 placeholder="How can we assist you today?"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
                 className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-gold focus:border-gold outline-none resize-y"
                 required
+                disabled={submitted}
               />
             </div>
             {submitted ? (
@@ -131,6 +192,8 @@ export default function ContactPage() {
             ) : (
               <Button
                 type="submit"
+                isLoading={submitMessage.isPending}
+                spinner={<Spinner size="sm" color="white" />}
                 className="w-full bg-primary text-white font-semibold py-6 flex items-center justify-center gap-2"
               >
                 <FiSend size={18} className="shrink-0" /> Send Message →
@@ -139,7 +202,6 @@ export default function ContactPage() {
           </form>
         </section>
 
-        {/* Right: Contact info + map */}
         <aside className="space-y-6">
           <div className="bg-white rounded-xl border p-6 flex gap-4">
             <div className="bg-gray-200 rounded-lg p-2 w-12 h-12 flex items-center justify-center">

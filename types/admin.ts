@@ -1,5 +1,6 @@
 export type ExecutiveStatus = "active" | "inactive" | "completed";
 export type ChapterStatus = "active" | "inactive";
+export type ExecutiveRole = "super_admin" | "admin" | "editor" | "viewer";
 
 export interface AdminExecutive {
   id: string;
@@ -12,6 +13,7 @@ export interface AdminExecutive {
   chapterName: string;
   churchName: string;
   status: ExecutiveStatus;
+  role: ExecutiveRole;
   description: string;
   image?: string | null;
   startYear: number;
@@ -181,3 +183,26 @@ export const EVENT_CATEGORIES = [
   "Outreach",
   "Conference",
 ] as const;
+
+export interface AdminMessage {
+  id: string;
+  firstName: string;
+  lastName: string;
+  fullName: string;
+  email: string;
+  phone?: string | null;
+  subject: string;
+  message: string;
+  isRead: boolean;
+  readAt?: string | null;
+  createdAt: string;
+}
+
+export interface ContactFormPayload {
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone?: string;
+  subject: string;
+  message: string;
+}

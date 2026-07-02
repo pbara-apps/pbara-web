@@ -2,9 +2,14 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { FiVideo, FiImage, FiDownload, FiFilter, FiZoomIn, FiPlay, FiChevronRight, FiFileText, FiCalendar, FiShield } from "react-icons/fi";
+import { FiVideo, FiImage, FiDownload, FiFilter, FiChevronRight, FiFileText, FiCalendar, FiShield } from "react-icons/fi";
 import { MdPalette } from "react-icons/md";
 import { downloads } from "@/data/downloads";
+import { PhotoPreviewCard, VideoPreviewCard } from "@/components/media/GalleryPreviewCards";
+import {
+  MediaViewerModal,
+  type MediaViewerItem,
+} from "@/components/media/MediaViewerModal";
 import { useGetPublicGallery } from "@/service/apis/gallery";
 import type { DownloadItem } from "@/types";
 
@@ -38,14 +43,25 @@ type TabKey = "videos" | "photos" | "downloads";
 
 export function MediaPageContent() {
   const [tab, setTab] = useState<TabKey>("photos");
+  const [viewerItem, setViewerItem] = useState<MediaViewerItem | null>(null);
   const { data: photosData } = useGetPublicGallery("photo");
   const { data: videosData } = useGetPublicGallery("video");
 
   const galleryImages = useMemo(() => {
     if (photosData && photosData.length > 0) {
-      return photosData.map((item) => ({ src: item.url, alt: item.alt || item.title }));
+      return photosData.map((item) => ({
+        id: item.id,
+        src: item.url,
+        alt: item.alt || item.title,
+        title: item.title,
+      }));
     }
-    return GALLERY_IMAGES;
+    return GALLERY_IMAGES.map((item, index) => ({
+      id: String(index),
+      src: item.src,
+      alt: item.alt,
+      title: item.alt,
+    }));
   }, [photosData]);
 
   const videos = useMemo(() => {
@@ -53,13 +69,18 @@ export function MediaPageContent() {
       return videosData.map((item) => ({
         id: item.id,
         title: item.title,
-        date: item.category,
-        duration: "—",
-        image: item.url,
-        imageAlt: item.alt || item.title,
+        category: item.category,
+        url: item.url,
+        alt: item.alt || item.title,
       }));
     }
-    return VIDEOS;
+    return VIDEOS.map((item) => ({
+      id: item.id,
+      title: item.title,
+      category: item.date,
+      url: item.image,
+      alt: item.imageAlt,
+    }));
   }, [videosData]);
 
   return (
@@ -134,29 +155,21 @@ export function MediaPageContent() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {videos.map((v) => (
-              <div key={v.id} className="group cursor-pointer">
-                <div className="relative aspect-video rounded-xl overflow-hidden mb-3 shadow-md border border-slate-200 dark:border-slate-800">
-                  <div
-                    className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
-                    style={{ backgroundImage: `url("${v.image}")` }}
-                    role="img"
-                    aria-label={v.imageAlt}
-                  />
-                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors" aria-hidden />
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <FiPlay size={40} className="text-white" aria-hidden />
-                  </div>
-                  <span className="absolute bottom-2 right-2 bg-black/70 text-white text-[10px] font-bold px-2 py-0.5 rounded">
-                    {v.duration}
-                  </span>
-                </div>
-                <h4 className="text-primary dark:text-slate-200 font-bold text-sm leading-snug group-hover:text-accent-gold transition-colors">
-                  {v.title}
-                </h4>
-                <p className="text-slate-500 text-[11px] mt-1 uppercase font-bold tracking-wider">
-                  {v.date}
-                </p>
-              </div>
+              <VideoPreviewCard
+                key={v.id}
+                url={v.url}
+                title={v.title}
+                alt={v.alt}
+                category={v.category}
+                onOpen={() =>
+                  setViewerItem({
+                    type: "video",
+                    url: v.url,
+                    title: v.title,
+                    alt: v.alt,
+                  })
+                }
+              />
             ))}
           </div>
         </section>
@@ -179,21 +192,21 @@ export function MediaPageContent() {
               </button>
             </div>
             <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
-              {galleryImages.map((img, i) => (
-                <div
-                  key={i}
-                  className="break-inside-avoid relative group rounded-lg overflow-hidden border border-primary/10"
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={img.src}
-                    alt={img.alt}
-                    className="w-full h-auto block"
-                  />
-                  <div className="absolute inset-0 bg-primary/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <FiZoomIn size={40} className="text-white" aria-hidden />
-                  </div>
-                </div>
+              {galleryImages.map((img) => (
+                <PhotoPreviewCard
+                  key={img.id}
+                  src={img.src}
+                  alt={img.alt}
+                  title={img.title}
+                  onOpen={() =>
+                    setViewerItem({
+                      type: "photo",
+                      url: img.src,
+                      title: img.title,
+                      alt: img.alt,
+                    })
+                  }
+                />
               ))}
             </div>
           </section>
@@ -229,6 +242,11 @@ export function MediaPageContent() {
           </div>
         </section>
       )}
+
+      <MediaViewerModal
+        item={viewerItem}
+        onClose={() => setViewerItem(null)}
+      />
     </main>
   );
 }

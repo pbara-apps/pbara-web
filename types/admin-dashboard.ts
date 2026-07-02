@@ -20,5 +20,6 @@ export interface AdminDashboardStats {
   totalGallery: number;
   activeGallery: number;
   totalMessages: number;
+  unreadMessages: number;
   recentActivity: DashboardActivityItem[];
 }

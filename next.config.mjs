@@ -12,6 +12,11 @@ const nextConfig = {
         hostname: "pbara.vercel.app",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        pathname: "/**",
+      },
     ],
   },
 };

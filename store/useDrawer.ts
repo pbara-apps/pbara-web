@@ -29,6 +29,32 @@ export type DrawerSize =
 
 export type DrawerPlacement = "right" | "left" | "top" | "bottom";
 
+const FORM_DRAWER_VIEWS: DrawerView[] = [
+  "create-executive",
+  "edit-executive",
+  "create-office",
+  "edit-office",
+  "create-church",
+  "edit-church",
+  "create-news",
+  "edit-news",
+  "create-event",
+  "edit-event",
+  "create-gallery",
+  "edit-gallery",
+  "edit-director-desk",
+];
+
+const DEFAULT_CONFIG = {
+  size: "md" as DrawerSize,
+  placement: "right" as DrawerPlacement,
+};
+
+const FORM_DRAWER_CONFIG = {
+  size: "3xl" as DrawerSize,
+  placement: "right" as DrawerPlacement,
+};
+
 interface DrawerOptions {
   size?: DrawerSize;
   placement?: DrawerPlacement;
@@ -53,20 +79,23 @@ interface DrawerState {
 export const useDrawer = create<DrawerState>((set) => ({
   view: null,
   body: {},
-  config: {
-    size: "md",
-    placement: "right",
-  },
+  config: DEFAULT_CONFIG,
   openDrawer: (view, options) =>
-    set((state) => ({
+    set(() => ({
       view,
       body: options?.body ?? {},
-      config: { ...state.config, ...(options?.config ?? {}) },
+      config: {
+        ...(FORM_DRAWER_VIEWS.includes(view)
+          ? FORM_DRAWER_CONFIG
+          : DEFAULT_CONFIG),
+        ...(options?.config ?? {}),
+      },
     })),
   closeDrawer: () =>
     set({
       view: null,
       body: {},
+      config: DEFAULT_CONFIG,
     }),
 }));
 
