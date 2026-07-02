@@ -25,7 +25,7 @@ import {
   useGetEvents,
 } from "@/service/apis/event";
 import { useDrawer } from "@/store/useDrawer";
-import type { AdminEvent, EventStatus } from "@/types/admin";
+import type { EventStatus } from "@/types/admin";
 import { EVENT_CATEGORIES, EVENT_STATUSES } from "@/types/admin";
 
 const PAGE_SIZE = 9;

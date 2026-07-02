@@ -22,8 +22,6 @@ interface OfficeFormDrawerProps {
   onClose: () => void;
 }
 
-const blank: OfficeFormPayload = { name: "", description: "" };
-
 export function OfficeFormDrawer({
   mode,
   initial,

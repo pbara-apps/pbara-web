@@ -25,7 +25,7 @@ import {
   useGetGallery,
 } from "@/service/apis/gallery";
 import { useDrawer } from "@/store/useDrawer";
-import type { AdminGalleryItem, GalleryStatus, GalleryType } from "@/types/admin";
+import type { GalleryStatus, GalleryType } from "@/types/admin";
 import { GALLERY_STATUSES, GALLERY_TYPES } from "@/types/admin";
 
 const PAGE_SIZE = 9;
