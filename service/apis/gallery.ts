@@ -50,6 +50,24 @@ export const useCreateGalleryItem = () => {
   });
 };
 
+export const useCreateGalleryBulk = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (body: GalleryFormPayload[]) => {
+      const res = await http.post("/gallery/create/bulk", body);
+      const list = (res.data ?? []) as unknown[];
+      return list.map((item) =>
+        mapGallery(item as Parameters<typeof mapGallery>[0]),
+      );
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: galleryKeys.all });
+      qc.invalidateQueries({ queryKey: ["gallery", "public"] });
+      qc.invalidateQueries({ queryKey: adminKeys.dashboard });
+    },
+  });
+};
+
 export const useUpdateGalleryItem = () => {
   const qc = useQueryClient();
   return useMutation({

@@ -4,7 +4,8 @@ import { StatsBar } from "@/components/sections/StatsBar";
 import { DirectorDesk } from "@/components/sections/DirectorDesk";
 import { HomeSections } from "@/components/sections/HomeSections";
 import { executives } from "@/data/executives";
-import { newsItems } from "@/data/news";
+import { newsItems as fallbackNews } from "@/data/news";
+import { fetchPublicNews } from "@/lib/api/news";
 
 export const metadata: Metadata = {
   alternates: {
@@ -15,7 +16,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function HomePage() {
+export default async function HomePage() {
+  const news = await fetchPublicNews();
+  const newsItems = news.length > 0 ? news : fallbackNews;
+
   const bulletins = [
     newsItems.find((n) => n.category === "Featured") ?? newsItems[0],
     newsItems.find((n) => n.category === "Report") ?? newsItems[1],

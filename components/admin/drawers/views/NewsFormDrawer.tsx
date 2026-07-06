@@ -16,6 +16,7 @@ import {
   successToast,
 } from "@/components/shared/toast-notification/toast-notification";
 import { ImageUploadField } from "@/components/admin/shared/ImageUploadField";
+import { RichTextEditor } from "@/components/admin/shared/RichTextEditor";
 import { useCreateNews, useUpdateNews } from "@/service/apis/news";
 import type { AdminNews, NewsFormPayload } from "@/types/admin";
 import { NEWS_CATEGORIES, NEWS_STATUSES } from "@/types/admin";
@@ -97,7 +98,11 @@ export function NewsFormDrawer({ mode, initial, onClose }: NewsFormDrawerProps) 
           {NEWS_CATEGORIES.map((c) => <SelectItem key={c}>{c}</SelectItem>)}
         </Select>
         <Textarea label="Excerpt" labelPlacement="outside" minRows={3} value={form.excerpt} onValueChange={(v) => setForm((f) => ({ ...f, excerpt: v }))} variant="bordered" isRequired classNames={inputCx} />
-        <Textarea label="Content" labelPlacement="outside" minRows={6} value={form.content ?? ""} onValueChange={(v) => setForm((f) => ({ ...f, content: v }))} variant="bordered" classNames={inputCx} />
+        <RichTextEditor
+          label="Content"
+          value={form.content ?? ""}
+          onChange={(v) => setForm((f) => ({ ...f, content: v }))}
+        />
         <div className="grid grid-cols-2 gap-4">
           <Input label="Author" labelPlacement="outside" value={form.author ?? ""} onValueChange={(v) => setForm((f) => ({ ...f, author: v }))} variant="bordered" classNames={inputCx} />
           <Input type="number" label="Read time (min)" labelPlacement="outside" value={String(form.read_time ?? 3)} onValueChange={(v) => setForm((f) => ({ ...f, read_time: Number(v) || 3 }))} variant="bordered" classNames={inputCx} />

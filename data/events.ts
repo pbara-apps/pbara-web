@@ -35,6 +35,7 @@ export const upcomingEvents: EventItem[] = [
     title: "Annual Royal Ambassadors Camp",
     category: "Golden Ambassador",
     date: "2026-08-06",
+    endDate: "2026-08-09",
     venue: "First Baptist Church, Badagry",
     description:
       "A week-long camp focused on spiritual growth, outdoor activities, and leadership development for all age groups.",

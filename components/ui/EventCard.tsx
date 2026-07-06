@@ -4,6 +4,7 @@ import { FiMapPin, FiShare2 } from "react-icons/fi";
 import { Button } from "@heroui/react";
 import { Chip } from "@heroui/react";
 import type { EventItem } from "@/types";
+import { formatEventDateLabel, parseEventDateParts } from "@/lib/event-date";
 
 interface EventCardProps {
   event: EventItem;
@@ -11,14 +12,8 @@ interface EventCardProps {
   past?: boolean;
 }
 
-function formatDate(dateStr: string): { day: string; month: string; year: string } {
-  const d = new Date(dateStr);
-  const months = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" ");
-  return {
-    day: d.getDate().toString(),
-    month: months[d.getMonth()] ?? "",
-    year: d.getFullYear().toString(),
-  };
+function formatDate(dateStr: string, endDate?: string | null) {
+  return parseEventDateParts(dateStr, endDate);
 }
 
 /**
@@ -30,7 +25,7 @@ export function EventCard({ event, horizontal = true, past = false }: EventCardP
   const imageAlt = event.image ? `${event.title} — Royal Ambassadors` : "Royal Ambassadors logo as event placeholder";
 
   if (past) {
-    const dateLabel = event.date.length <= 7 ? event.date : formatDate(event.date).month + " " + formatDate(event.date).year;
+    const dateLabel = formatEventDateLabel(event.date, event.endDate);
     return (
       <article className="bg-surface rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out overflow-hidden flex flex-col">
         <div className="relative aspect-video w-full bg-primary/10">
@@ -68,7 +63,7 @@ export function EventCard({ event, horizontal = true, past = false }: EventCardP
     );
   }
 
-  const { day, month, year } = formatDate(event.date);
+  const { day, month, year } = formatDate(event.date, event.endDate);
 
   return (
     <article className="bg-surface rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out overflow-hidden flex flex-col md:flex-row">

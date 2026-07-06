@@ -25,6 +25,7 @@ import {
   useGetEvents,
 } from "@/service/apis/event";
 import { useDrawer } from "@/store/useDrawer";
+import { formatEventDateLabel } from "@/lib/event-date";
 import type { EventStatus } from "@/types/admin";
 import { EVENT_CATEGORIES, EVENT_STATUSES } from "@/types/admin";
 
@@ -136,7 +137,7 @@ export default function EventAdminPage() {
                 key={item.id}
                 id={item.id}
                 title={item.title}
-                subtitle={`${item.date} · ${item.venue}`}
+                subtitle={`${formatEventDateLabel(item.date, item.endDate)} · ${item.venue}`}
                 image={item.image}
                 chips={[
                   { label: item.category },

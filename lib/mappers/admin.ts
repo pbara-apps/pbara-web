@@ -8,7 +8,8 @@ import type {
   AdminNews,
   AdminOffice,
 } from "@/types/admin";
-import type { Chapter, EventItem, Executive, NewsItem } from "@/types";
+import { eventEndTimestamp } from "@/lib/event-date";
+import type { Chapter, EventItem, Executive, NewsDetail, NewsItem } from "@/types";
 
 type PopulatedRef = {
   _id?: string;
@@ -138,6 +139,7 @@ type RawEvent = {
   title: string;
   category: string;
   date: string;
+  endDate?: string | null;
   venue: string;
   description: string;
   image?: string | null;
@@ -177,11 +179,15 @@ function formatDate(value?: string) {
   });
 }
 
-function isPastEvent(date: string, status: AdminEvent["status"]) {
+function isPastEvent(
+  date: string,
+  status: AdminEvent["status"],
+  endDate?: string | null,
+) {
   if (status === "completed" || status === "cancelled") return true;
-  const parsed = Date.parse(date);
-  if (!Number.isNaN(parsed)) return parsed < Date.now();
-  return false;
+  const endTs = eventEndTimestamp(date, endDate);
+  if (endTs == null) return false;
+  return endTs < Date.now();
 }
 
 export function mapNews(raw: RawNews): AdminNews {
@@ -214,27 +220,36 @@ export function mapPublicNews(raw: RawNews): NewsItem {
   };
 }
 
+export function mapPublicNewsDetail(raw: RawNews): NewsDetail {
+  return {
+    ...mapPublicNews(raw),
+    content: raw.content ?? "",
+  };
+}
+
 export function mapEvent(raw: RawEvent): AdminEvent {
   return {
     id: toId(raw),
     title: raw.title,
     category: raw.category,
     date: raw.date,
+    endDate: raw.endDate ?? null,
     venue: raw.venue,
     description: raw.description,
     image: raw.image ?? null,
     status: raw.status,
-    isPast: isPastEvent(raw.date, raw.status),
+    isPast: isPastEvent(raw.date, raw.status, raw.endDate),
   };
 }
 
 export function mapPublicEvent(raw: RawEvent): EventItem {
-  const isPast = isPastEvent(raw.date, raw.status);
+  const isPast = isPastEvent(raw.date, raw.status, raw.endDate);
   return {
     id: toId(raw),
     title: raw.title,
     category: raw.category,
     date: raw.date,
+    endDate: raw.endDate ?? null,
     venue: raw.venue,
     description: raw.description,
     image: raw.image ?? undefined,

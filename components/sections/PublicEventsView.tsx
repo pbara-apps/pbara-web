@@ -12,6 +12,7 @@ import {
 } from "react-icons/fi";
 import { HiOutlineShieldCheck } from "react-icons/hi2";
 import type { EventItem } from "@/types";
+import { parseEventDateParts, formatEventDateLabel } from "@/lib/event-date";
 
 const UPCOMING_IMAGES: Record<string, string> = {
   "1": "https://lh3.googleusercontent.com/aida-public/AB6AXuB99MhOLoBFMOWcAcIzkvFtMkvJUAHCLR8GCyC9xSdhfEGcJPK7oFXucX-1GERDH7anSfiJQ0NRG0hvOHyrPS1PBbiphemSOCRCb9qwEP1UYFBBgafaOd8CB-fWaOAZdRcWFPHx3HabxFwKUHKmcp9dhrO2x-N8_wxQu5DEtUG94hkGdT17bBYJbH6_YsV7KohTidZe3JpjReg65T6KjVggzEVGgB9yewEWVwlv2UqcrzerBuihjhUXKFfbHN7ToRlTOjeGfdP7yDA",
@@ -23,31 +24,6 @@ const ARCHIVE_IMAGES: Record<string, string> = {
   "4": "https://lh3.googleusercontent.com/aida-public/AB6AXuBk-oMpT-xv_EFR_IteaaFLVskHyhhXTedNK3Kqt5FH8sLh8hHzBnxPPNUAiB6O8c0u_HYsBprkzYoyd2uWgFzsqmVWJQILYyI37_CtvQvSR4wJlYD8MUF5hDfZyRybTyQE2vY6IYT7Ty8X_bcS__aciOBW72cqlN2hQ2lvcgcQ8njzm0_TL7RA_S4g8hMAG0H8pT5hz7jFSbAG06luU2WML3qhIcWVoij9Wdw407OuwWDzFecmuZtczWK9i_d69k6FQ_Nh3P4Y3zg",
   "5": "https://lh3.googleusercontent.com/aida-public/AB6AXuDdkEuSp2Oqn4m6Xx5po6O-mXR4ntMHjeA10OsVgnhzQXjtxX2HfkpkIQMSvt6qyVglK_FmKnFgwXljRThflQoLDGAUYsOX2ruxUfs3aFGnXZq5OOJRSAyqeirkg0_U2PaIHhkVAmUrxyhW4-ckUjZIRkyYMVzK-tlpi4R7UccChcWo0ZrGUHlMWo65-bTKQHmkAsd1BIinm_bbvb7CaRDbuId0ckf78kjYSlDZnGgRiRGNIBnJkgcHdqq905Dn4tOjYmpwiXVUipM",
 };
-
-function formatIsoDateParts(iso: string) {
-  // iso: YYYY-MM-DD
-  const [y, m, d] = iso.split("-");
-  const monthNames = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "June",
-    "July",
-    "August",
-    "Sept",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-  const monthIdx = Math.max(1, Math.min(12, Number(m))) - 1;
-  return {
-    day: String(d ?? "").padStart(2, "0"),
-    month: monthNames[monthIdx] ?? "",
-    year: y ?? "",
-  };
-}
 
 export function PublicEventsView({
   upcomingEvents,
@@ -115,12 +91,10 @@ export function PublicEventsView({
 
         <div className="grid gap-6">
           {upcomingEvents.map((event) => {
-            const hasIso = Boolean(
-              event.date && event.date.length >= 10 && event.date.includes("-"),
+            const { day, month, year } = parseEventDateParts(
+              event.date,
+              event.endDate,
             );
-            const { day, month, year } = hasIso
-              ? formatIsoDateParts(event.date)
-              : { day: "--", month: "", year: "" };
             const categoryLabel =
               event.category === "Golden Ambassador"
                 ? "Golden Jubilee"
@@ -131,7 +105,7 @@ export function PublicEventsView({
                 : "bg-slate-50 dark:bg-slate-800";
             const leftDayColor =
               event.id === "1" ? "text-primary" : "text-slate-400";
-            const rightImage = UPCOMING_IMAGES[event.id];
+            const rightImage = event.image ?? UPCOMING_IMAGES[event.id];
 
             return (
               <div
@@ -147,9 +121,7 @@ export function PublicEventsView({
                   <span className="text-slate-600 dark:text-slate-300 font-bold text-xl uppercase">
                     {month}
                   </span>
-                  <span className="text-slate-400 text-sm mt-1">
-                    {event.id === "1" ? `${year} - ${year}` : year}
-                  </span>
+                  <span className="text-slate-400 text-sm mt-1">{year}</span>
                 </div>
 
                 <div className="flex-1 p-8 flex flex-col justify-between">
@@ -270,7 +242,7 @@ export function PublicEventsView({
                     aria-label={image ? "Event photo" : undefined}
                   />
                   <div className="absolute top-2 right-2 px-2 py-1 bg-slate-900/60 text-white text-[10px] rounded backdrop-blur-md">
-                    {event.date}
+                    {formatEventDateLabel(event.date, event.endDate)}
                   </div>
                 </div>
                 <div className="p-5">

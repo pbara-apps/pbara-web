@@ -89,7 +89,7 @@ export default function GalleryAdminPage() {
         title="Media Gallery"
         description="Manage photos and videos displayed on the public media page."
         actionLabel="Add Media"
-        onAction={() => openDrawer("create-gallery")}
+        onAction={() => openDrawer("create-gallery", { config: { size: "4xl" } })}
         stats={
           <>
             <Chip size="sm" variant="flat" className="bg-primary/10 text-primary">{items.length} items</Chip>
@@ -126,7 +126,7 @@ export default function GalleryAdminPage() {
         <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-text-dark/10 py-20">
           <LuImage size={32} className="text-primary/40" />
           <p className="text-sm text-text-muted">No gallery items yet.</p>
-          <Button startContent={<LuPlus size={16} />} className="bg-primary text-white" onPress={() => openDrawer("create-gallery")}>Add Media</Button>
+          <Button startContent={<LuPlus size={16} />} className="bg-primary text-white" onPress={() => openDrawer("create-gallery", { config: { size: "4xl" } })}>Add Media</Button>
         </div>
       ) : (
         <>

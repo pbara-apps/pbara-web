@@ -51,11 +51,16 @@ export interface NewsItem {
   slug?: string;
 }
 
+export interface NewsDetail extends NewsItem {
+  content: string;
+}
+
 export interface EventItem {
   id: string;
   title: string;
   category: string;
   date: string;
+  endDate?: string | null;
   venue: string;
   description: string;
   image?: string;

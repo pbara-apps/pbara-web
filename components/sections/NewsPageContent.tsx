@@ -2,24 +2,16 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
 import { FiFilter, FiBell, FiCalendar, FiBookOpen, FiArrowRight, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { HiOutlineNewspaper } from "react-icons/hi2";
 import { HiOutlineMegaphone } from "react-icons/hi2";
 import { MdMilitaryTech } from "react-icons/md";
+import { newsArticlePath } from "@/lib/api/news";
 import type { NewsItem } from "@/types";
 
 const GRID_PER_PAGE = 4;
-
-const FEATURED_IMAGE =
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuCNZrU5UrSCAH5pN8iAM5DEyl8YYc7pMegjDWxFpD5dgn6gKacJkfOq5fvGuR0knyNmq-Eipf8dbI7rh2fJ2FRCUDwDbF5zPmKh0UbkJv5bkUchmYzRWJADGwERUzZdlxAgFd8YLqP87HWVZBZbOggGh1byJ7TI8vIfWcC4VDUPuzOH7BULikKn7-7-EhxC6pyjAghaf0326Jp0z9tiRBW3t76JYV176HRXxK-rqmyZ9aTJtNRx0qlrpBVviaGW6nsUWLEbqVFQJ_Y";
-
-const GRID_IMAGES = [
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuD_T61JT85oukUJL9fhBZav8E-4bmRf0NiDcFKnFqBmqqQLGstUsCecqjl0IpFmIkbP4E-PxnYfSNkq_jRrQ73Khgzi3WGledmeKnuw-uMnYZiDbVl9m8m2ZFEctRLMnQfsSCVoI8-Sll9JwUz7b1LkuhKWQFIS7LN57vw2EjVHtdNsaNdOP-ekPk6lcVyHkFfL-AD5z6q79f8FG-hyb9f14Gu57Ei9wCRe7ee-YH2Y1Uh_Qiyz135tlfvPiZ0NhqzKdgOFa6KsKiI",
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuBTJLhHYSAVMtul9DH56SfFCyzIvSYS3d2pgLfGzf8BPG8q89O_SeGuTO8iXTzT-cF1JN8m2cLierwOKm4PkOE4_ORYn91ak-DXlUuK_tWTloCUKaecFigvn6hRCiwwsydMhLOBIhGARA-A0-R3h-c4MaMM68jNafjNbdLJn-PS4IUZ2Ya1IAPmppbe63H3PwJD3UuFQSuzjphRVawzwWw-OOkXTValrMxPPpHJil-D1OJau7FUszdUPPBhkjK-WkhKil3kdy3hr1c",
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuD6okiSAO_PddgJy72hSaYvzBFlYZopqWFSpZJ3TXgOvsHUHCsAp5PJkN1KhmtSpFEK4yhSIqgWlmRNXPEo3wYIJEkz_wCiIcoZMFt6yu4N5KP9qDj_60OtRI2MHmEzokwovpRDPwkDDwJvfxbj0NCrjyHZA3-Tn5kxz5ZFTZMcAaQ0_kmv6H_puqmIf91GxyW7OWbn1yHJLKEn_pu6Om2-nXyxNGzjv7MHFLLHJHhMjFrECt3VhXse8mta_Y87gGMagOtwCJQeH2U",
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuB6QLSEQQGP0FlQmygqAlb-uDviaU_bynckWsU2W0hkKSgRkR1_2uW9vypGhSkz88Lye5bENRjcfk2wEwaxxB9Fi7tl5B9Hm5peXfhFfU1QGvqgUSN8ProQm4aGV7739OX4cVIGqtSTjOwbR06Rhvc4u4PF29z93QtMxbamYvK0WKXFsNBuCWACO4FPVzjpIDJiMmA47BTfSBiB96ljJrN2DPSEP4bTdfnlZleCRLF4f1ZTT6iNTtstZNokYD-AKoBQqX9dDtuKCfU",
-];
 
 const CATEGORIES = [
   { key: "all", label: "All News", icon: HiOutlineNewspaper },
@@ -31,6 +23,10 @@ const CATEGORIES = [
 
 interface NewsPageContentProps {
   news: NewsItem[];
+}
+
+function newsImageSrc(image?: string) {
+  return image || "/images/ra-logo.png";
 }
 
 export function NewsPageContent({ news }: NewsPageContentProps) {
@@ -149,13 +145,21 @@ export function NewsPageContent({ news }: NewsPageContentProps) {
 
         {/* Featured Article */}
         {featured && (
-          <article className="group relative flex flex-col overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:shadow-md transition-all mb-8">
-            <div
-              className="aspect-[21/9] w-full bg-slate-100 dark:bg-slate-800 bg-cover bg-center overflow-hidden"
-              style={{ backgroundImage: `url('${FEATURED_IMAGE}')` }}
-              role="img"
-              aria-label="Young men in military uniform standing in formation during training"
-            />
+          <article className="group relative mb-8 flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
+            <div className="relative aspect-[21/9] w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
+              <Image
+                src={newsImageSrc(featured.image)}
+                alt={
+                  featured.image
+                    ? `${featured.title} — Royal Ambassadors`
+                    : "Royal Ambassadors logo"
+                }
+                fill
+                priority
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 900px"
+              />
+            </div>
             <div className="flex flex-col p-6 md:p-8">
               <div className="flex items-center gap-3 mb-3">
                 <span className="text-xs font-bold text-primary tracking-widest uppercase">
@@ -189,7 +193,7 @@ export function NewsPageContent({ news }: NewsPageContentProps) {
                   </span>
                 </div>
                 <Link
-                  href={`/news/${featured.slug ?? featured.id}`}
+                  href={newsArticlePath(featured)}
                   className="flex items-center gap-2 text-primary font-bold text-sm uppercase tracking-wider group/btn"
                 >
                   Read Full Report
@@ -207,23 +211,26 @@ export function NewsPageContent({ news }: NewsPageContentProps) {
         {/* News Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {gridItems.map((item, idx) => {
-            const imageUrl = GRID_IMAGES[idx] ?? "";
             const ctaLabels = ["Details", "Read", "Full Story", "Update"];
             const cta = ctaLabels[idx] ?? "Read";
+
             return (
               <article
                 key={item.id}
-                className="flex flex-col bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden group"
+                className="group flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"
               >
-                <div className="aspect-video bg-slate-100 dark:bg-slate-800 bg-cover bg-center">
-                  {imageUrl && (
-                    <div
-                      className="w-full h-full bg-cover bg-center"
-                      style={{ backgroundImage: `url('${imageUrl}')` }}
-                      role="img"
-                      aria-label="Article image"
-                    />
-                  )}
+                <div className="relative aspect-video overflow-hidden bg-slate-100 dark:bg-slate-800">
+                  <Image
+                    src={newsImageSrc(item.image)}
+                    alt={
+                      item.image
+                        ? `${item.title} — Royal Ambassadors`
+                        : "Royal Ambassadors logo"
+                    }
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 420px"
+                  />
                 </div>
                 <div className="p-6 flex flex-col h-full">
                   <div className="mb-2">
@@ -242,7 +249,7 @@ export function NewsPageContent({ news }: NewsPageContentProps) {
                       {item.date} • {item.readTime ?? 3} min read
                     </span>
                     <Link
-                      href={`/news/${item.slug ?? item.id}`}
+                      href={newsArticlePath(item)}
                       className="text-primary text-sm font-bold uppercase"
                     >
                       {cta}

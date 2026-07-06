@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
-import { PublicNewsPage } from "@/components/sections/PublicNewsPage";
+import { Suspense } from "react";
+import { NewsPageContent } from "@/components/sections/NewsPageContent";
+import { newsItems as fallbackNews } from "@/data/news";
+import { fetchPublicNews } from "@/lib/api/news";
 
 export const metadata: Metadata = {
   title: "News and Press",
@@ -15,6 +18,21 @@ export const metadata: Metadata = {
   keywords: ["News", "Press", "Announcements", "RA updates", "Bulletin"],
 };
 
-export default function NewsPage() {
-  return <PublicNewsPage />;
+function NewsListFallback() {
+  return (
+    <div className="flex min-h-[50vh] items-center justify-center">
+      <p className="text-text-muted">Loading news…</p>
+    </div>
+  );
+}
+
+export default async function NewsPage() {
+  const news = await fetchPublicNews();
+  const items = news.length > 0 ? news : fallbackNews;
+
+  return (
+    <Suspense fallback={<NewsListFallback />}>
+      <NewsPageContent news={items} />
+    </Suspense>
+  );
 }
