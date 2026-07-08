@@ -25,3 +25,11 @@ export const ROLE_LABELS: Record<ExecutiveRole, string> = {
 export function isSuperAdmin(role?: string | null) {
   return role === "super_admin";
 }
+
+export function canManageDirectorDesk(role?: string | null) {
+  return role === "super_admin" || role === "admin";
+}
+
+export function canWriteAdminContent(role?: string | null) {
+  return role === "super_admin" || role === "admin" || role === "editor";
+}

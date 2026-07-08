@@ -24,14 +24,18 @@ import {
   useDeleteGalleryItem,
   useGetGallery,
 } from "@/service/apis/gallery";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import { useDrawer } from "@/store/useDrawer";
 import type { GalleryStatus, GalleryType } from "@/types/admin";
 import { GALLERY_STATUSES, GALLERY_TYPES } from "@/types/admin";
+import { canWriteAdminContent } from "@/types/user";
 
 const PAGE_SIZE = 9;
 
 export default function GalleryAdminPage() {
   const openDrawer = useDrawer((s) => s.openDrawer);
+  const { user } = useCurrentUser();
+  const canManage = canWriteAdminContent(user?.role);
   const { data: items = [], isLoading, isError, refetch } = useGetGallery();
   const deleteOne = useDeleteGalleryItem();
   const deleteBulk = useDeleteGalleryBulk();
@@ -90,6 +94,8 @@ export default function GalleryAdminPage() {
         description="Manage photos and videos displayed on the public media page."
         actionLabel="Add Media"
         onAction={() => openDrawer("create-gallery", { config: { size: "4xl" } })}
+        actionDisabled={!canManage}
+        actionDisabledText="Your role does not permit gallery updates."
         stats={
           <>
             <Chip size="sm" variant="flat" className="bg-primary/10 text-primary">{items.length} items</Chip>
@@ -126,7 +132,7 @@ export default function GalleryAdminPage() {
         <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-text-dark/10 py-20">
           <LuImage size={32} className="text-primary/40" />
           <p className="text-sm text-text-muted">No gallery items yet.</p>
-          <Button startContent={<LuPlus size={16} />} className="bg-primary text-white" onPress={() => openDrawer("create-gallery", { config: { size: "4xl" } })}>Add Media</Button>
+          <Button startContent={<LuPlus size={16} />} className="bg-primary text-white" onPress={() => openDrawer("create-gallery", { config: { size: "4xl" } })} isDisabled={!canManage}>Add Media</Button>
         </div>
       ) : (
         <>
@@ -148,6 +154,7 @@ export default function GalleryAdminPage() {
                 onDelete={() => setDeleteTarget({ ids: [item.id], label: item.title })}
                 onClick={() => openDrawer("edit-gallery", { body: item })}
                 fallbackIcon={item.type === "video" ? <LuVideo size={32} /> : <LuImage size={32} />}
+                canManage={canManage}
               />
             ))}
           </div>
@@ -157,7 +164,7 @@ export default function GalleryAdminPage() {
         </>
       )}
 
-      <BulkActionBar count={selected.size} entityLabel="Item" onClear={() => setSelected(new Set())} onDelete={() => setDeleteTarget({ ids: Array.from(selected), label: `${selected.size} items` })} deleting={deleteBulk.isPending} />
+      <BulkActionBar count={selected.size} entityLabel="Item" onClear={() => setSelected(new Set())} onDelete={() => setDeleteTarget({ ids: Array.from(selected), label: `${selected.size} items` })} deleting={deleteBulk.isPending} disabled={!canManage} />
       <ConfirmDialog isOpen={!!deleteTarget} title="Delete gallery item" message={`Remove ${deleteTarget?.label ?? "selected items"}?`} loading={deleteOne.isPending || deleteBulk.isPending} onClose={() => setDeleteTarget(null)} onConfirm={handleDelete} />
     </div>
   );

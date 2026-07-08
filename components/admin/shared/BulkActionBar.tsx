@@ -9,6 +9,8 @@ interface BulkActionBarProps {
   onClear: () => void;
   onDelete: () => void;
   deleting?: boolean;
+  disabled?: boolean;
+  disabledReason?: string;
 }
 
 export function BulkActionBar({
@@ -17,6 +19,8 @@ export function BulkActionBar({
   onClear,
   onDelete,
   deleting = false,
+  disabled = false,
+  disabledReason = "You are not allowed to delete records.",
 }: BulkActionBarProps) {
   return (
     <div
@@ -42,8 +46,9 @@ export function BulkActionBar({
         <span className="h-5 w-px bg-white/15" aria-hidden />
         <button
           type="button"
-          disabled={deleting}
+          disabled={deleting || disabled}
           onClick={onDelete}
+          title={disabled ? disabledReason : undefined}
           className="flex items-center gap-1.5 text-xs font-semibold text-rose-200 transition-colors hover:text-white disabled:opacity-60"
         >
           <LuTrash2 size={14} />

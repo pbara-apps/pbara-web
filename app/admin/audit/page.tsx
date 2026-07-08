@@ -1,6 +1,8 @@
 "use client";
 
 import {
+  Card,
+  CardBody,
   Chip,
   Input,
   Pagination,
@@ -26,9 +28,9 @@ dayjs.extend(relativeTime);
 const PAGE_SIZE = 12;
 
 const actionColors: Record<string, string> = {
-  created: "bg-emerald-100 text-emerald-700",
-  updated: "bg-blue-100 text-blue-700",
-  deleted: "bg-rose-100 text-rose-700",
+  created: "bg-emerald-100 text-emerald-700 border border-emerald-200",
+  updated: "bg-blue-100 text-blue-700 border border-blue-200",
+  deleted: "bg-rose-100 text-rose-700 border border-rose-200",
 };
 
 export default function AuditAdminPage() {
@@ -71,46 +73,54 @@ export default function AuditAdminPage() {
         }
       />
 
-      <section className="flex flex-wrap gap-3 rounded-xl border border-text-dark/[0.05] bg-surface p-3">
-        <Input
-          placeholder="Search by title, actor, action…"
-          value={search}
-          onValueChange={(v) => {
-            setSearch(v);
-            setPage(1);
-          }}
-          startContent={<LuSearch size={16} className="text-text-muted" />}
-          variant="flat"
-          radius="full"
-          className="min-w-[240px] flex-1"
-          classNames={{
-            inputWrapper: "bg-background/60 border border-text-dark/[0.06]",
-            input: "text-sm",
-          }}
-        />
-        <Select
-          selectedKeys={[entityFilter]}
-          onSelectionChange={(keys) => {
-            setEntityFilter(Array.from(keys)[0] as string);
-            setPage(1);
-          }}
-          className="w-44"
-          variant="flat"
-          radius="md"
-          aria-label="Entity type"
-        >
-          <SelectItem key="all">All Entities</SelectItem>
-          <>
-            {entityTypes.map((t) => (
-              <SelectItem key={t} className="capitalize">
-                {t}
-              </SelectItem>
-            ))}
-          </>
-        </Select>
-      </section>
+      <Card className="border border-text-dark/[0.05] bg-surface shadow-[0_8px_24px_rgba(15,23,42,0.06)]">
+        <CardBody className="flex flex-wrap items-center gap-3 p-3">
+          <Input
+            placeholder="Search by title, actor, action…"
+            value={search}
+            onValueChange={(v) => {
+              setSearch(v);
+              setPage(1);
+            }}
+            startContent={<LuSearch size={16} className="text-text-muted" />}
+            variant="flat"
+            radius="full"
+            className="min-w-[240px] flex-1"
+            classNames={{
+              inputWrapper:
+                "bg-background/60 border border-text-dark/[0.08] shadow-none data-[focus=true]:border-primary/40",
+              input: "text-sm",
+            }}
+          />
+          <Select
+            selectedKeys={[entityFilter]}
+            onSelectionChange={(keys) => {
+              setEntityFilter(Array.from(keys)[0] as string);
+              setPage(1);
+            }}
+            className="w-48"
+            variant="flat"
+            radius="md"
+            aria-label="Entity type"
+            classNames={{
+              trigger:
+                "bg-background/60 border border-text-dark/[0.08] shadow-none data-[focus=true]:border-primary/40",
+              value: "text-sm",
+            }}
+          >
+            <SelectItem key="all">All Entities</SelectItem>
+            <>
+              {entityTypes.map((t) => (
+                <SelectItem key={t} className="capitalize">
+                  {t}
+                </SelectItem>
+              ))}
+            </>
+          </Select>
+        </CardBody>
+      </Card>
 
-      <section className="overflow-hidden rounded-2xl border border-text-dark/[0.05] bg-surface shadow-[0_1px_2px_rgba(27,36,82,0.04)]">
+      <section className="overflow-hidden rounded-2xl border border-text-dark/[0.05] bg-surface shadow-[0_10px_24px_rgba(15,23,42,0.06)]">
         {isLoading ? (
           <div className="flex justify-center py-20">
             <Spinner color="primary" />
@@ -128,7 +138,15 @@ export default function AuditAdminPage() {
           </div>
         ) : (
           <>
-            <Table removeWrapper aria-label="Audit log" classNames={{ th: "bg-background/60 text-[11px] font-semibold uppercase tracking-[0.08em] text-text-muted", td: "py-3 text-sm" }}>
+            <Table
+              removeWrapper
+              aria-label="Audit log"
+              classNames={{
+                th: "bg-background/70 text-[11px] font-semibold uppercase tracking-[0.08em] text-text-muted",
+                tr: "data-[hover=true]:bg-background/40",
+                td: "py-3.5 text-sm align-middle",
+              }}
+            >
               <TableHeader>
                 <TableColumn>Action</TableColumn>
                 <TableColumn>Entity</TableColumn>

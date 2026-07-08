@@ -1,6 +1,8 @@
 "use client";
 import { useGetAdminDirectorDesk } from "@/service/apis/admin";
 import { useDrawer } from "@/store/useDrawer";
+import useCurrentUser from "@/hooks/useCurrentUser";
+import { canManageDirectorDesk } from "@/types/user";
 import { Button } from "@heroui/react";
 import { LuArrowRight, LuPencil, LuQuote } from "react-icons/lu";
 
@@ -14,6 +16,8 @@ export function DirectorDeskPreview({
   onRead,
 }: DirectorDeskPreviewProps) {
   const openDrawer = useDrawer((s) => s.openDrawer);
+  const { user } = useCurrentUser();
+  const canManage = canManageDirectorDesk(user?.role);
 
   const { data: directorDesk } = useGetAdminDirectorDesk();
 
@@ -49,8 +53,9 @@ export function DirectorDeskPreview({
               size="sm"
               startContent={<LuPencil size={16} />}
               onPress={handleEdit}
+              isDisabled={!canManage}
             >
-              Edit
+              {canManage ? "Edit" : "Read only"}
             </Button>
           </div>
         </div>

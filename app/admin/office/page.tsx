@@ -37,8 +37,10 @@ import {
   useDeleteOfficesBulk,
   useGetOffices,
 } from "@/service/apis/office";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import { useDrawer } from "@/store/useDrawer";
 import type { AdminOffice } from "@/types/admin";
+import { canWriteAdminContent } from "@/types/user";
 
 type ColumnKey = "name" | "description" | "actions";
 
@@ -52,6 +54,8 @@ const PAGE_SIZE = 10;
 
 export default function OfficeAdminPage() {
   const openDrawer = useDrawer((s) => s.openDrawer);
+  const { user } = useCurrentUser();
+  const canManage = canWriteAdminContent(user?.role);
   const { data: offices = [], isLoading, isError, refetch } = useGetOffices();
   const deleteOffice = useDeleteOffice();
   const deleteBulk = useDeleteOfficesBulk();
@@ -132,9 +136,13 @@ export default function OfficeAdminPage() {
               </DropdownTrigger>
               <DropdownMenu
                 aria-label="Office actions"
+                disabledKeys={!canManage ? ["edit", "delete"] : []}
                 onAction={(key) => {
-                  if (key === "edit") openDrawer("edit-office", { body: office });
+                  if (key === "edit" && canManage) {
+                    openDrawer("edit-office", { body: office });
+                  }
                   if (key === "delete") {
+                    if (!canManage) return;
                     setDeleteTarget({ ids: [office.id], label: office.name });
                   }
                 }}
@@ -164,6 +172,8 @@ export default function OfficeAdminPage() {
         description="Define executive roles used when assigning officers across chapters."
         actionLabel="Add Office"
         onAction={() => openDrawer("create-office")}
+        actionDisabled={!canManage}
+        actionDisabledText="Your role does not permit office updates."
         stats={
           <Chip size="sm" variant="flat" className="bg-primary/10 text-primary">
             {offices.length} offices registered
@@ -219,6 +229,7 @@ export default function OfficeAdminPage() {
                 }
               }}
               onRowAction={(key) => {
+                if (!canManage) return;
                 const office = filtered.find((o) => o.id === key);
                 if (office) openDrawer("edit-office", { body: office });
               }}
@@ -245,6 +256,7 @@ export default function OfficeAdminPage() {
                       size="sm"
                       startContent={<LuPlus size={14} />}
                       onPress={() => openDrawer("create-office")}
+                      isDisabled={!canManage}
                       className="bg-primary text-white"
                     >
                       Add Office
@@ -296,6 +308,7 @@ export default function OfficeAdminPage() {
           })
         }
         deleting={deleteBulk.isPending}
+        disabled={!canManage}
       />
 
       <ConfirmDialog

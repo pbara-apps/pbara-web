@@ -103,7 +103,12 @@ export function ExecutiveFormDrawer({
     };
 
     if (isCreate) {
-      payload.password = form.password?.trim() || "password";
+      const pwd = form.password?.trim();
+      if (!pwd || pwd.length < 8) {
+        errorToast("Password must be at least 8 characters.", "Validation");
+        return;
+      }
+      payload.password = pwd;
     } else if (form.password?.trim()) {
       payload.password = form.password.trim();
     }
@@ -284,7 +289,7 @@ export function ExecutiveFormDrawer({
           type={isCreate ? "password" : "text"}
           label={isCreate ? "Login Password" : "Reset Password (optional)"}
           labelPlacement="outside"
-          placeholder={isCreate ? "Default: password" : "Leave blank to keep current"}
+          placeholder={isCreate ? "Enter a secure password" : "Leave blank to keep current"}
           value={form.password ?? ""}
           onValueChange={(v) => update("password", v)}
           variant="bordered"

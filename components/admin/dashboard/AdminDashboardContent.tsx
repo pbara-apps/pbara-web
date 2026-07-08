@@ -25,16 +25,11 @@ import {
 import { SystemStatus } from "@/components/admin/dashboard/SystemStatus";
 import WelcomeHeader from "@/components/admin/dashboard/WelcomeHeader";
 import { useGetAdminDashboard } from "@/service/apis/admin";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import type { DashboardActivityItem } from "@/types/admin-dashboard";
+import { canWriteAdminContent } from "@/types/user";
 
 dayjs.extend(relativeTime);
-
-const quickActions: QuickAction[] = [
-  { label: "Create News", icon: LuNewspaper, href: "/admin/news" },
-  { label: "Create Event", icon: LuCalendar, href: "/admin/event" },
-  { label: "Add Gallery Item", icon: LuImage, href: "/admin/gallery" },
-  { label: "Manage Executives", icon: LuUsers, href: "/admin/executive" },
-];
 
 function mapActivity(item: DashboardActivityItem): ActivityEntry {
   return {
@@ -54,6 +49,18 @@ function mapActivity(item: DashboardActivityItem): ActivityEntry {
 
 export function AdminDashboardContent() {
   const router = useRouter();
+  const { user } = useCurrentUser();
+  const canManage = canWriteAdminContent(user?.role);
+  const quickActions: QuickAction[] = [
+    { label: "Create News", icon: LuNewspaper, href: "/admin/news" },
+    { label: "Create Event", icon: LuCalendar, href: "/admin/event" },
+    { label: "Add Gallery Item", icon: LuImage, href: "/admin/gallery" },
+    { label: "Manage Executives", icon: LuUsers, href: "/admin/executive" },
+  ].map((action) => ({
+    ...action,
+    disabled: !canManage,
+    disabledReason: "Your role does not allow content creation.",
+  }));
   const { data, isLoading, isError, refetch } = useGetAdminDashboard();
 
   if (isLoading) {

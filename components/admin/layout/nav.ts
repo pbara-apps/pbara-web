@@ -10,6 +10,8 @@ import {
   LuMessageSquare,
   LuSettings,
   LuFileText,
+  LuUser,
+  LuShield,
 } from "react-icons/lu";
 
 export type NavItem = {
@@ -28,6 +30,7 @@ export const adminNav: NavItem[] = [
   { label: "News", href: "/admin/news", icon: LuNewspaper },
   { label: "Events", href: "/admin/event", icon: LuCalendar },
   { label: "Gallery", href: "/admin/gallery", icon: LuImage },
+  { label: "Administrative", href: "/admin/administrative", icon: LuShield },
   {
     label: "Messages",
     href: "/admin/messages",
@@ -36,6 +39,7 @@ export const adminNav: NavItem[] = [
 ];
 
 export const adminFooterNav: NavItem[] = [
+  { label: "Profile", href: "/admin/profile", icon: LuUser },
   { label: "Audit Log", href: "/admin/audit", icon: LuFileText },
   { label: "Settings", href: "/admin/settings", icon: LuSettings },
 ];

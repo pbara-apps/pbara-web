@@ -4,6 +4,13 @@ import http from ".";
 
 export const adminKeys = {
   dashboard: ["admin-dashboard"] as const,
+  directorDesk: ["admin-director-desk"] as const,
+};
+
+export type AdminDirectorDeskPayload = {
+  title?: string;
+  description?: string;
+  image?: string | null;
 };
 
 export const useGetAdminDashboard = () => {
@@ -18,7 +25,7 @@ export const useGetAdminDashboard = () => {
 
 export const useGetAdminDirectorDesk = () => {
   return useQuery({
-    queryKey: ["admin-director-desk"],
+    queryKey: adminKeys.directorDesk,
     queryFn: async () => {
       const res = await http.get("/admin/director-desk");
       return res.data;
@@ -28,7 +35,7 @@ export const useGetAdminDirectorDesk = () => {
 
 export const useUpdateAdminDirectorDesk = () => {
   return useMutation({
-    mutationFn: async (directorDesk) => {
+    mutationFn: async (directorDesk: AdminDirectorDeskPayload) => {
       const res = await http.patch("/admin/director-desk", directorDesk);
       return res.data;
     },

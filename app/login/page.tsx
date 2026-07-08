@@ -66,7 +66,7 @@ export default function LoginPage() {
           id: user._id ?? user.id ?? "",
           name: user.name,
           email: user.email ?? data.email,
-          role: user.role ?? "admin",
+          role: user.role ?? "viewer",
           token: response.token,
         },
         token: response.token,

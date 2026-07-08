@@ -2,6 +2,8 @@
 
 import {
   Button,
+  Card,
+  CardBody,
   Chip,
   Input,
   Pagination,
@@ -34,13 +36,17 @@ import {
   useMarkMessageRead,
   useMarkMessagesReadBulk,
 } from "@/service/apis/message";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import type { AdminMessage } from "@/types/admin";
+import { canWriteAdminContent } from "@/types/user";
 
 dayjs.extend(relativeTime);
 
 const PAGE_SIZE = 10;
 
 export default function MessagesAdminPage() {
+  const { user } = useCurrentUser();
+  const canManage = canWriteAdminContent(user?.role);
   const { data: messages = [], isLoading, isError } = useGetMessages();
   const markRead = useMarkMessageRead();
   const markReadBulk = useMarkMessagesReadBulk();
@@ -83,6 +89,7 @@ export default function MessagesAdminPage() {
   const openMessage = async (msg: AdminMessage) => {
     setActiveMessage(msg);
     if (!msg.isRead) {
+      if (!canManage) return;
       try {
         await markRead.mutateAsync(msg.id);
       } catch {
@@ -94,6 +101,7 @@ export default function MessagesAdminPage() {
   const handleMarkSelectedRead = async () => {
     const ids = Array.from(selected);
     if (ids.length === 0) return;
+    if (!canManage) return;
     try {
       await markReadBulk.mutateAsync(ids);
       setSelected(new Set());
@@ -108,6 +116,7 @@ export default function MessagesAdminPage() {
 
   const handleDeleteSelected = async () => {
     if (!deleteTarget) return;
+    if (!canManage) return;
     try {
       await deleteBulk.mutateAsync(deleteTarget.ids);
       setSelected(new Set());
@@ -123,6 +132,7 @@ export default function MessagesAdminPage() {
   };
 
   const handleDeleteOne = async (id: string) => {
+    if (!canManage) return;
     try {
       await deleteMessage.mutateAsync(id);
       if (activeMessage?.id === id) setActiveMessage(null);
@@ -154,44 +164,58 @@ export default function MessagesAdminPage() {
         }
       />
 
-      <section className="flex flex-wrap gap-3 rounded-xl border border-text-dark/[0.05] bg-surface p-3">
-        <Input
-          placeholder="Search by name, email, subject…"
-          value={search}
-          onValueChange={(v) => {
-            setSearch(v);
-            setPage(1);
-          }}
-          startContent={<LuSearch size={16} className="text-text-muted" />}
-          variant="flat"
-          radius="full"
-          className="min-w-[240px] flex-1"
-          classNames={{
-            inputWrapper: "bg-background/60 border border-text-dark/[0.06]",
-            input: "text-sm",
-          }}
-        />
-        <Select
-          selectedKeys={[statusFilter]}
-          onSelectionChange={(keys) => {
-            setStatusFilter(Array.from(keys)[0] as string);
-            setPage(1);
-          }}
-          className="w-40"
-          variant="flat"
-          radius="md"
-          aria-label="Status filter"
-        >
-          <SelectItem key="all">All</SelectItem>
-          <SelectItem key="unread">Unread</SelectItem>
-          <SelectItem key="read">Read</SelectItem>
-        </Select>
-        {selected.size > 0 ? (
-          <Button size="sm" variant="flat" onPress={handleMarkSelectedRead}>
-            Mark {selected.size} as read
-          </Button>
-        ) : null}
-      </section>
+      <Card className="border border-text-dark/[0.05] bg-surface shadow-[0_8px_24px_rgba(15,23,42,0.06)]">
+        <CardBody className="flex flex-wrap items-center gap-3 p-3">
+          <Input
+            placeholder="Search by name, email, subject…"
+            value={search}
+            onValueChange={(v) => {
+              setSearch(v);
+              setPage(1);
+            }}
+            startContent={<LuSearch size={16} className="text-text-muted" />}
+            variant="flat"
+            radius="full"
+            className="min-w-[240px] flex-1"
+            classNames={{
+              inputWrapper:
+                "bg-background/60 border border-text-dark/[0.08] shadow-none data-[focus=true]:border-primary/40",
+              input: "text-sm",
+            }}
+          />
+          <Select
+            selectedKeys={[statusFilter]}
+            onSelectionChange={(keys) => {
+              setStatusFilter(Array.from(keys)[0] as string);
+              setPage(1);
+            }}
+            className="w-44"
+            variant="flat"
+            radius="md"
+            aria-label="Status filter"
+            classNames={{
+              trigger:
+                "bg-background/60 border border-text-dark/[0.08] shadow-none data-[focus=true]:border-primary/40",
+              value: "text-sm",
+            }}
+          >
+            <SelectItem key="all">All</SelectItem>
+            <SelectItem key="unread">Unread</SelectItem>
+            <SelectItem key="read">Read</SelectItem>
+          </Select>
+          {selected.size > 0 ? (
+            <Button
+              size="sm"
+              variant="flat"
+              onPress={handleMarkSelectedRead}
+              isDisabled={!canManage}
+              className="bg-primary/10 text-primary"
+            >
+              Mark {selected.size} as read
+            </Button>
+          ) : null}
+        </CardBody>
+      </Card>
 
       <BulkActionBar
         count={selected.size}
@@ -204,10 +228,11 @@ export default function MessagesAdminPage() {
           })
         }
         deleting={deleteBulk.isPending}
+        disabled={!canManage}
       />
 
       <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-        <section className="overflow-hidden rounded-2xl border border-text-dark/[0.05] bg-surface shadow-[0_1px_2px_rgba(27,36,82,0.04)]">
+        <section className="overflow-hidden rounded-2xl border border-text-dark/[0.05] bg-surface shadow-[0_10px_24px_rgba(15,23,42,0.06)]">
           {isLoading ? (
             <div className="flex justify-center py-20">
               <Spinner color="primary" />
@@ -231,7 +256,8 @@ export default function MessagesAdminPage() {
                 }}
                 classNames={{
                   th: "bg-background/50 text-[11px] uppercase tracking-wide text-text-muted",
-                  td: "py-3",
+                  tr: "data-[hover=true]:bg-background/30",
+                  td: "py-3.5",
                 }}
               >
                 <TableHeader>
@@ -246,7 +272,7 @@ export default function MessagesAdminPage() {
                       key={msg.id}
                       className={cn(
                         "cursor-pointer",
-                        activeMessage?.id === msg.id && "bg-primary/[0.03]",
+                        activeMessage?.id === msg.id && "bg-primary/[0.05]",
                         !msg.isRead && "font-medium",
                       )}
                       onClick={() => openMessage(msg)}
@@ -300,7 +326,7 @@ export default function MessagesAdminPage() {
           )}
         </section>
 
-        <section className="rounded-2xl border border-text-dark/[0.05] bg-surface p-6 shadow-[0_1px_2px_rgba(27,36,82,0.04)]">
+        <section className="rounded-2xl border border-text-dark/[0.05] bg-surface p-6 shadow-[0_10px_24px_rgba(15,23,42,0.06)]">
           {activeMessage ? (
             <div className="space-y-4">
               <div className="flex items-start justify-between gap-3">
@@ -327,6 +353,7 @@ export default function MessagesAdminPage() {
                   color="danger"
                   aria-label="Delete message"
                   onPress={() => handleDeleteOne(activeMessage.id)}
+                  isDisabled={!canManage}
                 >
                   <LuTrash2 size={16} />
                 </Button>

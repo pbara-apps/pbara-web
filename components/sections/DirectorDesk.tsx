@@ -2,14 +2,19 @@ import Link from "next/link";
 import { FiArrowRight } from "react-icons/fi";
 import { MdFormatQuote } from "react-icons/md";
 
-const directorName = "Coun. Ikechukwu Mgbeme, Oluwaseun";
-const directorTitle = "Association Director";
-const directorPortraitSrc = "/images/ik.png";
+type DirectorDeskData = {
+  name: string;
+  title: string;
+  description: string;
+  image?: string | null;
+};
 
 /**
  * Full-width card: left — director photo placeholder + name overlay; right — quote marks, heading, message, read more link
  */
-export function DirectorDesk() {
+export function DirectorDesk({ data }: { data: DirectorDeskData }) {
+  const directorPortraitSrc = data.image || "/images/ik.png";
+
   return (
     <section className="py-20 bg-background" aria-labelledby="director-heading">
       <div className="max-w-7xl mx-auto px-6">
@@ -25,8 +30,8 @@ export function DirectorDesk() {
             />
 
             <div className="absolute bottom-6 left-6 z-20">
-              <h4 className="text-white text-xl font-bold">{directorName}</h4>
-              <p className="text-gold text-sm font-semibold">{directorTitle}</p>
+              <h4 className="text-white text-xl font-bold">{data.name}</h4>
+              <p className="text-gold text-sm font-semibold">{data.title}</p>
             </div>
           </div>
 
@@ -41,11 +46,7 @@ export function DirectorDesk() {
                 From the Director&apos;s Desk
               </h3>
               <p className="text-text-muted text-lg leading-relaxed">
-                &quot;Welcome to the official website of the Pentecost Baptist
-                Association — Royal Ambassadors. Our mission is to train boys in
-                faith, discipline, and Christlike character. As we continue to
-                grow our chapters across the association, we remain committed to
-                equipping every ambassador for life and service...&quot;
+                {data.description}
               </p>
             </div>
 

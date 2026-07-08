@@ -43,9 +43,11 @@ import {
   useGetExecutives,
 } from "@/service/apis/executive";
 import { useGetOffices } from "@/service/apis/office";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import { useDrawer } from "@/store/useDrawer";
 import type { AdminExecutive, ExecutiveStatus } from "@/types/admin";
 import { EXECUTIVE_STATUSES } from "@/types/admin";
+import { canWriteAdminContent } from "@/types/user";
 
 type ColumnKey = "executive" | "role" | "chapter" | "status" | "actions";
 
@@ -61,6 +63,8 @@ const PAGE_SIZE = 8;
 
 export default function ExecutiveAdminPage() {
   const openDrawer = useDrawer((s) => s.openDrawer);
+  const { user } = useCurrentUser();
+  const canManage = canWriteAdminContent(user?.role);
   const { data: executives = [], isLoading, isError, refetch } = useGetExecutives();
   const { data: offices = [] } = useGetOffices();
   const { data: chapters = [] } = useGetChapters();
@@ -188,9 +192,13 @@ export default function ExecutiveAdminPage() {
               </DropdownTrigger>
               <DropdownMenu
                 aria-label="Executive actions"
+                disabledKeys={!canManage ? ["edit", "delete"] : []}
                 onAction={(key) => {
-                  if (key === "edit") openDrawer("edit-executive", { body: exec });
+                  if (key === "edit" && canManage) {
+                    openDrawer("edit-executive", { body: exec });
+                  }
                   if (key === "delete") {
+                    if (!canManage) return;
                     setDeleteTarget({ ids: [exec.id], label: exec.name });
                   }
                 }}
@@ -220,6 +228,8 @@ export default function ExecutiveAdminPage() {
         description="Manage association executives, office assignments, and public visibility."
         actionLabel="Add Executive"
         onAction={() => openDrawer("create-executive")}
+        actionDisabled={!canManage}
+        actionDisabledText="Your role does not permit executive updates."
         stats={
           <>
             <Chip size="sm" variant="flat" className="bg-primary/10 text-primary">
@@ -345,6 +355,7 @@ export default function ExecutiveAdminPage() {
                 }
               }}
               onRowAction={(key) => {
+                if (!canManage) return;
                 const exec = filtered.find((e) => e.id === key);
                 if (exec) openDrawer("edit-executive", { body: exec });
               }}
@@ -376,6 +387,7 @@ export default function ExecutiveAdminPage() {
                       size="sm"
                       startContent={<LuPlus size={14} />}
                       onPress={() => openDrawer("create-executive")}
+                      isDisabled={!canManage}
                       className="bg-primary text-white"
                     >
                       Add Executive
@@ -439,6 +451,7 @@ export default function ExecutiveAdminPage() {
           })
         }
         deleting={deleteBulk.isPending}
+        disabled={!canManage}
       />
 
       <ConfirmDialog

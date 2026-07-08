@@ -9,6 +9,8 @@ interface AdminPageHeaderProps {
   description: string;
   actionLabel?: string;
   onAction?: () => void;
+  actionDisabled?: boolean;
+  actionDisabledText?: string;
   stats?: ReactNode;
 }
 
@@ -17,6 +19,8 @@ export function AdminPageHeader({
   description,
   actionLabel,
   onAction,
+  actionDisabled = false,
+  actionDisabledText = "You are not allowed to perform this operation.",
   stats,
 }: AdminPageHeaderProps) {
   return (
@@ -33,6 +37,8 @@ export function AdminPageHeader({
           radius="md"
           startContent={<LuPlus size={18} />}
           onPress={onAction}
+          isDisabled={actionDisabled}
+          title={actionDisabled ? actionDisabledText : undefined}
           className="bg-primary font-semibold text-white shadow-md transition-all hover:bg-[#040e3d]"
         >
           {actionLabel}

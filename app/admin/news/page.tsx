@@ -24,14 +24,18 @@ import {
   useDeleteNewsBulk,
   useGetNews,
 } from "@/service/apis/news";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import { useDrawer } from "@/store/useDrawer";
 import type { AdminNews, NewsStatus } from "@/types/admin";
 import { NEWS_CATEGORIES, NEWS_STATUSES } from "@/types/admin";
+import { canWriteAdminContent } from "@/types/user";
 
 const PAGE_SIZE = 9;
 
 export default function NewsAdminPage() {
   const openDrawer = useDrawer((s) => s.openDrawer);
+  const { user } = useCurrentUser();
+  const canManage = canWriteAdminContent(user?.role);
   const { data: items = [], isLoading, isError, refetch } = useGetNews();
   const deleteOne = useDeleteNews();
   const deleteBulk = useDeleteNewsBulk();
@@ -110,6 +114,8 @@ export default function NewsAdminPage() {
         description="Publish bulletins, press releases, and association updates."
         actionLabel="Create Article"
         onAction={() => openDrawer("create-news")}
+        actionDisabled={!canManage}
+        actionDisabledText="Your role does not permit news updates."
         stats={
           <>
             <Chip size="sm" variant="flat" className="bg-primary/10 text-primary">{items.length} articles</Chip>
@@ -155,13 +161,13 @@ export default function NewsAdminPage() {
         <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-text-dark/10 py-20">
           <LuNewspaper size={32} className="text-primary/40" />
           <p className="text-sm text-text-muted">No news articles yet.</p>
-          <Button startContent={<LuPlus size={16} />} className="bg-primary text-white" onPress={() => openDrawer("create-news")}>Create Article</Button>
+          <Button startContent={<LuPlus size={16} />} className="bg-primary text-white" onPress={() => openDrawer("create-news")} isDisabled={!canManage}>Create Article</Button>
         </div>
       ) : (
         <>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
             {pageItems.map((item) => (
-              <AdminContentCard key={item.id} {...cardProps(item)} />
+              <AdminContentCard key={item.id} {...cardProps(item)} canManage={canManage} />
             ))}
           </div>
           <div className="flex justify-center pt-2">
@@ -170,7 +176,7 @@ export default function NewsAdminPage() {
         </>
       )}
 
-      <BulkActionBar count={selected.size} entityLabel="Article" onClear={() => setSelected(new Set())} onDelete={() => setDeleteTarget({ ids: Array.from(selected), label: `${selected.size} articles` })} deleting={deleteBulk.isPending} />
+      <BulkActionBar count={selected.size} entityLabel="Article" onClear={() => setSelected(new Set())} onDelete={() => setDeleteTarget({ ids: Array.from(selected), label: `${selected.size} articles` })} deleting={deleteBulk.isPending} disabled={!canManage} />
       <ConfirmDialog isOpen={!!deleteTarget} title="Delete news" message={`Remove ${deleteTarget?.label ?? "selected articles"}?`} loading={deleteOne.isPending || deleteBulk.isPending} onClose={() => setDeleteTarget(null)} onConfirm={handleDelete} />
     </div>
   );

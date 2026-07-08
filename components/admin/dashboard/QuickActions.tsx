@@ -9,6 +9,8 @@ export interface QuickAction {
   icon: IconType;
   href?: string;
   onClick?: () => void;
+  disabled?: boolean;
+  disabledReason?: string;
 }
 
 export function QuickActions({ actions }: { actions: QuickAction[] }) {
@@ -22,23 +24,34 @@ export function QuickActions({ actions }: { actions: QuickAction[] }) {
       <div className="mt-4 space-y-2">
         {actions.map((a) => {
           const Icon = a.icon;
-          const className =
-            "group flex w-full items-center gap-3 rounded-xl bg-white/[0.06] px-3 py-2.5 text-left text-sm font-medium text-white transition-all hover:bg-white/[0.12]";
+          const className = `group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition-all ${
+            a.disabled
+              ? "cursor-not-allowed bg-white/[0.04] text-white/45"
+              : "bg-white/[0.06] text-white hover:bg-white/[0.12]"
+          }`;
 
           const content = (
             <>
-              <span className="flex items-center justify-center rounded-lg bg-gold/15 text-gold transition-colors">
+              <span
+                className={`flex items-center justify-center rounded-lg transition-colors ${
+                  a.disabled ? "bg-white/10 text-white/45" : "bg-gold/15 text-gold"
+                }`}
+              >
                 <Icon size={20} />
               </span>
               <span className="flex-1">{a.label}</span>
               <LuChevronRight
                 size={16}
-                className="text-white/30 transition-transform group-hover:translate-x-0.5 group-hover:text-white/70"
+                className={`transition-transform ${
+                  a.disabled
+                    ? "text-white/20"
+                    : "text-white/30 group-hover:translate-x-0.5 group-hover:text-white/70"
+                }`}
               />
             </>
           );
 
-          if (a.href) {
+          if (a.href && !a.disabled) {
             return (
               <Link key={a.label} href={a.href} className={className}>
                 {content}
@@ -52,6 +65,8 @@ export function QuickActions({ actions }: { actions: QuickAction[] }) {
               onClick={a.onClick}
               type="button"
               className={className}
+              disabled={a.disabled}
+              title={a.disabled ? a.disabledReason : undefined}
             >
               {content}
             </button>

@@ -24,15 +24,19 @@ import {
   useDeleteEventsBulk,
   useGetEvents,
 } from "@/service/apis/event";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import { useDrawer } from "@/store/useDrawer";
 import { formatEventDateLabel } from "@/lib/event-date";
 import type { EventStatus } from "@/types/admin";
 import { EVENT_CATEGORIES, EVENT_STATUSES } from "@/types/admin";
+import { canWriteAdminContent } from "@/types/user";
 
 const PAGE_SIZE = 9;
 
 export default function EventAdminPage() {
   const openDrawer = useDrawer((s) => s.openDrawer);
+  const { user } = useCurrentUser();
+  const canManage = canWriteAdminContent(user?.role);
   const { data: items = [], isLoading, isError, refetch } = useGetEvents();
   const deleteOne = useDeleteEvent();
   const deleteBulk = useDeleteEventsBulk();
@@ -91,6 +95,8 @@ export default function EventAdminPage() {
         description="Manage upcoming programmes, ceremonies, and past event archives."
         actionLabel="Create Event"
         onAction={() => openDrawer("create-event")}
+        actionDisabled={!canManage}
+        actionDisabledText="Your role does not permit event updates."
         stats={
           <>
             <Chip size="sm" variant="flat" className="bg-primary/10 text-primary">{items.length} events</Chip>
@@ -127,7 +133,7 @@ export default function EventAdminPage() {
         <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-text-dark/10 py-20">
           <LuCalendar size={32} className="text-primary/40" />
           <p className="text-sm text-text-muted">No events scheduled yet.</p>
-          <Button startContent={<LuPlus size={16} />} className="bg-primary text-white" onPress={() => openDrawer("create-event")}>Create Event</Button>
+          <Button startContent={<LuPlus size={16} />} className="bg-primary text-white" onPress={() => openDrawer("create-event")} isDisabled={!canManage}>Create Event</Button>
         </div>
       ) : (
         <>
@@ -152,6 +158,7 @@ export default function EventAdminPage() {
                 onDelete={() => setDeleteTarget({ ids: [item.id], label: item.title })}
                 onClick={() => openDrawer("edit-event", { body: item })}
                 fallbackIcon={<LuCalendar size={32} />}
+                canManage={canManage}
               />
             ))}
           </div>
@@ -161,7 +168,7 @@ export default function EventAdminPage() {
         </>
       )}
 
-      <BulkActionBar count={selected.size} entityLabel="Event" onClear={() => setSelected(new Set())} onDelete={() => setDeleteTarget({ ids: Array.from(selected), label: `${selected.size} events` })} deleting={deleteBulk.isPending} />
+      <BulkActionBar count={selected.size} entityLabel="Event" onClear={() => setSelected(new Set())} onDelete={() => setDeleteTarget({ ids: Array.from(selected), label: `${selected.size} events` })} deleting={deleteBulk.isPending} disabled={!canManage} />
       <ConfirmDialog isOpen={!!deleteTarget} title="Delete event" message={`Remove ${deleteTarget?.label ?? "selected events"}?`} loading={deleteOne.isPending || deleteBulk.isPending} onClose={() => setDeleteTarget(null)} onConfirm={handleDelete} />
     </div>
   );

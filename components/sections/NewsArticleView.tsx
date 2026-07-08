@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { FiArrowLeft, FiClock } from "react-icons/fi";
+import sanitizeHtml from "sanitize-html";
 import { newsArticlePath } from "@/lib/api/news";
 import type { NewsDetail, NewsItem } from "@/types";
 
@@ -27,9 +28,45 @@ function contentParagraphs(content: string) {
     .filter(Boolean);
 }
 
+function sanitizeArticleHtml(content: string) {
+  return sanitizeHtml(content, {
+    allowedTags: [
+      "p",
+      "br",
+      "strong",
+      "em",
+      "u",
+      "blockquote",
+      "ul",
+      "ol",
+      "li",
+      "h2",
+      "h3",
+      "a",
+      "span",
+    ],
+    allowedAttributes: {
+      a: ["href", "target", "rel"],
+      span: ["class"],
+    },
+    allowedSchemes: ["http", "https", "mailto"],
+    transformTags: {
+      a: (_tagName, attribs) => ({
+        tagName: "a",
+        attribs: {
+          href: attribs.href ?? "#",
+          target: "_blank",
+          rel: "noopener noreferrer",
+        },
+      }),
+    },
+  });
+}
+
 export function NewsArticleView({ article, related }: NewsArticleViewProps) {
   const content = article.content?.trim() ?? "";
   const isHtml = isHtmlContent(content);
+  const safeHtml = isHtml ? sanitizeArticleHtml(content) : "";
   const paragraphs = isHtml ? [] : contentParagraphs(content);
   const imageSrc = articleImageSrc(article.image);
   const imageAlt = article.image
@@ -90,7 +127,7 @@ export function NewsArticleView({ article, related }: NewsArticleViewProps) {
             {isHtml ? (
               <div
                 className="rich-text-content text-base"
-                dangerouslySetInnerHTML={{ __html: content }}
+                dangerouslySetInnerHTML={{ __html: safeHtml }}
               />
             ) : paragraphs.length > 0 ? (
               paragraphs.map((paragraph) => (

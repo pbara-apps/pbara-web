@@ -54,6 +54,7 @@ export function Sidebar({
         tabIndex={mobileOpen ? 0 : -1}
         onClick={onMobileClose}
         className={cn(
+          "focus-ring",
           "fixed inset-0 z-40 bg-primary/50 backdrop-blur-sm transition-opacity duration-200 lg:hidden",
           mobileOpen
             ? "pointer-events-auto opacity-100"
@@ -108,7 +109,7 @@ export function Sidebar({
           <button
             type="button"
             onClick={onMobileClose}
-            className="ml-auto rounded-md p-2 text-white/70 transition-colors hover:bg-white/10 hover:text-white lg:hidden"
+            className="focus-ring ml-auto rounded-md p-2 text-white/70 transition-colors hover:bg-white/10 hover:text-white lg:hidden"
             aria-label="Close menu"
           >
             <LuX size={20} />
@@ -174,6 +175,7 @@ export function Sidebar({
                 router.replace("/login");
               }}
               className={cn(
+                "focus-ring",
                 "shrink-0 rounded-md p-1.5 text-white/60 transition-colors hover:bg-white/10 hover:text-white",
                 collapsed && "lg:hidden",
               )}
@@ -187,7 +189,7 @@ export function Sidebar({
         <button
           type="button"
           onClick={onToggleCollapse}
-          className="mx-3 mt-3 hidden h-8 items-center justify-center gap-2 rounded-lg bg-white/[0.04] text-xs font-medium text-white/60 ring-1 ring-white/10 transition-all hover:bg-white/10 hover:text-white lg:flex"
+          className="focus-ring mx-3 mt-3 hidden h-8 items-center justify-center gap-2 rounded-lg bg-white/[0.04] text-xs font-medium text-white/60 ring-1 ring-white/10 transition-all hover:bg-white/10 hover:text-white lg:flex"
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           aria-pressed={collapsed}
         >
@@ -225,6 +227,7 @@ function SidebarLink({
       title={collapsed ? item.label : undefined}
       aria-current={active ? "page" : undefined}
       className={cn(
+        "focus-ring",
         "group relative flex items-center rounded-lg py-2.5 text-sm font-medium outline-none transition-all duration-200",
         "focus-visible:ring-2 focus-visible:ring-gold/60",
         "px-3 gap-3",

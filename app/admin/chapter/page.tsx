@@ -41,9 +41,11 @@ import {
   useDeleteChaptersBulk,
   useGetChapters,
 } from "@/service/apis/church";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import { useDrawer } from "@/store/useDrawer";
 import type { AdminChapter, ChapterStatus } from "@/types/admin";
 import { CHAPTER_STATUSES } from "@/types/admin";
+import { canWriteAdminContent } from "@/types/user";
 
 type ColumnKey = "chapter" | "commander" | "address" | "status" | "actions";
 
@@ -59,6 +61,8 @@ const PAGE_SIZE = 10;
 
 export default function ChapterAdminPage() {
   const openDrawer = useDrawer((s) => s.openDrawer);
+  const { user } = useCurrentUser();
+  const canManage = canWriteAdminContent(user?.role);
   const { data: chapters = [], isLoading, isError, refetch } = useGetChapters();
   const deleteChapter = useDeleteChapter();
   const deleteBulk = useDeleteChaptersBulk();
@@ -172,9 +176,13 @@ export default function ChapterAdminPage() {
               </DropdownTrigger>
               <DropdownMenu
                 aria-label="Chapter actions"
+                disabledKeys={!canManage ? ["edit", "delete"] : []}
                 onAction={(key) => {
-                  if (key === "edit") openDrawer("edit-church", { body: chapter });
+                  if (key === "edit" && canManage) {
+                    openDrawer("edit-church", { body: chapter });
+                  }
                   if (key === "delete") {
+                    if (!canManage) return;
                     setDeleteTarget({
                       ids: [chapter.id],
                       label: chapter.chapter,
@@ -207,6 +215,8 @@ export default function ChapterAdminPage() {
         description="Manage local RA chapters displayed on the public chapters page."
         actionLabel="Register Chapter"
         onAction={() => openDrawer("create-church")}
+        actionDisabled={!canManage}
+        actionDisabledText="Your role does not permit chapter updates."
         stats={
           <>
             <Chip size="sm" variant="flat" className="bg-primary/10 text-primary">
@@ -293,6 +303,7 @@ export default function ChapterAdminPage() {
                 }
               }}
               onRowAction={(key) => {
+                if (!canManage) return;
                 const chapter = filtered.find((c) => c.id === key);
                 if (chapter) openDrawer("edit-church", { body: chapter });
               }}
@@ -319,6 +330,7 @@ export default function ChapterAdminPage() {
                       size="sm"
                       startContent={<LuPlus size={14} />}
                       onPress={() => openDrawer("create-church")}
+                      isDisabled={!canManage}
                       className="bg-primary text-white"
                     >
                       Register Chapter
@@ -370,6 +382,7 @@ export default function ChapterAdminPage() {
           })
         }
         deleting={deleteBulk.isPending}
+        disabled={!canManage}
       />
 
       <ConfirmDialog

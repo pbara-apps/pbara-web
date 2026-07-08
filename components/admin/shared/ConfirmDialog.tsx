@@ -29,23 +29,37 @@ export function ConfirmDialog({
   onConfirm,
 }: ConfirmDialogProps) {
   return (
-    <Modal isOpen={isOpen} onOpenChange={(open) => !open && onClose()} size="md">
-      <ModalContent>
+    <Modal
+      isOpen={isOpen}
+      onOpenChange={(open) => !open && onClose()}
+      size="md"
+      classNames={{
+        backdrop: "bg-primary/40 backdrop-blur-sm",
+      }}
+    >
+      <ModalContent className="border border-text-dark/[0.08] bg-surface shadow-[0_22px_44px_rgba(15,23,42,0.18)]">
         {(close) => (
           <>
-            <ModalHeader className="text-primary">{title}</ModalHeader>
+            <ModalHeader className="border-b border-text-dark/[0.06] text-primary">
+              {title}
+            </ModalHeader>
             <ModalBody>
               <p className="text-sm text-text-muted">{message}</p>
             </ModalBody>
-            <ModalFooter>
-              <Button variant="light" onPress={close} isDisabled={loading}>
+            <ModalFooter className="border-t border-text-dark/[0.06]">
+              <Button
+                variant="light"
+                onPress={close}
+                isDisabled={loading}
+                className="focus-ring"
+              >
                 Cancel
               </Button>
               <Button
                 color="danger"
                 isLoading={loading}
                 onPress={onConfirm}
-                className="font-semibold"
+                className="focus-ring font-semibold"
               >
                 {confirmLabel}
               </Button>

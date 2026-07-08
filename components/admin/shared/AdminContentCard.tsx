@@ -25,6 +25,8 @@ interface AdminContentCardProps {
   onDelete?: () => void;
   onClick?: () => void;
   fallbackIcon?: React.ReactNode;
+  canManage?: boolean;
+  disabledReason?: string;
 }
 
 export function AdminContentCard({
@@ -39,6 +41,8 @@ export function AdminContentCard({
   onDelete,
   onClick,
   fallbackIcon,
+  canManage = true,
+  disabledReason = "You are not allowed to modify this item.",
 }: AdminContentCardProps) {
   return (
     <article
@@ -46,7 +50,7 @@ export function AdminContentCard({
         "group relative flex flex-col overflow-hidden rounded-2xl border bg-surface shadow-[0_1px_2px_rgba(27,36,82,0.04)] transition-all duration-200",
         selected
           ? "border-gold ring-2 ring-gold/30"
-          : "border-text-dark/[0.05] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(27,36,82,0.08)]",
+            : "border-text-dark/[0.05] hover:-translate-y-0.5 motion-reduce:hover:translate-y-0 hover:shadow-[0_8px_24px_rgba(27,36,82,0.08)]",
       )}
     >
       {onSelect ? (
@@ -63,15 +67,17 @@ export function AdminContentCard({
 
       <button
         type="button"
-        onClick={onClick}
-        className="relative aspect-[16/10] w-full overflow-hidden bg-gradient-to-br from-primary/10 to-[#040e3d]/10 text-left"
+        onClick={canManage ? onClick : undefined}
+        disabled={!canManage}
+        title={!canManage ? disabledReason : undefined}
+        className="focus-ring relative aspect-[16/10] w-full overflow-hidden bg-gradient-to-br from-primary/10 to-[#040e3d]/10 text-left"
       >
         {image ? (
           <Image
             src={image}
             alt={title}
             fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            className="object-cover transition-transform duration-300 group-hover:scale-105 motion-reduce:group-hover:scale-100"
             sizes="(max-width: 768px) 100vw, 33vw"
           />
         ) : (
@@ -118,12 +124,15 @@ export function AdminContentCard({
                 radius="md"
                 aria-label="Open actions"
                 className="shrink-0 text-text-muted"
+                isDisabled={!canManage}
+                title={!canManage ? disabledReason : undefined}
               >
                 <LuEllipsisVertical size={16} />
               </Button>
             </DropdownTrigger>
             <DropdownMenu
               aria-label="Card actions"
+              disabledKeys={!canManage ? ["edit", "delete"] : []}
               onAction={(key) => {
                 if (key === "edit") onEdit?.();
                 if (key === "delete") onDelete?.();

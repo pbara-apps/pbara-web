@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Alert,
   Button,
   DrawerBody,
   DrawerFooter,
@@ -21,6 +22,13 @@ import {
   LuUpload,
 } from "react-icons/lu";
 import { useDrawerBody } from "@/store/useDrawer";
+import {
+  errorToast,
+  successToast,
+} from "@/components/shared/toast-notification/toast-notification";
+import useCurrentUser from "@/hooks/useCurrentUser";
+import { useUpdateAdminDirectorDesk } from "@/service/apis/admin";
+import { canManageDirectorDesk } from "@/types/user";
 
 export interface DirectorDeskBody {
   image?: string | null;
@@ -43,6 +51,9 @@ const DirectorDeskView = ({ onClose }: DirectorDeskViewProps) => {
   const [saving, setSaving] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { user } = useCurrentUser();
+  const updateDirectorDesk = useUpdateAdminDirectorDesk();
+  const canManage = canManageDirectorDesk(user?.role);
 
   useEffect(() => {
     setTitle(initial?.title ?? "");
@@ -60,11 +71,27 @@ const DirectorDeskView = ({ onClose }: DirectorDeskViewProps) => {
   };
 
   const handleSave = async () => {
+    if (!canManage) {
+      errorToast("Only Admins and Super Admins can update Director's Desk.", "Unauthorized");
+      return;
+    }
     setSaving(true);
-    // TODO: call PATCH /api/director-desk with { title, description, portrait }
-    await new Promise((r) => setTimeout(r, 600));
-    setSaving(false);
-    onClose();
+    try {
+      await updateDirectorDesk.mutateAsync({
+        title: title.trim(),
+        description: description.trim(),
+        image: portrait,
+      });
+      successToast("Director's Desk updated successfully.");
+      onClose();
+    } catch (err) {
+      errorToast(
+        (err as { message?: string })?.message ?? "Unable to update Director's Desk.",
+        "Error",
+      );
+    } finally {
+      setSaving(false);
+    }
   };
 
   const canSave = title.trim().length > 0 && description.trim().length > 0;
@@ -82,6 +109,14 @@ const DirectorDeskView = ({ onClose }: DirectorDeskViewProps) => {
       </DrawerHeader>
 
       <DrawerBody className="space-y-6 px-6 py-6">
+        {!canManage ? (
+          <Alert
+            color="warning"
+            variant="flat"
+            title="You do not have permission to update this section."
+            description="Only Super Admins and Admins can modify Director's Desk."
+          />
+        ) : null}
         <section>
           <label className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.08em] text-text-muted">
             Director&apos;s Portrait
@@ -102,6 +137,7 @@ const DirectorDeskView = ({ onClose }: DirectorDeskViewProps) => {
                   variant="flat"
                   startContent={<LuUpload size={14} />}
                   onPress={() => fileInputRef.current?.click()}
+                  isDisabled={!canManage}
                   className="bg-white/95 font-semibold text-primary backdrop-blur"
                 >
                   Replace
@@ -111,6 +147,7 @@ const DirectorDeskView = ({ onClose }: DirectorDeskViewProps) => {
                   variant="flat"
                   startContent={<LuTrash2 size={14} />}
                   onPress={() => setPortrait(null)}
+                  isDisabled={!canManage}
                   className="bg-rose-50/95 font-semibold text-rose-700 backdrop-blur"
                 >
                   Remove
@@ -142,6 +179,7 @@ const DirectorDeskView = ({ onClose }: DirectorDeskViewProps) => {
                 accept="image/*"
                 className="sr-only"
                 onChange={(e) => handleFiles(e.target.files)}
+                disabled={!canManage}
               />
               <div
                 className={cn(
@@ -170,6 +208,7 @@ const DirectorDeskView = ({ onClose }: DirectorDeskViewProps) => {
           placeholder="e.g. Spiritual Leadership in Modern Times"
           value={title}
           onValueChange={setTitle}
+          isDisabled={!canManage}
           variant="bordered"
           radius="md"
           isRequired
@@ -200,6 +239,7 @@ const DirectorDeskView = ({ onClose }: DirectorDeskViewProps) => {
               maxRows={20}
               value={description}
               onValueChange={setDescription}
+              isDisabled={!canManage}
               placeholder="Start typing the director's message here…"
               variant="flat"
               classNames={{
@@ -224,7 +264,7 @@ const DirectorDeskView = ({ onClose }: DirectorDeskViewProps) => {
           radius="md"
           onPress={handleSave}
           isLoading={saving}
-          isDisabled={!canSave}
+          isDisabled={!canSave || !canManage}
           className="bg-primary font-semibold text-white shadow-md hover:bg-[#040e3d]"
         >
           {saving ? "Saving…" : "Update Director's Desk"}
