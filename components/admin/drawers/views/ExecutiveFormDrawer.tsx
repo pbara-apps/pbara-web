@@ -82,7 +82,12 @@ export function ExecutiveFormDrawer({
     [chapters],
   );
 
-  const handleSave = async () => {
+  const resetCreateForm = () => {
+    setForm(toForm(undefined));
+  };
+
+  const handleSave = async (options?: { closeAfterSave?: boolean }) => {
+    const closeAfterSave = options?.closeAfterSave ?? true;
     if (!form.name.trim() || !form.office_id || !form.church_id || !form.phone.trim()) {
       errorToast("Please complete all required fields.", "Validation");
       return;
@@ -121,7 +126,11 @@ export function ExecutiveFormDrawer({
         await updateExecutive.mutateAsync({ id: initial.id, body: payload });
         successToast("Executive updated successfully.");
       }
-      onClose();
+      if (isCreate && !closeAfterSave) {
+        resetCreateForm();
+      } else {
+        onClose();
+      }
     } catch (err) {
       const message =
         (err as { message?: string })?.message ?? "Unable to save executive.";
@@ -308,14 +317,36 @@ export function ExecutiveFormDrawer({
         >
           Cancel
         </Button>
-        <Button
-          radius="md"
-          onPress={handleSave}
-          isLoading={saving}
-          className="bg-primary font-semibold text-white shadow-md hover:bg-[#040e3d]"
-        >
-          {isCreate ? "Create Executive" : "Save Changes"}
-        </Button>
+        {isCreate ? (
+          <div className="flex gap-3">
+            <Button
+              radius="md"
+              onPress={() => handleSave({ closeAfterSave: false })}
+              isLoading={saving}
+              className="bg-primary font-semibold text-white shadow-md hover:bg-[#040e3d]"
+            >
+              Create & Add Another
+            </Button>
+            <Button
+              radius="md"
+              onPress={() => handleSave({ closeAfterSave: true })}
+              isLoading={saving}
+              variant="bordered"
+              className="border-text-dark/15 font-semibold text-text-dark"
+            >
+              Create Executive
+            </Button>
+          </div>
+        ) : (
+          <Button
+            radius="md"
+            onPress={() => handleSave({ closeAfterSave: true })}
+            isLoading={saving}
+            className="bg-primary font-semibold text-white shadow-md hover:bg-[#040e3d]"
+          >
+            Save Changes
+          </Button>
+        )}
       </DrawerFooter>
     </>
   );

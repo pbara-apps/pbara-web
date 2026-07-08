@@ -6,6 +6,15 @@ export interface UserType {
   email: string;
   role: ExecutiveRole;
   token: string;
+  phone?: string;
+  officeId?: string;
+  officeName?: string;
+  churchId?: string;
+  churchName?: string;
+  chapterName?: string;
+  status?: "active" | "inactive" | "completed";
+  startYear?: number;
+  endYear?: number | null;
 }
 
 export const EXECUTIVE_ROLES: ExecutiveRole[] = [

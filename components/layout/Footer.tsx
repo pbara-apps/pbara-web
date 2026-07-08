@@ -151,10 +151,10 @@ export function Footer() {
               <p className="flex items-center gap-2">
                 <FiMail size={18} className="text-gold shrink-0" aria-hidden />
                 <a
-                  href="mailto:info@pba-ra.org"
+                  href="mailto:info@pbara.org.ng"
                   className="hover:text-gold transition-colors"
                 >
-                  info@pba-ra.org
+                  info@pbara.org.ng
                 </a>
               </p>
               <p className="flex items-center gap-2">

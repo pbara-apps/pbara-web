@@ -59,6 +59,14 @@ export default function LoginPage() {
         id?: string;
         name: string;
         email?: string;
+        phone?: string;
+        office_id?: string;
+        church_id?: string;
+        start_year?: number;
+        end_year?: number | null;
+        status?: "active" | "inactive" | "completed";
+        office?: { _id?: string; name?: string };
+        church?: { _id?: string; name?: string; chapter?: string };
         role?: "super_admin" | "admin" | "editor" | "viewer";
       };
       setCurrentUser({
@@ -66,6 +74,15 @@ export default function LoginPage() {
           id: user._id ?? user.id ?? "",
           name: user.name,
           email: user.email ?? data.email,
+          phone: user.phone ?? "",
+          officeId: user.office_id ?? user.office?._id ?? "",
+          officeName: user.office?.name ?? "",
+          churchId: user.church_id ?? user.church?._id ?? "",
+          churchName: user.church?.name ?? "",
+          chapterName: user.church?.chapter ?? "",
+          status: user.status ?? "active",
+          startYear: user.start_year,
+          endYear: user.end_year ?? null,
           role: user.role ?? "viewer",
           token: response.token,
         },

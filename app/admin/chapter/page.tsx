@@ -68,7 +68,9 @@ export default function ChapterAdminPage() {
   const deleteBulk = useDeleteChaptersBulk();
 
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<ChapterStatus | "all">("all");
+  const [statusFilter, setStatusFilter] = useState<ChapterStatus | "all">(
+    "all",
+  );
   const [page, setPage] = useState(1);
   const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set());
   const [deleteTarget, setDeleteTarget] = useState<{
@@ -125,7 +127,7 @@ export default function ChapterAdminPage() {
             <Avatar
               src={chapter.image ?? undefined}
               name={chapter.chapter}
-              size="sm"
+              size="md"
               classNames={{
                 base: "bg-gradient-to-br from-primary to-[#040e3d] text-white ring-1 ring-text-dark/[0.06]",
               }}
@@ -219,10 +221,18 @@ export default function ChapterAdminPage() {
         actionDisabledText="Your role does not permit chapter updates."
         stats={
           <>
-            <Chip size="sm" variant="flat" className="bg-primary/10 text-primary">
+            <Chip
+              size="sm"
+              variant="flat"
+              className="bg-primary/10 text-primary"
+            >
               {chapters.length} chapters
             </Chip>
-            <Chip size="sm" variant="flat" className="bg-emerald-100 text-emerald-700">
+            <Chip
+              size="sm"
+              variant="flat"
+              className="bg-emerald-100 text-emerald-700"
+            >
               {activeCount} active
             </Chip>
           </>
@@ -252,7 +262,9 @@ export default function ChapterAdminPage() {
           aria-label="Filter by status"
           selectedKeys={[statusFilter]}
           onSelectionChange={(keys) => {
-            setStatusFilter((Array.from(keys)[0] as ChapterStatus | "all") ?? "all");
+            setStatusFilter(
+              (Array.from(keys)[0] as ChapterStatus | "all") ?? "all",
+            );
             setPage(1);
           }}
           radius="md"

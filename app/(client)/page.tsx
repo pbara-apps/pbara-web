@@ -6,6 +6,7 @@ import { HomeSections } from "@/components/sections/HomeSections";
 import { executives } from "@/data/executives";
 import { newsItems as fallbackNews } from "@/data/news";
 import { fetchPublicDirectorDesk } from "@/lib/api/director-desk";
+import { fetchPublicHeroStats } from "@/lib/api/hero-stats";
 import { fetchPublicNews } from "@/lib/api/news";
 
 export const metadata: Metadata = {
@@ -18,9 +19,10 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const [news, directorDesk] = await Promise.all([
+  const [news, directorDesk, heroStats] = await Promise.all([
     fetchPublicNews(),
     fetchPublicDirectorDesk(),
+    fetchPublicHeroStats(),
   ]);
   const newsItems = news.length > 0 ? news : fallbackNews;
 
@@ -32,7 +34,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <HeroSection />
+      <HeroSection stats={heroStats} />
       <StatsBar />
       <DirectorDesk data={directorDesk} />
       <HomeSections executives={executives} bulletins={bulletins} />

@@ -68,6 +68,12 @@ export interface EventItem {
   isPast: boolean;
 }
 
+export interface HeroStat {
+  end: number;
+  label: string;
+  suffix: string;
+}
+
 export interface DownloadItem {
   id: string;
   title: string;

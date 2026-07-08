@@ -1,7 +1,9 @@
 "use client";
 
 import {
+  Button,
   Chip,
+  Input,
   Select,
   SelectItem,
   Spinner,
@@ -12,10 +14,14 @@ import {
   TableHeader,
   TableRow,
 } from "@heroui/react";
+import { useEffect, useState } from "react";
 import { AdminPageHeader } from "@/components/admin/shared/AdminPageHeader";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import { useProfile } from "@/service/apis/auth";
 import {
   useGetExecutivesForSettings,
+  useGetHeroStatsForSettings,
+  useUpdateHeroStats,
   useUpdateExecutiveRole,
 } from "@/service/apis/settings";
 import {
@@ -28,13 +34,35 @@ import {
   isSuperAdmin,
   type ExecutiveRole,
 } from "@/types/user";
+import type { HeroStat } from "@/types";
 
 export default function SettingsAdminPage() {
   const { user } = useCurrentUser();
+  useProfile(true);
   const superAdmin = isSuperAdmin(user?.role);
+  const canManageHeroStats = user?.role === "super_admin" || user?.role === "admin";
   const { data: executives = [], isLoading, isError } =
     useGetExecutivesForSettings(superAdmin);
+  const {
+    data: heroStats = [],
+    isLoading: isHeroStatsLoading,
+    isError: isHeroStatsError,
+  } = useGetHeroStatsForSettings(canManageHeroStats);
   const updateRole = useUpdateExecutiveRole();
+  const updateHeroStats = useUpdateHeroStats();
+  const [editableStats, setEditableStats] = useState<HeroStat[]>([]);
+
+  useEffect(() => {
+    setEditableStats(
+      heroStats.length > 0
+        ? heroStats
+        : [
+            { end: 21, label: "Active Chapters", suffix: "+" },
+            { end: 500, label: "Total Ambassadors", suffix: "+" },
+            { end: 14, label: "Years of Impact", suffix: "+" },
+          ],
+    );
+  }, [heroStats]);
 
   const handleRoleChange = async (id: string, role: ExecutiveRole) => {
     try {
@@ -47,6 +75,67 @@ export default function SettingsAdminPage() {
       );
     }
   };
+
+  const updateStat = (
+    index: number,
+    field: keyof HeroStat,
+    value: string | number,
+  ) => {
+    setEditableStats((prev) =>
+      prev.map((item, i) =>
+        i === index
+          ? {
+              ...item,
+              [field]:
+                field === "end"
+                  ? Math.max(0, Number(value) || 0)
+                  : String(value),
+            }
+          : item,
+      ),
+    );
+  };
+
+  const addStat = () => {
+    setEditableStats((prev) => {
+      if (prev.length >= 4) return prev;
+      return [...prev, { label: "", end: 0, suffix: "+" }];
+    });
+  };
+
+  const removeStat = (index: number) => {
+    setEditableStats((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSaveHeroStats = async () => {
+    const normalized = editableStats
+      .map((item) => ({
+        label: item.label.trim(),
+        end: Number(item.end),
+        suffix: item.suffix.trim() || "+",
+      }))
+      .filter((item) => item.label.length > 0);
+
+    if (normalized.length === 0) {
+      errorToast("At least one stat label is required.", "Validation");
+      return;
+    }
+
+    try {
+      await updateHeroStats.mutateAsync({ stats: normalized });
+      successToast("Hero statistics updated.");
+    } catch (err) {
+      errorToast(
+        (err as { message?: string })?.message ?? "Unable to update hero statistics.",
+        "Error",
+      );
+    }
+  };
+
+  const canSaveHeroStats =
+    canManageHeroStats &&
+    editableStats.length > 0 &&
+    editableStats.every((item) => item.label.trim().length > 0);
 
   return (
     <div className="space-y-6">
@@ -65,6 +154,26 @@ export default function SettingsAdminPage() {
           <Chip size="sm" variant="flat" className="bg-primary/10 text-primary">
             {user?.role ? ROLE_LABELS[user.role] : "Admin"}
           </Chip>
+        </div>
+        <div className="mt-5 grid gap-3 md:grid-cols-2">
+          <AccountDetail label="Full Name" value={user?.name} />
+          <AccountDetail label="Email" value={user?.email} />
+          <AccountDetail label="Phone" value={user?.phone} />
+          <AccountDetail label="Office" value={user?.officeName} />
+          <AccountDetail label="Church" value={user?.churchName} />
+          <AccountDetail label="Chapter" value={user?.chapterName} />
+          <AccountDetail
+            label="Service Year"
+            value={
+              user?.startYear
+                ? `${user.startYear}${user?.endYear ? ` - ${user.endYear}` : " - Present"}`
+                : undefined
+            }
+          />
+          <AccountDetail
+            label="Account Status"
+            value={user?.status ? user.status.toUpperCase() : undefined}
+          />
         </div>
       </section>
 
@@ -160,6 +269,105 @@ export default function SettingsAdminPage() {
           </p>
         </section>
       )}
+
+      <section className="overflow-hidden rounded-2xl border border-text-dark/[0.05] bg-surface shadow-[0_1px_2px_rgba(27,36,82,0.04)]">
+        <div className="border-b border-text-dark/[0.05] px-6 py-5">
+          <h2 className="text-base font-semibold text-primary">
+            Homepage Hero Statistics
+          </h2>
+          <p className="mt-1 text-sm text-text-muted">
+            Control the statistic counters displayed on the hero section of the
+            public homepage.
+          </p>
+        </div>
+
+        {!canManageHeroStats ? (
+          <p className="px-6 py-10 text-sm text-text-muted">
+            Only Admins and Super Admins can manage homepage hero statistics.
+          </p>
+        ) : isHeroStatsLoading ? (
+          <div className="flex justify-center py-16">
+            <Spinner color="primary" />
+          </div>
+        ) : isHeroStatsError ? (
+          <p className="py-16 text-center text-sm text-rose-600">
+            Unable to load hero statistics.
+          </p>
+        ) : (
+          <div className="space-y-4 px-6 py-5">
+            {editableStats.map((item, index) => (
+              <div
+                key={`${index}-${item.label}`}
+                className="grid gap-3 rounded-xl border border-text-dark/10 p-4 md:grid-cols-[1.6fr_1fr_auto_auto]"
+              >
+                <Input
+                  label="Label"
+                  labelPlacement="outside"
+                  placeholder="e.g. Active Chapters"
+                  value={item.label}
+                  onValueChange={(value) => updateStat(index, "label", value)}
+                  variant="bordered"
+                />
+                <Input
+                  label="Value"
+                  labelPlacement="outside"
+                  type="number"
+                  min={0}
+                  value={String(item.end)}
+                  onValueChange={(value) => updateStat(index, "end", value)}
+                  variant="bordered"
+                />
+                <Input
+                  label="Suffix"
+                  labelPlacement="outside"
+                  placeholder="+"
+                  value={item.suffix}
+                  onValueChange={(value) => updateStat(index, "suffix", value)}
+                  variant="bordered"
+                />
+                <Button
+                  color="danger"
+                  variant="light"
+                  className="self-end"
+                  onPress={() => removeStat(index)}
+                  isDisabled={editableStats.length <= 1}
+                >
+                  Remove
+                </Button>
+              </div>
+            ))}
+
+            <div className="flex flex-wrap justify-between gap-3 pt-2">
+              <Button
+                variant="bordered"
+                onPress={addStat}
+                isDisabled={editableStats.length >= 4}
+              >
+                Add Stat
+              </Button>
+              <Button
+                className="bg-primary text-white"
+                onPress={handleSaveHeroStats}
+                isLoading={updateHeroStats.isPending}
+                isDisabled={!canSaveHeroStats}
+              >
+                Save Hero Stats
+              </Button>
+            </div>
+          </div>
+        )}
+      </section>
+    </div>
+  );
+}
+
+function AccountDetail({ label, value }: { label: string; value?: string }) {
+  return (
+    <div className="rounded-xl border border-text-dark/[0.07] bg-background/30 px-3 py-2.5">
+      <p className="text-[11px] font-semibold uppercase tracking-wide text-text-muted">
+        {label}
+      </p>
+      <p className="mt-1 text-sm font-medium text-text-dark">{value?.trim() || "—"}</p>
     </div>
   );
 }
