@@ -1,4 +1,4 @@
-import { mapPublicNews, mapPublicNewsDetail } from "@/lib/mappers/admin";
+import { mapPublicNews, mapPublicNewsDetail } from "@/lib/mappers/public";
 import type { NewsDetail, NewsItem } from "@/types";
 
 const API_URL =
