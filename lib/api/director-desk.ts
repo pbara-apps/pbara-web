@@ -22,7 +22,7 @@ const FALLBACK: PublicDirectorDesk = {
 };
 
 export async function fetchPublicDirectorDesk(): Promise<PublicDirectorDesk> {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3004/api";
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3004";
   try {
     const response = await fetch(`${baseUrl}/admin/director-desk/public`, {
       next: { revalidate: 300 },

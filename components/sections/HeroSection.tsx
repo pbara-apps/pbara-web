@@ -368,7 +368,7 @@ export function HeroSection({ stats }: { stats: HeroStat[] }) {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.15, ease: "easeOut" }}
-            className="font-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4"
+            className="font-heading text-5xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4"
           >
             <span className="block text-white">
               Pentecost Baptist Association

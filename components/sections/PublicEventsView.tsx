@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import {
   FiArrowRight,
   FiCalendar,
@@ -13,6 +14,7 @@ import {
 import { HiOutlineShieldCheck } from "react-icons/hi2";
 import type { EventItem } from "@/types";
 import { parseEventDateParts, formatEventDateLabel } from "@/lib/event-date";
+import { EventInterestModal } from "./EventInterestModal";
 
 const UPCOMING_IMAGES: Record<string, string> = {
   "1": "https://lh3.googleusercontent.com/aida-public/AB6AXuB99MhOLoBFMOWcAcIzkvFtMkvJUAHCLR8GCyC9xSdhfEGcJPK7oFXucX-1GERDH7anSfiJQ0NRG0hvOHyrPS1PBbiphemSOCRCb9qwEP1UYFBBgafaOd8CB-fWaOAZdRcWFPHx3HabxFwKUHKmcp9dhrO2x-N8_wxQu5DEtUG94hkGdT17bBYJbH6_YsV7KohTidZe3JpjReg65T6KjVggzEVGgB9yewEWVwlv2UqcrzerBuihjhUXKFfbHN7ToRlTOjeGfdP7yDA",
@@ -32,6 +34,8 @@ export function PublicEventsView({
   upcomingEvents: EventItem[];
   pastEvents: EventItem[];
 }) {
+  const [interestEvent, setInterestEvent] = useState<EventItem | null>(null);
+
   return (
     <main className="flex-1">
       {/* Hero Section */}
@@ -149,8 +153,8 @@ export function PublicEventsView({
 
                   <div className="mt-6 flex items-center gap-4">
                     <button
-                      disabled
                       type="button"
+                      onClick={() => setInterestEvent(event)}
                       className="flex items-center gap-2 px-6 py-2.5 bg-accent-gold text-slate-900 font-bold rounded-lg hover:brightness-110 transition-all"
                     >
                       Register Now <FiArrowRight size={18} aria-hidden />
@@ -311,6 +315,11 @@ export function PublicEventsView({
           </div>
         </div>
       </section>
+
+      <EventInterestModal
+        event={interestEvent}
+        onClose={() => setInterestEvent(null)}
+      />
     </main>
   );
 }

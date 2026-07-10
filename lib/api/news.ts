@@ -2,7 +2,7 @@ import { mapPublicNews, mapPublicNewsDetail } from "@/lib/mappers/public";
 import type { NewsDetail, NewsItem } from "@/types";
 
 const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3004/api";
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3004";
 
 type ApiListResponse<T> = {
   data?: T[];
