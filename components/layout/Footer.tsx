@@ -1,6 +1,16 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { motion, useReducedMotion } from "framer-motion";
 import { FiMapPin, FiMail, FiPhone } from "react-icons/fi";
+import {
+  fadeInUp,
+  inViewProps,
+  motionSafe,
+  staggerContainer,
+  staggerItem,
+} from "@/lib/animations";
 
 const quickLinks = [
   { href: "/about", label: "Our History" },
@@ -22,12 +32,26 @@ const resourceLinks = [
  * Dark navy footer, 4 columns: logo + tagline + social; Navigation; Resources; Contact Secretariat
  */
 export function Footer() {
+  const reduced = useReducedMotion();
+  const view = inViewProps(reduced);
+
   return (
-    <footer className="bg-primary text-white">
+    <motion.footer
+      className="bg-primary text-white"
+      {...view}
+      variants={motionSafe(reduced, fadeInUp)}
+    >
       <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+          {...view}
+          variants={motionSafe(reduced, staggerContainer)}
+        >
           {/* Column 1: Branding & Social */}
-          <div className="space-y-4">
+          <motion.div
+            className="space-y-4"
+            variants={motionSafe(reduced, staggerItem)}
+          >
             <Link href="/" className="flex items-center gap-2">
               <Image
                 src="/images/ra-logo.png"
@@ -93,10 +117,10 @@ export function Footer() {
                 </svg>
               </a>
             </div>
-          </div>
+          </motion.div>
 
           {/* Column 2: Navigation */}
-          <div>
+          <motion.div variants={motionSafe(reduced, staggerItem)}>
             <h3 className="font-heading font-semibold text-sm uppercase tracking-wider mb-4">
               Navigation
             </h3>
@@ -112,10 +136,10 @@ export function Footer() {
                 </li>
               ))}
             </ul>
-          </div>
+          </motion.div>
 
           {/* Column 3: Resources */}
-          <div>
+          <motion.div variants={motionSafe(reduced, staggerItem)}>
             <h3 className="font-heading font-semibold text-sm uppercase tracking-wider mb-4">
               Resources
             </h3>
@@ -131,10 +155,10 @@ export function Footer() {
                 </li>
               ))}
             </ul>
-          </div>
+          </motion.div>
 
           {/* Column 4: Contact Secretariat */}
-          <div>
+          <motion.div variants={motionSafe(reduced, staggerItem)}>
             <h3 className="font-heading font-semibold text-sm uppercase tracking-wider mb-4">
               Contact Secretariat
             </h3>
@@ -167,10 +191,14 @@ export function Footer() {
                 </a>
               </p>
             </address>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
-        <div className="mt-10 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/70">
+        <motion.div
+          className="mt-10 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/70"
+          {...view}
+          variants={motionSafe(reduced, fadeInUp)}
+        >
           <p>
             © {new Date().getFullYear()} Pentecost Baptist Association – Royal
             Ambassadors. All rights reserved.
@@ -183,8 +211,8 @@ export function Footer() {
               Terms of Service
             </Link>
           </div>
-        </div>
+        </motion.div>
       </div>
-    </footer>
+    </motion.footer>
   );
 }

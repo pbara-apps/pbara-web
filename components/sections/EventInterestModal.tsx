@@ -287,7 +287,7 @@ export function EventInterestModal({
                           }}
                           className="size-4 rounded border-slate-300 text-primary focus:ring-accent-gold"
                         />
-                        External
+                        Guest?
                       </label>
                     </div>
 

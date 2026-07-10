@@ -2,18 +2,26 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { FiArrowRight, FiCalendar } from "react-icons/fi";
 import { HiOutlineMegaphone } from "react-icons/hi2";
 import { HiOutlineShieldCheck } from "react-icons/hi2";
 import type { Executive } from "@/types";
 import type { NewsItem } from "@/types";
 import { cn } from "@heroui/react";
-
-const sectionVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
-};
+import {
+  buttonHover,
+  buttonTap,
+  cardHover,
+  cardTap,
+  fadeInUp,
+  inViewProps,
+  motionSafe,
+  scalePop,
+  staggerContainer,
+  staggerItem,
+  zoomIn,
+} from "@/lib/animations";
 
 interface HomeSectionsProps {
   executives: Executive[];
@@ -44,19 +52,22 @@ function metaIcon(category: string) {
 }
 
 export function HomeSections({ executives, bulletins }: HomeSectionsProps) {
+  const reduced = useReducedMotion();
+  const view = inViewProps(reduced);
+
   return (
     <>
-      <motion.section
+      {/* ── Executive Council — staggered card grid ── */}
+      <section
         className="py-20 bg-surface"
         aria-labelledby="executive-heading"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={sectionVariants}
-        transition={{ duration: 0.5 }}
       >
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16 space-y-4">
+          <motion.div
+            className="text-center mb-16 space-y-4"
+            {...view}
+            variants={motionSafe(reduced, fadeInUp)}
+          >
             <h2
               id="executive-heading"
               className="text-primary text-4xl font-black tracking-tight font-heading"
@@ -68,17 +79,28 @@ export function HomeSections({ executives, bulletins }: HomeSectionsProps) {
               Leadership dedicated to the spiritual and social development of
               youth.
             </p>
-          </div>
+          </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <motion.div
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
+            {...view}
+            variants={motionSafe(reduced, staggerContainer)}
+          >
             {executives.map((exec) => {
               const imageSrc = exec.image ?? "/images/ra-logo.png";
               return (
-                <div
+                <motion.div
                   key={exec.id}
                   className="group text-center space-y-4 p-6 rounded-xl bg-slate-50 hover:bg-slate-50 transition-colors border border-slate-100 order-transparent hover:border-slate-200"
+                  variants={motionSafe(reduced, staggerItem)}
+                  whileHover={reduced ? undefined : cardHover}
+                  whileTap={reduced ? undefined : cardTap}
+                  style={{ boxShadow: "0 0 0 transparent" }}
                 >
-                  <div className="size-48 mx-auto overflow-hidden rounded-full border-4 border-white shadow-lg bg-background">
+                  <motion.div
+                    className="size-48 mx-auto overflow-hidden rounded-full border-4 border-white shadow-lg bg-background"
+                    variants={motionSafe(reduced, zoomIn)}
+                  >
                     <Image
                       alt={`${exec.name} — Executive Council`}
                       src={imageSrc}
@@ -89,7 +111,7 @@ export function HomeSections({ executives, bulletins }: HomeSectionsProps) {
                         !exec.image && "grayscale",
                       )}
                     />
-                  </div>
+                  </motion.div>
                   <div>
                     <h4 className="text-primary font-bold text-lg">
                       {exec.name}
@@ -99,25 +121,25 @@ export function HomeSections({ executives, bulletins }: HomeSectionsProps) {
                     </p>
                     <p className="text-slate-400 text-xs mt-1">{exec.church}</p>
                   </div>
-                </div>
+                </motion.div>
               );
             })}
-          </div>
+          </motion.div>
         </div>
-      </motion.section>
+      </section>
 
-      <motion.section
+      {/* ── Latest Bulletins — staggered cards + image zoom ── */}
+      <section
         className="py-20 bg-background"
         id="resources"
         aria-labelledby="bulletins-heading"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={sectionVariants}
-        transition={{ duration: 0.5 }}
       >
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
+          <motion.div
+            className="flex flex-col md:flex-row justify-between items-end mb-12 gap-4"
+            {...view}
+            variants={motionSafe(reduced, fadeInUp)}
+          >
             <div className="space-y-2">
               <h2
                 id="bulletins-heading"
@@ -129,15 +151,25 @@ export function HomeSections({ executives, bulletins }: HomeSectionsProps) {
                 Updates and announcements from across the association.
               </p>
             </div>
-            <Link
-              href="/news"
-              className="bg-white border border-slate-200 text-primary px-6 py-2 rounded-full font-bold text-sm shadow-sm hover:shadow-md hover:scale-105 transition-all uppercase tracking-wider min-h-[44px] inline-flex items-center justify-center touch-manipulation"
+            <motion.div
+              variants={motionSafe(reduced, scalePop)}
+              whileHover={reduced ? undefined : buttonHover}
+              whileTap={reduced ? undefined : buttonTap}
             >
-              See All <FiArrowRight size={16} aria-hidden />
-            </Link>
-          </div>
+              <Link
+                href="/news"
+                className="bg-white border border-slate-200 text-primary px-6 py-2 rounded-full font-bold text-sm shadow-sm hover:shadow-md transition-shadow uppercase tracking-wider min-h-[44px] inline-flex items-center justify-center touch-manipulation gap-1"
+              >
+                See All <FiArrowRight size={16} aria-hidden />
+              </Link>
+            </motion.div>
+          </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <motion.div
+            className="grid grid-cols-1 lg:grid-cols-3 gap-8"
+            {...view}
+            variants={motionSafe(reduced, staggerContainer)}
+          >
             {bulletins.slice(0, 3).map((item) => {
               const href = `/news/${item.slug ?? item.id}`;
               const imageSrc = bulletinImage(item);
@@ -150,11 +182,17 @@ export function HomeSections({ executives, bulletins }: HomeSectionsProps) {
                     : "READ MORE";
 
               return (
-                <article
+                <motion.article
                   key={item.id}
                   className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-200 group flex flex-col"
+                  variants={motionSafe(reduced, staggerItem)}
+                  whileHover={reduced ? undefined : cardHover}
+                  whileTap={reduced ? undefined : cardTap}
                 >
-                  <div className="h-48 relative overflow-hidden bg-primary/10">
+                  <motion.div
+                    className="h-48 relative overflow-hidden bg-primary/10"
+                    variants={motionSafe(reduced, zoomIn)}
+                  >
                     <Image
                       alt={`${item.title} — bulletin`}
                       src={imageSrc}
@@ -167,7 +205,7 @@ export function HomeSections({ executives, bulletins }: HomeSectionsProps) {
                     >
                       {item.category}
                     </div>
-                  </div>
+                  </motion.div>
 
                   <div className="p-8 flex flex-col flex-1">
                     <div className="flex items-center gap-2 text-gold text-xs font-bold uppercase mb-3">
@@ -195,12 +233,12 @@ export function HomeSections({ executives, bulletins }: HomeSectionsProps) {
                       <FiArrowRight size={16} aria-hidden />
                     </Link>
                   </div>
-                </article>
+                </motion.article>
               );
             })}
-          </div>
+          </motion.div>
         </div>
-      </motion.section>
+      </section>
     </>
   );
 }

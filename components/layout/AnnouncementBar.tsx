@@ -20,12 +20,12 @@ export function AnnouncementBar() {
             PORTALS
           </Link>
           <span className="text-white/50">·</span>
-          <Link
+          {/* <Link
             href="/contact"
             className="text-white/90 hover:text-gold transition-colors"
           >
             DONATIONS
-          </Link>
+          </Link> */}
         </nav>
       </div>
     </header>

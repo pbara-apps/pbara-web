@@ -1,5 +1,12 @@
 import { eventEndTimestamp } from "@/lib/event-date";
-import type { Chapter, EventItem, Executive, NewsDetail, NewsItem } from "@/types";
+import type {
+  Chapter,
+  EventItem,
+  Executive,
+  NewsDetail,
+  NewsItem,
+  Patron,
+} from "@/types";
 
 type PopulatedRef = {
   _id?: string;
@@ -24,6 +31,16 @@ type RawChapter = {
   chapter: string;
   counsellor?: string;
   status: "active" | "inactive";
+  image?: string | null;
+};
+
+type RawPatron = {
+  _id?: string;
+  id?: string;
+  name: string;
+  role: string;
+  quote: string;
+  description?: string | null;
   image?: string | null;
 };
 
@@ -102,6 +119,17 @@ export function mapPublicChapter(raw: RawChapter): Chapter {
     commander: raw.counsellor ?? "—",
     unit: "general",
     status: raw.status,
+    image: raw.image ?? undefined,
+  };
+}
+
+export function mapPublicPatron(raw: RawPatron): Patron {
+  return {
+    id: toId(raw),
+    name: raw.name,
+    role: raw.role,
+    quote: raw.quote,
+    description: raw.description ?? undefined,
     image: raw.image ?? undefined,
   };
 }

@@ -2,9 +2,22 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, useReducedMotion } from "framer-motion";
 import { Button } from "@heroui/react";
 import type { HeroStat } from "@/types";
+import {
+  buttonHover,
+  buttonTap,
+  defaultTransition,
+  heroFadeUp,
+  heroHeadline,
+  heroImageZoom,
+  heroStaggerContainer,
+  motionSafe,
+  mountProps,
+  staggerContainer,
+  staggerItem,
+} from "@/lib/animations";
 
 const HERO_IMAGES = [
   "/images/image2.jpg",
@@ -63,6 +76,15 @@ const AURORA_STYLES = `
   ._smoke-pulse {
     animation: _pulseopacity 8s ease-in-out infinite;
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    ._vignette-drift,
+    ._smoke-track,
+    ._smoke-track-reverse,
+    ._smoke-pulse {
+      animation: none !important;
+    }
+  }
 `;
 
 function useCountUp(end: number, suffix: string, enabled: boolean) {
@@ -88,21 +110,21 @@ function StatItem({
   label,
   suffix,
   isInView,
-  index,
+  className,
+  reduced,
 }: {
   end: number;
   label: string;
   suffix: string;
   isInView: boolean;
-  index: number;
+  className?: string;
+  reduced: boolean | null;
 }) {
   const value = useCountUp(end, suffix, isInView);
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ delay: index * 0.1, duration: 0.5 }}
-      className="text-center"
+      variants={motionSafe(reduced, staggerItem)}
+      className={`relative flex flex-col items-center min-h-[44px] justify-center text-center ${className ?? ""}`}
     >
       <p className="font-heading text-2xl md:text-3xl lg:text-4xl font-bold text-white">
         {value}
@@ -116,8 +138,9 @@ function StatItem({
 
 export function HeroSection({ stats }: { stats: HeroStat[] }) {
   const [slideIndex, setSlideIndex] = useState(0);
+  const reduced = useReducedMotion();
   const statsRef = useRef<HTMLDivElement>(null);
-  const statsInView = useInView(statsRef, { once: true, margin: "-80px" });
+  const statsInView = useInView(statsRef, { once: true, amount: 0.2 });
   const heroStats =
     stats.length > 0
       ? stats.slice(0, 4).map((item) => ({
@@ -126,12 +149,19 @@ export function HeroSection({ stats }: { stats: HeroStat[] }) {
         }))
       : FALLBACK_STATS;
 
+  const mount = mountProps(reduced);
+  const fadeUp = motionSafe(reduced, heroFadeUp);
+  const headline = motionSafe(reduced, heroHeadline);
+  const imageZoom = motionSafe(reduced, heroImageZoom);
+  const contentStagger = motionSafe(reduced, heroStaggerContainer);
+
   useEffect(() => {
+    if (reduced) return;
     const id = setInterval(() => {
       setSlideIndex((i) => (i + 1) % HERO_IMAGES.length);
     }, 5500);
     return () => clearInterval(id);
-  }, []);
+  }, [reduced]);
 
   const setSlide = useCallback((index: number) => {
     setSlideIndex(index);
@@ -153,16 +183,18 @@ export function HeroSection({ stats }: { stats: HeroStat[] }) {
           aria-hidden
         />
 
-        {/* Layer 1 — photo slideshow with slow 1.5s crossfade */}
+        {/* Layer 1 — photo slideshow with slow 1.5s crossfade + mount zoom */}
         {HERO_IMAGES.map((src, i) => (
-          <div
+          <motion.div
             key={src}
             className="absolute inset-0"
             style={{
-              transition: "opacity 1500ms ease-in-out",
+              transition: reduced ? undefined : "opacity 1500ms ease-in-out",
               opacity: i === slideIndex ? 1 : 0,
               zIndex: 1,
             }}
+            {...mount}
+            variants={imageZoom}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -174,7 +206,7 @@ export function HeroSection({ stats }: { stats: HeroStat[] }) {
                 if (t.src !== FALLBACK_IMAGE) t.src = FALLBACK_IMAGE;
               }}
             />
-          </div>
+          </motion.div>
         ))}
 
         {/*
@@ -352,12 +384,15 @@ export function HeroSection({ stats }: { stats: HeroStat[] }) {
       </div>
 
       {/* ── Content panel ── */}
-      <div className="relative z-20 w-full max-w-7xl mx-auto min-h-screen flex flex-col justify-center px-4 py-8 md:py-16 lg:py-24">
-        <div className="max-w-4xl mx-auto lg:mx-0 w-full">
+      <div className="relative z-20 w-full max-w-[85rem] mx-auto min-h-screen flex flex-col justify-center px-4 py-8 md:py-16 lg:py-24">
+        <motion.div
+          className="max-w-6xl mx-auto lg:mx-0 w-full"
+          initial={reduced ? false : "hidden"}
+          animate="visible"
+          variants={contentStagger}
+        >
           <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
+            variants={fadeUp}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full border-2 border-gold text-gold text-xs font-semibold uppercase tracking-widest mb-6"
           >
             DISCIPLINE · SERVICE · FAITH
@@ -365,21 +400,19 @@ export function HeroSection({ stats }: { stats: HeroStat[] }) {
 
           <motion.h1
             id="hero-heading"
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.15, ease: "easeOut" }}
-            className="font-heading text-5xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4"
+            variants={headline}
+            className="font-heading text-3xl sm:text-4xl md:text-5xl lg:text-[7rem] font-bold leading-tight mb-4"
           >
             <span className="block text-white">
               Pentecost Baptist Association
             </span>
-            <span className="block text-gold">Royal Ambassadors</span>
+            <span className="block text-gold text-4xl sm:text-5xl md:text-6xl lg:text-[6rem]">
+              Royal Ambassadors
+            </span>
           </motion.h1>
 
           <motion.p
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
+            variants={fadeUp}
             className="text-white/70 italic text-base md:text-lg mb-8 max-w-lg"
           >
             Ambassadors for Christ: Raising godly boys into disciplined men of
@@ -387,57 +420,67 @@ export function HeroSection({ stats }: { stats: HeroStat[] }) {
           </motion.p>
 
           <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.45, ease: "easeOut" }}
+            variants={fadeUp}
             className="flex flex-col sm:flex-row flex-wrap gap-4"
           >
-            <Button
-              as={Link}
-              href="/about"
-              className="bg-gold text-primary hover:opacity-90 font-semibold min-h-[44px]"
+            <motion.div
+              whileHover={reduced ? undefined : buttonHover}
+              whileTap={reduced ? undefined : buttonTap}
             >
-              Learn Our Mission
-            </Button>
-            <Button
-              as={Link}
-              href="/events"
-              variant="bordered"
-              className="border-2 border-white text-white bg-transparent hover:bg-white/10 font-semibold min-h-[44px]"
+              <Button
+                as={Link}
+                href="/about"
+                className="bg-gold text-primary hover:opacity-90 font-semibold min-h-[44px]"
+              >
+                Learn Our Mission
+              </Button>
+            </motion.div>
+            <motion.div
+              whileHover={reduced ? undefined : buttonHover}
+              whileTap={reduced ? undefined : buttonTap}
             >
-              View Calendar
-            </Button>
+              <Button
+                as={Link}
+                href="/events"
+                variant="bordered"
+                className="border-2 border-white text-white bg-transparent hover:bg-white/10 font-semibold min-h-[44px]"
+              >
+                View Calendar
+              </Button>
+            </motion.div>
           </motion.div>
 
           <motion.div
             ref={statsRef}
-            initial={{ opacity: 0, y: 20 }}
-            animate={statsInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5, delay: 0.2 }}
             className="mt-12 pt-8 border-t border-gold/40 grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-0 lg:flex lg:justify-between"
+            variants={motionSafe(reduced, staggerContainer)}
+            initial={reduced ? false : "hidden"}
+            animate={reduced || statsInView ? "visible" : "hidden"}
           >
             {heroStats.map((stat, i) => (
-              <div
+              <StatItem
                 key={stat.label}
-                className={`relative flex flex-col items-center min-h-[44px] justify-center ${
+                end={stat.end}
+                label={stat.label}
+                suffix={stat.suffix}
+                isInView={statsInView || !!reduced}
+                reduced={reduced}
+                className={
                   i > 0 ? "lg:border-l lg:border-gold/50 lg:pl-6" : ""
-                }`}
-              >
-                <StatItem
-                  end={stat.end}
-                  label={stat.label}
-                  suffix={stat.suffix}
-                  isInView={statsInView}
-                  index={i}
-                />
-              </div>
+                }
+              />
             ))}
           </motion.div>
-        </div>
+        </motion.div>
       </div>
 
       {/* ── Desktop thumbnail strip ── */}
-      <div className="absolute top-1/2 -translate-y-1/2 right-8 hidden lg:flex z-20 flex-col gap-3">
+      <motion.div
+        className="absolute top-1/2 -translate-y-1/2 right-8 hidden lg:flex z-20 flex-col gap-3"
+        {...mount}
+        variants={fadeUp}
+        transition={{ ...defaultTransition, delay: 0.5 }}
+      >
         {HERO_IMAGES.map((src, i) => (
           <button
             key={src}
@@ -466,7 +509,7 @@ export function HeroSection({ stats }: { stats: HeroStat[] }) {
             />
           </button>
         ))}
-      </div>
+      </motion.div>
 
       {/* ── Mobile dot indicators ── */}
       <div className="absolute bottom-5 left-0 right-0 flex lg:hidden z-20 justify-center gap-2">

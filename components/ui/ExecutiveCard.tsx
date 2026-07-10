@@ -18,8 +18,8 @@ export function ExecutiveCard({
 
   if (variant === "officer") {
     return (
-      <article className="group bg-white dark:bg-slate-800 p-1 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all overflow-hidden">
-        <div className="relative aspect-[1.2] overflow-hidden rounded-lg mb-2 border-4 border-[#D4AF37]/30">
+      <article className="group h-full flex flex-col bg-white dark:bg-slate-800 p-1 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all overflow-hidden">
+        <div className="relative aspect-[1.2] shrink-0 overflow-hidden rounded-lg mb-2 border-4 border-[#D4AF37]/30">
           <div
             className={cn(
               "absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-500",
@@ -32,14 +32,14 @@ export function ExecutiveCard({
             aria-label={`Portrait of ${executive.name}`}
           />
         </div>
-        <div className="px-4 pb-4 bg-primary rounded-tr-2xl rounded-bl-2xl py-2">
-          <h3 className="text-white text-lg font-bold leading-tight">
+        <div className="flex-1 flex flex-col justify-center px-4 py-3 bg-primary rounded-bl-2xl rounded-tr-2xl min-h-[7.5rem]">
+          <h3 className="text-white text-lg font-bold leading-tight line-clamp-2">
             {executive.name}
           </h3>
-          <p className="text-white/90 font-semibold text-sm mb-1 uppercase tracking-wider">
+          <p className="text-white/90 font-semibold text-sm mt-1 uppercase tracking-wider line-clamp-1">
             {executive.position}
           </p>
-          <p className="text-slate-100 dark:text-slate-400 text-xs">
+          <p className="text-slate-100 dark:text-slate-400 text-xs mt-1 line-clamp-1">
             {executive.church}
           </p>
         </div>

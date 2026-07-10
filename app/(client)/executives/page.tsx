@@ -2,12 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { MdMilitaryTech } from "react-icons/md";
 import { HiOutlineClock } from "react-icons/hi2";
-import { FiAward } from "react-icons/fi";
 import { PastOfficersTable } from "@/components/ui/PastOfficersTable";
 import { CurrentExecutivesGrid } from "@/components/sections/CurrentExecutivesGrid";
+import { PatronsSection } from "@/components/sections/CurrentPatronsGrid";
 import { pastOfficers } from "@/data/pastOfficers";
-import { patrons } from "@/data/patrons";
-import { cn } from "@heroui/react";
 
 export const metadata: Metadata = {
   title: "Executive Leadership and Patrons",
@@ -101,56 +99,7 @@ export default function ExecutivesPage() {
         <PastOfficersTable officers={pastOfficers} />
       </section>
 
-      {/* Patrons Section */}
-      <section className="mb-20" aria-labelledby="patrons-heading">
-        <div className="mb-8 sapce-y-1">
-          <div className="flex items-center gap-3">
-            <FiAward size={32} className="text-primary shrink-0" aria-hidden />
-            <h2
-              id="patrons-heading"
-              className="text-slate-900 dark:text-slate-100 text-3xl font-bold"
-            >
-              Our Patrons
-            </h2>
-          </div>
-          <p className="text-slate-600 dark:text-slate-400 text-base ps-2">
-            {" "}
-            Dignified elders and leaders providing spiritual guidance and
-            support to the association.
-          </p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-          {patrons.map((patron) => (
-            <div
-              key={patron.name}
-              className="flex flex-col md:flex-row gap-6 p-6 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700"
-            >
-              <div className="w-32 h-32 md:w-40 md:h-40 shrink-0 rounded-full overflow-hidden border-4 border-primary/20">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={patron.image ?? "/images/ra-logo.png"}
-                  alt={patron.name}
-                  className={cn(
-                    "w-full h-full object-cover",
-                    !patron.image && "grayscale",
-                  )}
-                />
-              </div>
-              <div className="flex flex-col justify-center">
-                <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
-                  {patron.name}
-                </h3>
-                <p className="text-primary font-bold text-sm uppercase mb-3">
-                  {patron.role}
-                </p>
-                <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed italic">
-                  &quot;{patron.quote}&quot;
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      <PatronsSection />
     </main>
   );
 }
