@@ -26,6 +26,9 @@ export const metadata: Metadata = {
     default: "PBA Royal Ambassadors | Pentecost Baptist Association",
     template: "%s | PBA Royal Ambassadors",
   },
+  alternates: {
+    canonical: "/",
+  },
   description:
     "Royal Ambassadors of Nigeria — building godly boys into disciplined men of faith and integrity through the Pentecost Baptist Association.",
   keywords: [
