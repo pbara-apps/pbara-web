@@ -42,7 +42,7 @@ export async function generateMetadata({
     openGraph: {
       title: article.title,
       description: article.excerpt,
-      url: `https://www.pbara.org.ng${canonicalPath}`,
+      url: `https://pbara.org.ng${canonicalPath}`,
       type: "article",
       publishedTime: article.date,
       authors: article.author ? [article.author] : undefined,
@@ -90,10 +90,10 @@ export default async function NewsArticlePage({
       name: "Pentecost Baptist Association - Royal Ambassadors",
       logo: {
         "@type": "ImageObject",
-        url: "https://www.pbara.org.ng/images/ra-logo.png",
+        url: "https://pbara.org.ng/images/ra-logo.png",
       },
     },
-    mainEntityOfPage: `https://www.pbara.org.ng${canonicalPath}`,
+    mainEntityOfPage: `https://pbara.org.ng${canonicalPath}`,
   };
 
   return (

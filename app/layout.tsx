@@ -10,7 +10,7 @@ const outfit = Outfit({
   weight: "variable",
 });
 
-const baseUrl = "https://www.pbara.org.ng";
+const baseUrl = "https://pbara.org.ng";
 
 const organizationSchema = {
   "@context": "https://schema.org",

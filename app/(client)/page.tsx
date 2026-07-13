@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   openGraph: {
-    url: "https://www.pbara.org.ng",
+    url: "https://pbara.org.ng",
   },
 };
 

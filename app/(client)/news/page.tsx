@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     "Official announcements, program updates, and leadership insights from the Royal Ambassadors paramilitary Christian youth organization.",
   openGraph: {
     title: "News & Press | PBA Royal Ambassadors",
-    url: "https://www.pbara.org.ng/news",
+    url: "https://pbara.org.ng/news",
   },
   keywords: ["News", "Press", "Announcements", "RA updates", "Bulletin"],
 };

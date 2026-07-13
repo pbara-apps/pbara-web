@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     "Contact the Royal Ambassadors headquarters. Send a message or find our address, phone, and email.",
   openGraph: {
     title: "Contact | PBA Royal Ambassadors",
-    url: "https://www.pbara.org.ng/contact",
+    url: "https://pbara.org.ng/contact",
   },
   keywords: ["Contact", "Headquarters", "PBA RA", "Get in touch"],
 };

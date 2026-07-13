@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     "Learn about the Royal Ambassadors of Nigeria, our heritage, vision, mission, and the Pentecost Baptist Association RA. Meet our patrons and discover how we develop young men for Christ.",
   openGraph: {
     title: "About Us | PBA Royal Ambassadors",
-    url: "https://www.pbara.org.ng/about",
+    url: "https://pbara.org.ng/about",
   },
   keywords: [
     "About",
