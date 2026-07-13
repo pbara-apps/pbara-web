@@ -53,6 +53,10 @@ export const metadata: Metadata = {
     locale: "en_NG",
     type: "website",
   },
+  verification: {
+    google: "1SpDl3NFPdCg3E0PQGKP3rMZinMvfgL1YSxuz6Cjaoc",
+  },
+
   robots: {
     index: true,
     follow: true,
