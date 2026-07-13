@@ -10,9 +10,16 @@ export const metadata: Metadata = {
     "Capturing moments of discipline, faith, and leadership from our Royal Ambassadors association. Videos, photo gallery, and downloadable resources.",
   openGraph: {
     title: "Media & Resources | PBA Royal Ambassadors",
-    url: "https://pbara.org.ng/media",
+    url: "https://www.pbara.org.ng/media",
   },
-  keywords: ["Gallery", "Videos", "Photos", "Downloads", "Resources", "RA media"],
+  keywords: [
+    "Gallery",
+    "Videos",
+    "Photos",
+    "Downloads",
+    "Resources",
+    "RA media",
+  ],
 };
 
 export default function MediaPage() {

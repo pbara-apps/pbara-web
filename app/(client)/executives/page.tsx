@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Executive Leadership | PBA Royal Ambassadors",
     description: "Current executive officers, past officers, and our patrons.",
-    url: "https://pbara.org.ng/executives",
+    url: "https://www.pbara.org.ng/executives",
   },
   keywords: ["Leadership", "Executive", "Patrons", "Officers", "PBA RA"],
 };

@@ -3,7 +3,7 @@ import { fetchPublicNews, newsArticlePath } from "@/lib/api/news";
 import { newsItems as fallbackNews } from "@/data/news";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = "https://pbara.org.ng";
+  const baseUrl = "https://www.pbara.org.ng";
   const lastModified = new Date();
 
   const staticRoutes = [

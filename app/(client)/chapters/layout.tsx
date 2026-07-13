@@ -9,11 +9,15 @@ export const metadata: Metadata = {
     "Discover Royal Ambassador chapters and units across the Pentecost Baptist Association. Find a chapter near you.",
   openGraph: {
     title: "Our Chapters | PBA Royal Ambassadors",
-    url: "https://pbara.org.ng/chapters",
+    url: "https://www.pbara.org.ng/chapters",
   },
   keywords: ["Chapters", "Units", "Find a chapter", "PBA RA network"],
 };
 
-export default function ChaptersLayout({ children }: { children: React.ReactNode }) {
+export default function ChaptersLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return children;
 }

@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Chapters & Units | PBA Royal Ambassadors",
     description: "Local RA chapters and units across the association.",
-    url: "https://pbara.org.ng/chapters",
+    url: "https://www.pbara.org.ng/chapters",
   },
   keywords: ["Chapters", "Units", "Royal Ambassadors", "PBA RA"],
 };
