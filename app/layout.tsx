@@ -32,12 +32,14 @@ export const metadata: Metadata = {
   description:
     "Royal Ambassadors of Nigeria — building godly boys into disciplined men of faith and integrity through the Pentecost Baptist Association.",
   keywords: [
-    "Royal Ambassadors",
-    "PBA",
-    "Pentecost Baptist",
-    "Nigeria",
-    "Christian youth",
-    "RA",
+    "PBA Royal Ambassadors",
+    "Royal Ambassadors Nigeria",
+    "Royal Ambassadors of Nigeria",
+    "Pentecost Baptist Association",
+    "Pentecost Baptist Association Royal Ambassadors",
+    "Royal Ambassadors Lagos",
+    "Royal Ambassadors Pentecost Baptist Association",
+    "Baptist Boys Organization",
   ],
   openGraph: {
     title: "PBA Royal Ambassadors | Pentecost Baptist Association",
