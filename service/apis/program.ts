@@ -6,8 +6,26 @@ import {
 import http from ".";
 
 export const programKeys = {
+  public: ["programs", "public"] as const,
   publicBySlug: (slug: string) => ["programs", "public", slug] as const,
 };
+
+export const useGetPublicPrograms = (options?: { openOnly?: boolean }) =>
+  useQuery({
+    queryKey: [...programKeys.public, { openOnly: options?.openOnly ?? false }],
+    queryFn: async () => {
+      const res = await http.get("/program/public");
+      const list = ((res.data ?? []) as unknown[]).map((item) =>
+        mapPublicProgram(item as Parameters<typeof mapPublicProgram>[0]),
+      );
+      if (options?.openOnly) {
+        return list.filter(
+          (program) => !isRegistrationClosed(program.registrationDeadline),
+        );
+      }
+      return list;
+    },
+  });
 
 export const useGetPublicProgramBySlug = (slug: string) =>
   useQuery({

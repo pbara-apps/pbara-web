@@ -10,7 +10,12 @@ import {
 } from "react";
 import { Button, Spinner } from "@heroui/react";
 import { motion, useReducedMotion } from "framer-motion";
-import { FiArrowLeft, FiPlus, FiUploadCloud } from "react-icons/fi";
+import {
+  FiArrowLeft,
+  FiArrowRight,
+  FiPlus,
+  FiUploadCloud,
+} from "react-icons/fi";
 import {
   RegistrationEntryBlock,
   type EntryDraft,
@@ -23,10 +28,7 @@ import {
   useUploadRegistrationProof,
 } from "@/service/apis/registration";
 import { useGetPublicRanks } from "@/service/apis/rank";
-import type {
-  RegistrationProgram,
-  RegistrationType,
-} from "@/types";
+import type { RegistrationProgram, RegistrationType } from "@/types";
 
 interface RegistrationStep2Props {
   program: RegistrationProgram;
@@ -42,6 +44,8 @@ type FormErrors = {
   entries?: Record<string, EntryFieldErrors>;
   submit?: string;
 };
+
+type SectionId = "contact" | "proof" | "type" | "participants";
 
 const fieldCx =
   "w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition-shadow focus:border-gold focus:ring-2 focus:ring-gold/30";
@@ -95,6 +99,17 @@ export function RegistrationStep2({
   const [proofPreviewUrl, setProofPreviewUrl] = useState<string | null>(null);
   const [entries, setEntries] = useState<EntryDraft[]>(() => [emptyEntry()]);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [activeSection, setActiveSection] = useState<SectionId>("contact");
+
+  const sections = useMemo(() => {
+    const items: { id: SectionId; label: string }[] = [
+      { id: "contact", label: "Contact" },
+      { id: "proof", label: "Proof" },
+    ];
+    if (modeChoice) items.push({ id: "type", label: "Type" });
+    items.push({ id: "participants", label: "Participants" });
+    return items;
+  }, [modeChoice]);
 
   const sortedChurches = useMemo(
     () =>
@@ -138,8 +153,35 @@ export function RegistrationStep2({
     });
   }, [firstChurchId]);
 
-  const isSubmitting =
-    uploadProof.isPending || createRegistration.isPending;
+  const isSubmitting = uploadProof.isPending || createRegistration.isPending;
+
+  function goToNextSection(from: SectionId) {
+    const order = sections.map((s) => s.id);
+    const index = order.indexOf(from);
+    const next = order[index + 1];
+    if (next) setActiveSection(next);
+  }
+
+  function sectionContinue(from: SectionId, label?: string) {
+    const order = sections.map((s) => s.id);
+    const index = order.indexOf(from);
+    if (index < 0 || index >= order.length - 1) return null;
+    const nextLabel =
+      label ??
+      sections.find((s) => s.id === order[index + 1])?.label ??
+      "Continue";
+
+    return (
+      <Button
+        type="button"
+        onPress={() => goToNextSection(from)}
+        endContent={<FiArrowRight size={16} />}
+        className="mt-5 h-11 w-full bg-primary font-semibold text-white lg:hidden"
+      >
+        Continue to {nextLabel}
+      </Button>
+    );
+  }
 
   function updateEntry(id: string, patch: Partial<EntryDraft>) {
     setEntries((prev) => {
@@ -163,6 +205,7 @@ export function RegistrationStep2({
 
   function addEntry() {
     setEntries((prev) => [...prev, emptyEntry()]);
+    setActiveSection("participants");
   }
 
   function removeEntry(id: string) {
@@ -187,7 +230,8 @@ export function RegistrationStep2({
       setProofPreviewUrl(null);
       setErrors((prev) => ({
         ...prev,
-        proofOfPayment: "Please upload an image of your payment proof (max 5MB).",
+        proofOfPayment:
+          "Please upload an image of your payment proof (max 5MB).",
       }));
       e.target.value = "";
       return;
@@ -206,7 +250,11 @@ export function RegistrationStep2({
 
     setProofFile(file);
     setProofPreviewUrl(URL.createObjectURL(file));
-    setErrors((prev) => ({ ...prev, proofOfPayment: undefined, submit: undefined }));
+    setErrors((prev) => ({
+      ...prev,
+      proofOfPayment: undefined,
+      submit: undefined,
+    }));
   }
 
   function validate(): FormErrors {
@@ -259,19 +307,22 @@ export function RegistrationStep2({
         Boolean(entry.rankId) &&
         Boolean(entry.churchId),
     );
-  }, [
-    registrantName,
-    registrantPhone,
-    proofFile,
-    entries,
-    registrationType,
-  ]);
+  }, [registrantName, registrantPhone, proofFile, entries, registrationType]);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const nextErrors = validate();
     if (Object.keys(nextErrors).length > 0) {
       setErrors(nextErrors);
+      if (nextErrors.registrantName || nextErrors.registrantPhone) {
+        setActiveSection("contact");
+      } else if (nextErrors.proofOfPayment) {
+        setActiveSection("proof");
+      } else if (nextErrors.registrationType) {
+        setActiveSection("type");
+      } else if (nextErrors.entries) {
+        setActiveSection("participants");
+      }
       return;
     }
     if (!proofFile) return;
@@ -306,15 +357,278 @@ export function RegistrationStep2({
     }
   }
 
+  const contactPanel = (
+    <section
+      id="reg-section-contact"
+      className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm md:p-6"
+    >
+      <h2 className="font-heading text-base font-semibold text-text-dark md:text-lg">
+        Your contact details
+      </h2>
+      <p className="mt-1 text-sm text-text-muted">
+        Person submitting this registration.
+      </p>
+      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+        <div>
+          <label htmlFor="registrant-name" className={labelCx}>
+            Full name
+          </label>
+          <input
+            id="registrant-name"
+            type="text"
+            value={registrantName}
+            onChange={(e) => {
+              setRegistrantName(e.target.value);
+              setErrors((prev) => ({
+                ...prev,
+                registrantName: undefined,
+                submit: undefined,
+              }));
+            }}
+            className={fieldCx}
+            autoComplete="name"
+          />
+          {errors.registrantName ? (
+            <p className="mt-1.5 text-xs text-red-600">
+              {errors.registrantName}
+            </p>
+          ) : null}
+        </div>
+        <div>
+          <label htmlFor="registrant-phone" className={labelCx}>
+            Phone number
+          </label>
+          <input
+            id="registrant-phone"
+            type="tel"
+            value={registrantPhone}
+            onChange={(e) => {
+              setRegistrantPhone(e.target.value);
+              setErrors((prev) => ({
+                ...prev,
+                registrantPhone: undefined,
+                submit: undefined,
+              }));
+            }}
+            className={fieldCx}
+            placeholder="+234…"
+            autoComplete="tel"
+          />
+          {errors.registrantPhone ? (
+            <p className="mt-1.5 text-xs text-red-600">
+              {errors.registrantPhone}
+            </p>
+          ) : null}
+        </div>
+      </div>
+      {sectionContinue("contact")}
+    </section>
+  );
+
+  const proofPanel = (
+    <section
+      id="reg-section-proof"
+      className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm md:p-6"
+    >
+      <h2 className="font-heading text-base font-semibold text-text-dark md:text-lg">
+        Proof of payment
+      </h2>
+      <p className="mt-1 text-sm text-text-muted">
+        Clear image of your transfer receipt (max 5MB).
+      </p>
+      <label
+        htmlFor={proofInputId}
+        className="mt-4 flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 bg-slate-50/80 px-4 py-5 text-center transition-colors hover:border-gold/50 hover:bg-gold/5 lg:flex-row lg:justify-start lg:gap-5 lg:text-left"
+      >
+        {proofPreviewUrl ? (
+          <div className="flex h-24 w-full max-w-[10rem] shrink-0 items-center justify-center overflow-hidden rounded-lg border border-slate-200 bg-white p-1.5 lg:h-28">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={proofPreviewUrl}
+              alt="Proof of payment preview"
+              className="max-h-full max-w-full object-contain"
+            />
+          </div>
+        ) : (
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-primary shadow-sm">
+            <FiUploadCloud size={20} />
+          </span>
+        )}
+        <span>
+          <span className="block text-sm font-medium text-text-dark">
+            {proofFile ? proofFile.name : "Choose image file"}
+          </span>
+          <span className="mt-0.5 block text-xs text-text-muted">
+            Click to browse · JPEG, PNG, or similar
+          </span>
+        </span>
+        <input
+          id={proofInputId}
+          type="file"
+          accept="image/*"
+          className="sr-only"
+          onChange={handleProofChange}
+        />
+      </label>
+      {errors.proofOfPayment ? (
+        <p className="mt-2 text-xs text-red-600">{errors.proofOfPayment}</p>
+      ) : null}
+      {sectionContinue("proof")}
+    </section>
+  );
+
+  const typePanel = modeChoice ? (
+    <section
+      id="reg-section-type"
+      className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm md:p-6"
+    >
+      <h2 className="font-heading text-base font-semibold text-text-dark md:text-lg">
+        Registration type
+      </h2>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        {(
+          [
+            {
+              value: "single" as const,
+              label: "Single",
+              hint: "One participant",
+            },
+            {
+              value: "bulk" as const,
+              label: "Bulk",
+              hint: "Multiple participants",
+            },
+          ] as const
+        ).map((option) => {
+          const selected = registrationType === option.value;
+          return (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => {
+                setRegistrationType(option.value);
+                setErrors((prev) => ({
+                  ...prev,
+                  registrationType: undefined,
+                  submit: undefined,
+                }));
+              }}
+              className={`rounded-xl border px-4 py-3.5 text-left transition-colors ${
+                selected
+                  ? "border-gold bg-gold/10 ring-2 ring-gold/30"
+                  : "border-slate-200 bg-white hover:border-slate-300"
+              }`}
+            >
+              <span className="block font-heading font-semibold text-text-dark">
+                {option.label}
+              </span>
+              <span className="mt-0.5 block text-xs text-text-muted">
+                {option.hint}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+      {errors.registrationType ? (
+        <p className="mt-2 text-xs text-red-600">{errors.registrationType}</p>
+      ) : null}
+      {sectionContinue("type")}
+    </section>
+  ) : null;
+
+  const submitButton = (
+    <Button
+      type="submit"
+      isDisabled={!requiredComplete || isSubmitting}
+      isLoading={isSubmitting}
+      spinner={<Spinner size="sm" color="white" />}
+      className="h-12 min-w-[200px] flex-1 bg-primary font-semibold text-white shadow-md data-[disabled=true]:opacity-50 sm:flex-none"
+    >
+      {isSubmitting ? "Submitting…" : "Submit registration"}
+    </Button>
+  );
+
+  const addAnotherButton = (
+    <Button
+      type="button"
+      variant="bordered"
+      onPress={addEntry}
+      startContent={<FiPlus size={16} />}
+      className="h-12 min-w-[180px] flex-1 border-primary/25 text-primary sm:flex-none"
+    >
+      Add another participant
+    </Button>
+  );
+
+  const actionBar = (
+    <div
+      className={`flex flex-col gap-3 sm:flex-row sm:items-center ${
+        registrationType === "bulk" ? "sm:justify-between" : "sm:justify-end"
+      }`}
+    >
+      {registrationType === "bulk" ? (
+        <>
+          {submitButton}
+          {addAnotherButton}
+        </>
+      ) : (
+        submitButton
+      )}
+    </div>
+  );
+
+  const participantsPanel = (
+    <section
+      id="reg-section-participants"
+      className="flex min-h-0 flex-1 flex-col rounded-2xl border border-slate-200/90 bg-white shadow-sm"
+    >
+      <div className="border-b border-slate-100 px-5 py-4 md:px-6">
+        <h2 className="font-heading text-base font-semibold text-text-dark md:text-lg">
+          {registrationType === "bulk" ? "Participants" : "Participant details"}
+        </h2>
+        <p className="mt-1 text-sm text-text-muted">
+          {registrationType === "bulk"
+            ? `${entries.length} entr${entries.length === 1 ? "y" : "ies"} — scroll this panel to review all.`
+            : "Enter the details for the person being registered."}
+        </p>
+      </div>
+
+      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-5 py-4 md:px-6 lg:max-h-[min(28rem,52vh)]">
+        {(registrationType === "single" ? entries.slice(0, 1) : entries).map(
+          (entry, index) => (
+            <RegistrationEntryBlock
+              key={entry.id}
+              index={index}
+              entry={entry}
+              ranks={sortedRanks}
+              churches={sortedChurches}
+              ranksLoading={ranksLoading}
+              churchesLoading={churchesLoading}
+              canRemove={registrationType === "bulk" && entries.length > 1}
+              showSameChurchToggle={registrationType === "bulk" && index > 0}
+              errors={errors.entries?.[entry.id]}
+              onChange={(patch) => updateEntry(entry.id, patch)}
+              onRemove={() => removeEntry(entry.id)}
+            />
+          ),
+        )}
+      </div>
+
+      <div className="border-t border-slate-100 px-5 py-4 md:px-6">
+        {actionBar}
+      </div>
+    </section>
+  );
+
   return (
     <motion.form
       {...mountProps(reduced)}
       variants={motionSafe(reduced, fadeInUp)}
       onSubmit={handleSubmit}
-      className="space-y-8"
+      className="space-y-0"
       noValidate
     >
-      <div className="flex flex-wrap items-start justify-between gap-4">
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
           <button
             type="button"
@@ -327,8 +641,8 @@ export function RegistrationStep2({
             Complete registration
           </h1>
           <p className="mt-2 max-w-xl text-sm text-text-muted md:text-base">
-            Provide your details, upload proof of payment, and list each
-            participant below.
+            Move between sections below — your progress stays in place as you
+            fill each part.
           </p>
         </div>
         <p className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-text-muted">
@@ -336,237 +650,59 @@ export function RegistrationStep2({
         </p>
       </div>
 
-      <section className="rounded-2xl border border-slate-200/90 bg-white p-6 shadow-sm md:p-8">
-        <h2 className="font-heading text-lg font-semibold text-text-dark">
-          Your contact details
-        </h2>
-        <p className="mt-1 text-sm text-text-muted">
-          This is the person submitting this registration.
-        </p>
-        <div className="mt-5 grid gap-4 sm:grid-cols-2">
-          <div>
-            <label htmlFor="registrant-name" className={labelCx}>
-              Full name
-            </label>
-            <input
-              id="registrant-name"
-              type="text"
-              value={registrantName}
-              onChange={(e) => {
-                setRegistrantName(e.target.value);
-                setErrors((prev) => ({
-                  ...prev,
-                  registrantName: undefined,
-                  submit: undefined,
-                }));
-              }}
-              className={fieldCx}
-              autoComplete="name"
-            />
-            {errors.registrantName ? (
-              <p className="mt-1.5 text-xs text-red-600">
-                {errors.registrantName}
-              </p>
-            ) : null}
-          </div>
-          <div>
-            <label htmlFor="registrant-phone" className={labelCx}>
-              Phone number
-            </label>
-            <input
-              id="registrant-phone"
-              type="tel"
-              value={registrantPhone}
-              onChange={(e) => {
-                setRegistrantPhone(e.target.value);
-                setErrors((prev) => ({
-                  ...prev,
-                  registrantPhone: undefined,
-                  submit: undefined,
-                }));
-              }}
-              className={fieldCx}
-              placeholder="+234…"
-              autoComplete="tel"
-            />
-            {errors.registrantPhone ? (
-              <p className="mt-1.5 text-xs text-red-600">
-                {errors.registrantPhone}
-              </p>
-            ) : null}
-          </div>
+      <nav
+        aria-label="Form sections"
+        className="sticky top-16 z-20 -mx-1 mb-6 overflow-x-auto px-1 pb-1 lg:hidden"
+      >
+        <div className="inline-flex min-w-full gap-2 rounded-xl border border-slate-200/90 bg-white/95 p-1.5 shadow-sm backdrop-blur sm:min-w-0">
+          {sections.map((section) => {
+            const selected = activeSection === section.id;
+            return (
+              <button
+                key={section.id}
+                type="button"
+                onClick={() => setActiveSection(section.id)}
+                className={`shrink-0 rounded-lg px-3.5 py-2 text-sm font-semibold transition-colors ${
+                  selected
+                    ? "bg-primary text-white shadow-sm"
+                    : "text-text-muted hover:bg-slate-50 hover:text-primary"
+                }`}
+              >
+                {section.label}
+              </button>
+            );
+          })}
         </div>
-      </section>
+      </nav>
 
-      <section className="rounded-2xl border border-slate-200/90 bg-white p-6 shadow-sm md:p-8">
-        <h2 className="font-heading text-lg font-semibold text-text-dark">
-          Proof of payment
-        </h2>
-        <p className="mt-1 text-sm text-text-muted">
-          Upload a clear image of your transfer receipt (JPEG, PNG, or similar ·
-          max 5MB).
-        </p>
-        <label
-          htmlFor={proofInputId}
-          className="mt-5 flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-slate-300 bg-slate-50/80 px-6 py-8 text-center transition-colors hover:border-gold/50 hover:bg-gold/5"
-        >
-          {proofPreviewUrl ? (
-            <div className="flex h-36 w-full max-w-xs items-center justify-center overflow-hidden rounded-lg border border-slate-200 bg-white p-2">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={proofPreviewUrl}
-                alt="Proof of payment preview"
-                className="max-h-full max-w-full object-contain"
-              />
-            </div>
-          ) : (
-            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-primary shadow-sm">
-              <FiUploadCloud size={22} />
-            </span>
-          )}
-          <span className="text-sm font-medium text-text-dark">
-            {proofFile ? proofFile.name : "Choose image file"}
-          </span>
-          <span className="text-xs text-text-muted">Click to browse</span>
-          <input
-            id={proofInputId}
-            type="file"
-            accept="image/*"
-            className="sr-only"
-            onChange={handleProofChange}
-          />
-        </label>
-        {errors.proofOfPayment ? (
-          <p className="mt-2 text-xs text-red-600">{errors.proofOfPayment}</p>
-        ) : null}
-      </section>
+      {/* Mobile / tablet: one section at a time */}
+      <div className="space-y-5 lg:hidden">
+        {activeSection === "contact" ? contactPanel : null}
+        {activeSection === "proof" ? proofPanel : null}
+        {activeSection === "type" ? typePanel : null}
+        {activeSection === "participants" ? participantsPanel : null}
+      </div>
 
-      {modeChoice ? (
-        <section className="rounded-2xl border border-slate-200/90 bg-white p-6 shadow-sm md:p-8">
-          <h2 className="font-heading text-lg font-semibold text-text-dark">
-            Registration type
-          </h2>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            {(
-              [
-                {
-                  value: "single" as const,
-                  label: "Single",
-                  hint: "One participant",
-                },
-                {
-                  value: "bulk" as const,
-                  label: "Bulk",
-                  hint: "Multiple participants",
-                },
-              ] as const
-            ).map((option) => {
-              const selected = registrationType === option.value;
-              return (
-                <button
-                  key={option.value}
-                  type="button"
-                  onClick={() => {
-                    setRegistrationType(option.value);
-                    setErrors((prev) => ({
-                      ...prev,
-                      registrationType: undefined,
-                      submit: undefined,
-                    }));
-                  }}
-                  className={`rounded-xl border px-4 py-4 text-left transition-colors ${
-                    selected
-                      ? "border-gold bg-gold/10 ring-2 ring-gold/30"
-                      : "border-slate-200 bg-white hover:border-slate-300"
-                  }`}
-                >
-                  <span className="block font-heading font-semibold text-text-dark">
-                    {option.label}
-                  </span>
-                  <span className="mt-1 block text-xs text-text-muted">
-                    {option.hint}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-          {errors.registrationType ? (
-            <p className="mt-2 text-xs text-red-600">
-              {errors.registrationType}
-            </p>
-          ) : null}
-        </section>
-      ) : null}
-
-      <section className="space-y-4">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <h2 className="font-heading text-lg font-semibold text-text-dark">
-              {registrationType === "bulk"
-                ? "Participants"
-                : "Participant details"}
-            </h2>
-            <p className="mt-1 text-sm text-text-muted">
-              {registrationType === "bulk"
-                ? "Add each person included in this registration."
-                : "Enter the details for the person being registered."}
-            </p>
-          </div>
-          {registrationType === "bulk" ? (
-            <Button
-              type="button"
-              variant="bordered"
-              onPress={addEntry}
-              startContent={<FiPlus size={16} />}
-              className="border-primary/20 text-primary"
-            >
-              Add another
-            </Button>
-          ) : null}
+      {/* Large screens: two columns — details + participants */}
+      <div className="hidden gap-6 lg:grid lg:grid-cols-2 lg:items-start">
+        <div className="space-y-5">
+          {contactPanel}
+          {proofPanel}
+          {typePanel}
         </div>
-
-        <div className="space-y-4">
-          {(registrationType === "single" ? entries.slice(0, 1) : entries).map(
-            (entry, index) => (
-              <RegistrationEntryBlock
-                key={entry.id}
-                index={index}
-                entry={entry}
-                ranks={sortedRanks}
-                churches={sortedChurches}
-                ranksLoading={ranksLoading}
-                churchesLoading={churchesLoading}
-                canRemove={registrationType === "bulk" && entries.length > 1}
-                showSameChurchToggle={
-                  registrationType === "bulk" && index > 0
-                }
-                errors={errors.entries?.[entry.id]}
-                onChange={(patch) => updateEntry(entry.id, patch)}
-                onRemove={() => removeEntry(entry.id)}
-              />
-            ),
-          )}
+        <div className="lg:sticky lg:top-32 lg:self-start">
+          {participantsPanel}
         </div>
-      </section>
+      </div>
 
       {errors.submit ? (
         <div
           role="alert"
-          className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+          className="mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
         >
           {errors.submit}
         </div>
       ) : null}
-
-      <Button
-        type="submit"
-        isDisabled={!requiredComplete || isSubmitting}
-        isLoading={isSubmitting}
-        spinner={<Spinner size="sm" color="white" />}
-        className="h-12 w-full bg-primary font-semibold text-white shadow-md data-[disabled=true]:opacity-50 sm:w-auto sm:min-w-[220px]"
-      >
-        {isSubmitting ? "Submitting…" : "Submit registration"}
-      </Button>
     </motion.form>
   );
 }

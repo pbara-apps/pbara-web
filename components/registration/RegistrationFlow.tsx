@@ -68,7 +68,7 @@ export function RegistrationFlow({ slug }: RegistrationFlowProps) {
         className="pointer-events-none absolute inset-x-0 top-0 h-72 bg-[radial-gradient(ellipse_at_top,_rgba(200,168,75,0.14),_transparent_60%),linear-gradient(180deg,_rgba(27,36,82,0.06),_transparent)]"
       />
 
-      <div className="relative mx-auto max-w-3xl px-4 py-12 md:py-16">
+      <div className="relative mx-auto max-w-6xl px-4 py-12 md:py-16">
         <ol className="mb-8 flex items-center gap-3" aria-label="Progress">
           <li className="flex items-center gap-3">
             <span

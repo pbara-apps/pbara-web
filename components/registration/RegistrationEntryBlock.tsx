@@ -61,9 +61,9 @@ export function RegistrationEntryBlock({
   onRemove,
 }: RegistrationEntryBlockProps) {
   return (
-    <fieldset className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm md:p-6">
-      <div className="mb-4 flex items-center justify-between gap-3">
-        <legend className="font-heading text-base font-semibold text-primary">
+    <fieldset className="rounded-xl border border-slate-200 bg-slate-50/50 p-4 md:p-5">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <legend className="font-heading text-sm font-semibold text-primary md:text-base">
           Participant {index + 1}
         </legend>
         {canRemove ? (

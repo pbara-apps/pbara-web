@@ -1,7 +1,9 @@
 "use client";
 
+import Link from "next/link";
+import { Button } from "@heroui/react";
 import { motion, useReducedMotion } from "framer-motion";
-import { FiAlertCircle, FiCheckCircle, FiClock } from "react-icons/fi";
+import { FiAlertCircle, FiArrowRight, FiCheckCircle, FiClock } from "react-icons/fi";
 import { fadeInUp, motionSafe, mountProps } from "@/lib/animations";
 
 type StatusKind = "unavailable" | "closed" | "success";
@@ -13,13 +15,19 @@ interface RegistrationStatusCardProps {
 
 const copy: Record<
   StatusKind,
-  { icon: typeof FiAlertCircle; title: string; body: (title?: string) => string }
+  {
+    icon: typeof FiAlertCircle;
+    title: string;
+    body: (title?: string) => string;
+    cta: string;
+  }
 > = {
   unavailable: {
     icon: FiAlertCircle,
     title: "Registration not available",
     body: () =>
-      "This registration link is inactive or could not be found. Please confirm you have the correct link, or contact headquarters if you believe this is an error.",
+      "This registration link is inactive or could not be found. Please confirm you have the correct link, or contact our support team if you believe this is an error.",
+    cta: "Browse open registrations",
   },
   closed: {
     icon: FiClock,
@@ -28,12 +36,14 @@ const copy: Record<
       title
         ? `Registration for “${title}” has closed. Late submissions are no longer accepted through this portal.`
         : "The registration deadline for this program has passed. Submissions are no longer accepted through this portal.",
+    cta: "View other registrations",
   },
   success: {
     icon: FiCheckCircle,
     title: "Registration received",
     body: () =>
-      "Your submission is pending verification. Payment is not confirmed yet — our team will review your proof of payment and entries, then follow up if needed. You may also contact headquarters to check your status.",
+      "Your submission is pending verification. Payment is not confirmed yet — our team will review your proof of payment and entries, then follow up if needed. You may also contact our support team to check your status.",
+    cta: "Back to registrations",
   },
 };
 
@@ -42,7 +52,7 @@ export function RegistrationStatusCard({
   programTitle,
 }: RegistrationStatusCardProps) {
   const reduced = useReducedMotion();
-  const { icon: Icon, title, body } = copy[kind];
+  const { icon: Icon, title, body, cta } = copy[kind];
   const tone =
     kind === "success"
       ? "border-emerald-200/80 bg-emerald-50/80 text-emerald-900"
@@ -74,6 +84,14 @@ export function RegistrationStatusCard({
       <p className="mt-3 text-sm leading-relaxed text-text-muted md:text-base">
         {body(programTitle)}
       </p>
+      <Button
+        as={Link}
+        href="/registration"
+        endContent={<FiArrowRight size={16} />}
+        className="mt-8 h-11 bg-primary font-semibold text-white shadow-md"
+      >
+        {cta}
+      </Button>
     </motion.div>
   );
 }
