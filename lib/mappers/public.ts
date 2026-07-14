@@ -6,6 +6,8 @@ import type {
   NewsDetail,
   NewsItem,
   Patron,
+  RegistrationProgram,
+  RegistrationRank,
 } from "@/types";
 
 type PopulatedRef = {
@@ -180,4 +182,79 @@ export function mapPublicGallery(raw: RawGallery) {
     type: raw.type,
     category: raw.category ?? "General",
   };
+}
+
+type RawBankDetails = {
+  bankName?: string;
+  accountName?: string;
+  accountNumber?: string;
+};
+
+type RawProgram = {
+  _id?: string;
+  id?: string;
+  title: string;
+  slug: string;
+  category: string;
+  description?: string | null;
+  flyerImageUrl?: string | null;
+  amount: number;
+  bankDetails?: RawBankDetails;
+  registrationMode: RegistrationProgram["registrationMode"];
+  registrationDeadline?: string | Date | null;
+  isActive?: boolean;
+  termsAndConditions?: string | null;
+};
+
+type RawRank = {
+  _id?: string;
+  id?: string;
+  name: string;
+  description?: string;
+  category?: string;
+};
+
+function toIsoString(value?: string | Date | null): string | null {
+  if (!value) return null;
+  if (value instanceof Date) return value.toISOString();
+  return String(value);
+}
+
+export function mapPublicProgram(raw: RawProgram): RegistrationProgram {
+  return {
+    id: toId(raw),
+    title: raw.title,
+    slug: raw.slug,
+    category: raw.category,
+    description: raw.description ?? null,
+    flyerImageUrl: raw.flyerImageUrl ?? null,
+    amount: Number(raw.amount ?? 0),
+    bankDetails: {
+      bankName: raw.bankDetails?.bankName ?? "",
+      accountName: raw.bankDetails?.accountName ?? "",
+      accountNumber: raw.bankDetails?.accountNumber ?? "",
+    },
+    registrationMode: raw.registrationMode,
+    registrationDeadline: toIsoString(raw.registrationDeadline),
+    isActive: raw.isActive !== false,
+    termsAndConditions: raw.termsAndConditions ?? null,
+  };
+}
+
+export function mapPublicRank(raw: RawRank): RegistrationRank {
+  return {
+    id: toId(raw),
+    name: raw.name,
+    description: raw.description,
+    category: raw.category,
+  };
+}
+
+/** True when the registration deadline has passed (inclusive of deadline day end). */
+export function isRegistrationClosed(
+  deadline?: string | null,
+  now: Date = new Date(),
+): boolean {
+  if (!deadline) return false;
+  return now.getTime() > new Date(deadline).getTime();
 }

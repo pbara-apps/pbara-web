@@ -82,3 +82,49 @@ export interface DownloadItem {
   fileUrl: string;
   icon: string;
 }
+
+export type RegistrationMode = "single" | "bulk" | "both";
+export type RegistrationType = "single" | "bulk";
+
+export interface ProgramBankDetails {
+  bankName: string;
+  accountName: string;
+  accountNumber: string;
+}
+
+export interface RegistrationProgram {
+  id: string;
+  title: string;
+  slug: string;
+  category: string;
+  description?: string | null;
+  flyerImageUrl?: string | null;
+  amount: number;
+  bankDetails: ProgramBankDetails;
+  registrationMode: RegistrationMode;
+  registrationDeadline?: string | null;
+  isActive: boolean;
+  termsAndConditions?: string | null;
+}
+
+export interface RegistrationRank {
+  id: string;
+  name: string;
+  description?: string;
+  category?: string;
+}
+
+export interface RegistrationEntryInput {
+  name: string;
+  rank: string;
+  church: string;
+}
+
+export interface CreateRegistrationPayload {
+  programId: string;
+  registrantName: string;
+  registrantPhone: string;
+  proofOfPaymentUrl: string;
+  registrationType: RegistrationType;
+  entries: RegistrationEntryInput[];
+}

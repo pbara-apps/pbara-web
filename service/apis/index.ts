@@ -8,6 +8,13 @@ const http = axios.create({
   },
 });
 
+http.interceptors.request.use((config) => {
+  if (config.data instanceof FormData) {
+    delete config.headers["Content-Type"];
+  }
+  return config;
+});
+
 http.interceptors.response.use(
   (response) => response?.data,
   (error) => Promise.reject(error?.response?.data ?? error),

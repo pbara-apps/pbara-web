@@ -23,14 +23,15 @@ const organizationSchema = {
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: {
-    default: "PBA Royal Ambassadors | Pentecost Baptist Association",
+    default:
+      "Royal Ambassadors of Nigeria | Pentecost Baptist Association (PBA)",
     template: "%s | PBA Royal Ambassadors",
   },
   alternates: {
     canonical: "/",
   },
   description:
-    "Royal Ambassadors of Nigeria — building godly boys into disciplined men of faith and integrity through the Pentecost Baptist Association.",
+    "Royal Ambassadors of Nigeria, Pentecost Baptist Association — building godly boys into disciplined men of faith and integrity through Christian discipleship, leadership, camping, missions, and community service.",
   keywords: [
     "PBA Royal Ambassadors",
     "Royal Ambassadors Nigeria",
@@ -40,6 +41,8 @@ export const metadata: Metadata = {
     "Royal Ambassadors Lagos",
     "Royal Ambassadors Pentecost Baptist Association",
     "Baptist Boys Organization",
+    "Royal Ambassadors Lagos West Baptist Conference",
+    "Lagos West Baptist Conference",
   ],
   openGraph: {
     title: "PBA Royal Ambassadors | Pentecost Baptist Association",
