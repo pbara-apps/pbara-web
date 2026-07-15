@@ -48,7 +48,8 @@ export const executives: Executive[] = [
     position: "Treasurer",
     church: "Emmanuel Baptist Church",
     bio: "Financial stewardship and resource management.",
-    image: undefined,
+    image:
+      "https://res.cloudinary.com/john-fixit/image/upload/v1784107005/pbara/executives/mvpovzxubtysrq9ndccv.jpg",
   },
   {
     id: crypto.randomUUID(),
@@ -68,7 +69,7 @@ export const executives: Executive[] = [
   },
   {
     id: crypto.randomUUID(),
-    name: "Amb. Adegbola oKESHINA",
+    name: "Amb. Adegbola Okesina",
     position: "Mission Officer",
     church: "Blessed Baptist Church",
     bio: "Overseeing the mission and outreach programs of the association.",

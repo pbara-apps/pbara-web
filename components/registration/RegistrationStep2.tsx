@@ -22,18 +22,26 @@ import {
   type EntryFieldErrors,
 } from "@/components/registration/RegistrationEntryBlock";
 import { fadeInUp, motionSafe, mountProps } from "@/lib/animations";
+import {
+  errorToast,
+  warningToast,
+} from "@/components/shared/toast-notification/toast-notification";
 import { useGetPublicChapters } from "@/service/apis/church";
 import {
   useCreateRegistration,
   useUploadRegistrationProof,
 } from "@/service/apis/registration";
 import { useGetPublicRanks } from "@/service/apis/rank";
-import type { RegistrationProgram, RegistrationType } from "@/types";
+import type {
+  CreatedRegistration,
+  RegistrationProgram,
+  RegistrationType,
+} from "@/types";
 
 interface RegistrationStep2Props {
   program: RegistrationProgram;
   onBack: () => void;
-  onSuccess: () => void;
+  onSuccess: (registration: CreatedRegistration) => void;
 }
 
 type FormErrors = {
@@ -203,10 +211,89 @@ export function RegistrationStep2({
     });
   }
 
+  const [scrollToEntryId, setScrollToEntryId] = useState<string | null>(null);
+
   function addEntry() {
-    setEntries((prev) => [...prev, emptyEntry()]);
+    const entry = emptyEntry();
+    setEntries((prev) => [...prev, entry]);
     setActiveSection("participants");
+    setScrollToEntryId(entry.id);
   }
+
+  useEffect(() => {
+    if (!scrollToEntryId) return;
+
+    let cancelled = false;
+    const entryId = scrollToEntryId;
+    let retryTimer: number | undefined;
+    let attempts = 0;
+
+    const run = () => {
+      if (cancelled) return;
+
+      const candidates = Array.from(
+        document.querySelectorAll<HTMLElement>(
+          `[data-entry-block="${entryId}"]`,
+        ),
+      );
+
+      const block = candidates.find((el) => {
+        let node: HTMLElement | null = el;
+        while (node) {
+          const style = window.getComputedStyle(node);
+          if (style.display === "none" || style.visibility === "hidden") {
+            return false;
+          }
+          node = node.parentElement;
+        }
+        return el.getClientRects().length > 0;
+      });
+
+      if (!block) {
+        attempts += 1;
+        if (attempts < 20) {
+          retryTimer = window.setTimeout(run, 50);
+        } else {
+          setScrollToEntryId(null);
+        }
+        return;
+      }
+
+      const scrollParent = block.closest<HTMLElement>("[data-entries-scroll]");
+
+      if (scrollParent) {
+        const parentRect = scrollParent.getBoundingClientRect();
+        const blockRect = block.getBoundingClientRect();
+        const offset =
+          blockRect.top -
+          parentRect.top -
+          parentRect.height / 2 +
+          blockRect.height / 2;
+        scrollParent.scrollTo({
+          top: scrollParent.scrollTop + offset,
+          behavior: "smooth",
+        });
+      } else {
+        block.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+
+      const nameInput = block.querySelector<HTMLInputElement>(
+        `[data-entry-name="${entryId}"]`,
+      );
+      nameInput?.focus({ preventScroll: true });
+      setScrollToEntryId(null);
+    };
+
+    const frame = window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(run);
+    });
+
+    return () => {
+      cancelled = true;
+      window.cancelAnimationFrame(frame);
+      if (retryTimer !== undefined) window.clearTimeout(retryTimer);
+    };
+  }, [scrollToEntryId, entries.length]);
 
   function removeEntry(id: string) {
     setEntries((prev) => {
@@ -262,8 +349,8 @@ export function RegistrationStep2({
     if (registrantName.trim().length < 2) {
       next.registrantName = "Enter your full name (at least 2 characters).";
     }
-    if (registrantPhone.trim().length < 7) {
-      next.registrantPhone = "Enter a valid phone number.";
+    if (!/^\d{7,15}$/.test(registrantPhone)) {
+      next.registrantPhone = "Enter a valid phone number (digits only).";
     }
     if (!proofFile) {
       next.proofOfPayment = "Upload proof of payment to continue.";
@@ -295,25 +382,35 @@ export function RegistrationStep2({
     return next;
   }
 
-  const requiredComplete = useMemo(() => {
-    const activeEntries =
-      registrationType === "single" ? entries.slice(0, 1) : entries;
-    if (registrantName.trim().length < 2) return false;
-    if (registrantPhone.trim().length < 7) return false;
-    if (!proofFile) return false;
-    return activeEntries.every(
-      (entry) =>
-        entry.name.trim().length >= 2 &&
-        Boolean(entry.rankId) &&
-        Boolean(entry.churchId),
-    );
-  }, [registrantName, registrantPhone, proofFile, entries, registrationType]);
+  function validationToastMessage(formErrors: FormErrors): string {
+    const parts: string[] = [];
+    if (formErrors.registrantName) parts.push("your full name");
+    if (formErrors.registrantPhone) parts.push("a valid phone number");
+    if (formErrors.proofOfPayment) parts.push("proof of payment");
+    if (formErrors.registrationType) parts.push("registration type");
+    if (formErrors.entries) {
+      const incomplete = Object.keys(formErrors.entries).length;
+      parts.push(
+        incomplete === 1
+          ? "complete participant details"
+          : `complete details for ${incomplete} participants`,
+      );
+    }
+    if (parts.length === 0) return "Please complete all required fields.";
+    if (parts.length === 1) return `Please provide ${parts[0]}.`;
+    if (parts.length === 2) return `Please provide ${parts[0]} and ${parts[1]}.`;
+    return `Please provide ${parts.slice(0, -1).join(", ")}, and ${parts[parts.length - 1]}.`;
+  }
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const nextErrors = validate();
     if (Object.keys(nextErrors).length > 0) {
       setErrors(nextErrors);
+      warningToast(
+        validationToastMessage(nextErrors),
+        "Complete required fields",
+      );
       if (nextErrors.registrantName || nextErrors.registrantPhone) {
         setActiveSection("contact");
       } else if (nextErrors.proofOfPayment) {
@@ -334,7 +431,7 @@ export function RegistrationStep2({
       const activeEntries =
         registrationType === "single" ? entries.slice(0, 1) : entries;
 
-      await createRegistration.mutateAsync({
+      const created = await createRegistration.mutateAsync({
         programId: program.id,
         registrantName: registrantName.trim(),
         registrantPhone: registrantPhone.trim(),
@@ -347,13 +444,13 @@ export function RegistrationStep2({
         })),
       });
 
-      onSuccess();
+      onSuccess(created);
     } catch (err) {
-      setErrors({
-        submit:
-          (err as { message?: string })?.message ??
-          "Unable to submit registration. Please check your connection and try again.",
-      });
+      const message =
+        (err as { message?: string })?.message ??
+        "Unable to submit registration. Please check your connection and try again.";
+      setErrors({ submit: message });
+      errorToast(message, "Submission failed");
     }
   }
 
@@ -401,9 +498,43 @@ export function RegistrationStep2({
           <input
             id="registrant-phone"
             type="tel"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            maxLength={15}
             value={registrantPhone}
             onChange={(e) => {
-              setRegistrantPhone(e.target.value);
+              const digitsOnly = e.target.value.replace(/\D/g, "").slice(0, 15);
+              setRegistrantPhone(digitsOnly);
+              setErrors((prev) => ({
+                ...prev,
+                registrantPhone: undefined,
+                submit: undefined,
+              }));
+            }}
+            onKeyDown={(e) => {
+              if (
+                e.ctrlKey ||
+                e.metaKey ||
+                e.altKey ||
+                e.key === "Backspace" ||
+                e.key === "Delete" ||
+                e.key === "Tab" ||
+                e.key === "ArrowLeft" ||
+                e.key === "ArrowRight" ||
+                e.key === "Home" ||
+                e.key === "End"
+              ) {
+                return;
+              }
+              if (!/^\d$/.test(e.key)) {
+                e.preventDefault();
+              }
+            }}
+            onPaste={(e) => {
+              e.preventDefault();
+              const pasted = e.clipboardData.getData("text");
+              const digitsOnly = pasted.replace(/\D/g, "").slice(0, 15);
+              setRegistrantPhone(digitsOnly);
               setErrors((prev) => ({
                 ...prev,
                 registrantPhone: undefined,
@@ -411,7 +542,7 @@ export function RegistrationStep2({
               }));
             }}
             className={fieldCx}
-            placeholder="+234…"
+            placeholder="08012345678"
             autoComplete="tel"
           />
           {errors.registrantPhone ? (
@@ -539,7 +670,7 @@ export function RegistrationStep2({
   const submitButton = (
     <Button
       type="submit"
-      isDisabled={!requiredComplete || isSubmitting}
+      isDisabled={isSubmitting}
       isLoading={isSubmitting}
       spinner={<Spinner size="sm" color="white" />}
       className="h-12 min-w-[200px] flex-1 bg-primary font-semibold text-white shadow-md data-[disabled=true]:opacity-50 sm:flex-none"
@@ -593,7 +724,10 @@ export function RegistrationStep2({
         </p>
       </div>
 
-      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-5 py-4 md:px-6 lg:max-h-[min(28rem,52vh)]">
+      <div
+        data-entries-scroll
+        className="min-h-0 flex-1 space-y-4 overflow-y-auto px-5 py-4 md:px-6 lg:max-h-[min(28rem,52vh)]"
+      >
         {(registrationType === "single" ? entries.slice(0, 1) : entries).map(
           (entry, index) => (
             <RegistrationEntryBlock

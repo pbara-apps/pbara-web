@@ -6,9 +6,9 @@ import { motion, useReducedMotion } from "framer-motion";
 import { FiArrowRight, FiCalendar } from "react-icons/fi";
 import { HiOutlineMegaphone } from "react-icons/hi2";
 import { HiOutlineShieldCheck } from "react-icons/hi2";
+import { HomeExecutivesCarousel } from "@/components/sections/HomeExecutivesCarousel";
 import type { Executive } from "@/types";
 import type { NewsItem } from "@/types";
-import { cn } from "@heroui/react";
 import {
   buttonHover,
   buttonTap,
@@ -57,11 +57,8 @@ export function HomeSections({ executives, bulletins }: HomeSectionsProps) {
 
   return (
     <>
-      {/* ── Executive Council — staggered card grid ── */}
-      <section
-        className="py-20 bg-surface"
-        aria-labelledby="executive-heading"
-      >
+      {/* ── Executive Council — horizontal carousel ── */}
+      <section className="py-20 bg-surface" aria-labelledby="executive-heading">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             className="text-center mb-16 space-y-4"
@@ -81,49 +78,8 @@ export function HomeSections({ executives, bulletins }: HomeSectionsProps) {
             </p>
           </motion.div>
 
-          <motion.div
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
-            {...view}
-            variants={motionSafe(reduced, staggerContainer)}
-          >
-            {executives.map((exec) => {
-              const imageSrc = exec.image ?? "/images/ra-logo.png";
-              return (
-                <motion.div
-                  key={exec.id}
-                  className="group text-center space-y-4 p-6 rounded-xl bg-slate-50 hover:bg-slate-50 transition-colors border border-slate-100 order-transparent hover:border-slate-200"
-                  variants={motionSafe(reduced, staggerItem)}
-                  whileHover={reduced ? undefined : cardHover}
-                  whileTap={reduced ? undefined : cardTap}
-                  style={{ boxShadow: "0 0 0 transparent" }}
-                >
-                  <motion.div
-                    className="size-48 mx-auto overflow-hidden rounded-full border-4 border-white shadow-lg bg-background"
-                    variants={motionSafe(reduced, zoomIn)}
-                  >
-                    <Image
-                      alt={`${exec.name} — Executive Council`}
-                      src={imageSrc}
-                      width={192}
-                      height={192}
-                      className={cn(
-                        "w-full h-full object-cover group-hover:grayscale-0 transition-all duration-500",
-                        !exec.image && "grayscale",
-                      )}
-                    />
-                  </motion.div>
-                  <div>
-                    <h4 className="text-primary font-bold text-lg">
-                      {exec.name}
-                    </h4>
-                    <p className="text-primary text-sm font-bold uppercase tracking-wide">
-                      {exec.position}
-                    </p>
-                    <p className="text-slate-400 text-xs mt-1">{exec.church}</p>
-                  </div>
-                </motion.div>
-              );
-            })}
+          <motion.div {...view} variants={motionSafe(reduced, fadeInUp)}>
+            <HomeExecutivesCarousel executives={executives} />
           </motion.div>
         </div>
       </section>

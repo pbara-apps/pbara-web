@@ -61,7 +61,10 @@ export function RegistrationEntryBlock({
   onRemove,
 }: RegistrationEntryBlockProps) {
   return (
-    <fieldset className="rounded-xl border border-slate-200 bg-slate-50/50 p-4 md:p-5">
+    <fieldset
+      data-entry-block={entry.id}
+      className="rounded-xl border border-slate-200 bg-slate-50/50 p-4 md:p-5 scroll-mt-4"
+    >
       <div className="mb-3 flex items-center justify-between gap-3">
         <legend className="font-heading text-sm font-semibold text-primary md:text-base">
           Participant {index + 1}
@@ -83,6 +86,7 @@ export function RegistrationEntryBlock({
             Full name
           </label>
           <input
+            data-entry-name={entry.id}
             id={`entry-name-${entry.id}`}
             type="text"
             value={entry.name}
@@ -95,7 +99,6 @@ export function RegistrationEntryBlock({
             <p className="mt-1.5 text-xs text-red-600">{errors.name}</p>
           ) : null}
         </div>
-
         <div>
           <label htmlFor={`entry-rank-${entry.id}`} className={labelCx}>
             Rank

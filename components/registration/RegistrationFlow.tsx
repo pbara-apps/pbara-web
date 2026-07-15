@@ -6,8 +6,10 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { RegistrationStatusCard } from "@/components/registration/RegistrationStatusCard";
 import { RegistrationStep1 } from "@/components/registration/RegistrationStep1";
 import { RegistrationStep2 } from "@/components/registration/RegistrationStep2";
+import { RegistrationSuccessPreview } from "@/components/registration/RegistrationSuccessPreview";
 import { fastTransition } from "@/lib/animations";
 import { useGetPublicProgramBySlug } from "@/service/apis/program";
+import type { CreatedRegistration } from "@/types";
 
 interface RegistrationFlowProps {
   slug: string;
@@ -19,7 +21,8 @@ export function RegistrationFlow({ slug }: RegistrationFlowProps) {
   const reduced = useReducedMotion();
   const { data, isLoading, isError } = useGetPublicProgramBySlug(slug);
   const [step, setStep] = useState<Step>(1);
-  const [submitted, setSubmitted] = useState(false);
+  const [createdRegistration, setCreatedRegistration] =
+    useState<CreatedRegistration | null>(null);
 
   if (isLoading) {
     return (
@@ -50,13 +53,10 @@ export function RegistrationFlow({ slug }: RegistrationFlowProps) {
     );
   }
 
-  if (submitted) {
+  if (createdRegistration) {
     return (
       <div className="px-4 py-16 md:py-24">
-        <RegistrationStatusCard
-          kind="success"
-          programTitle={program.title}
-        />
+        <RegistrationSuccessPreview registration={createdRegistration} />
       </div>
     );
   }
@@ -127,7 +127,7 @@ export function RegistrationFlow({ slug }: RegistrationFlowProps) {
               <RegistrationStep2
                 program={program}
                 onBack={() => setStep(1)}
-                onSuccess={() => setSubmitted(true)}
+                onSuccess={setCreatedRegistration}
               />
             )}
           </motion.div>

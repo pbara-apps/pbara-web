@@ -128,3 +128,22 @@ export interface CreateRegistrationPayload {
   registrationType: RegistrationType;
   entries: RegistrationEntryInput[];
 }
+
+export interface CreatedRegistrationParticipant {
+  name: string;
+  registrationCode: string;
+  rankName: string;
+  churchName: string;
+  churchChapter?: string;
+}
+
+export interface CreatedRegistration {
+  id: string;
+  programTitle: string;
+  registrantName: string;
+  registrantPhone: string;
+  registrationType: RegistrationType;
+  status: "pending" | "verified" | "rejected";
+  participants: CreatedRegistrationParticipant[];
+  createdAt?: string;
+}

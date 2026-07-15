@@ -22,7 +22,7 @@ export function ExecutiveCard({
         <div className="relative aspect-[1.2] shrink-0 overflow-hidden rounded-lg mb-2 border-4 border-[#D4AF37]/30">
           <div
             className={cn(
-              "absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-500",
+              "absolute inset-0 origin-top bg-cover bg-top -mt-10 transition-transform duration-500 group-hover:scale-105",
               !executive.image && "grayscale hover:grayscale-0",
             )}
             style={{
