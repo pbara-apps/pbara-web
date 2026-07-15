@@ -66,6 +66,8 @@ export interface EventItem {
   image?: string;
   status: string;
   isPast: boolean;
+  /** When set, Register Now navigates to /registration/[slug]. */
+  registrationProgramSlug?: string | null;
 }
 
 export interface HeroStat {

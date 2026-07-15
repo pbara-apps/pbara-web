@@ -69,6 +69,10 @@ type RawEvent = {
   description: string;
   image?: string | null;
   status: string;
+  registrationProgramId?:
+    | string
+    | { _id?: string; id?: string; slug?: string; isActive?: boolean }
+    | null;
 };
 
 type RawGallery = {
@@ -159,6 +163,15 @@ export function mapPublicNewsDetail(raw: RawNews): NewsDetail {
 
 export function mapPublicEvent(raw: RawEvent): EventItem {
   const isPast = isPastEvent(raw.date, raw.status, raw.endDate);
+  const programRef = raw.registrationProgramId;
+  const registrationProgramSlug =
+    programRef &&
+    typeof programRef === "object" &&
+    programRef.slug &&
+    programRef.isActive !== false
+      ? programRef.slug
+      : null;
+
   return {
     id: toId(raw),
     title: raw.title,
@@ -170,6 +183,7 @@ export function mapPublicEvent(raw: RawEvent): EventItem {
     image: raw.image ?? undefined,
     status: raw.status,
     isPast,
+    registrationProgramSlug,
   };
 }
 

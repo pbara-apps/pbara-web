@@ -14,6 +14,7 @@ import {
 import { HiOutlineShieldCheck } from "react-icons/hi2";
 import type { EventItem } from "@/types";
 import { parseEventDateParts, formatEventDateLabel } from "@/lib/event-date";
+import { registrationPath } from "@/lib/api/program";
 import { EventInterestModal } from "./EventInterestModal";
 
 const UPCOMING_IMAGES: Record<string, string> = {
@@ -152,13 +153,22 @@ export function PublicEventsView({
                   </div>
 
                   <div className="mt-6 flex items-center gap-4">
-                    <button
-                      type="button"
-                      onClick={() => setInterestEvent(event)}
-                      className="flex items-center gap-2 px-6 py-2.5 bg-accent-gold text-slate-900 font-bold rounded-lg hover:brightness-110 transition-all"
-                    >
-                      Register Now <FiArrowRight size={18} aria-hidden />
-                    </button>
+                    {event.registrationProgramSlug ? (
+                      <Link
+                        href={registrationPath(event.registrationProgramSlug)}
+                        className="flex items-center gap-2 px-6 py-2.5 bg-accent-gold text-slate-900 font-bold rounded-lg hover:brightness-110 transition-all"
+                      >
+                        Register Now <FiArrowRight size={18} aria-hidden />
+                      </Link>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => setInterestEvent(event)}
+                        className="flex items-center gap-2 px-6 py-2.5 bg-accent-gold text-slate-900 font-bold rounded-lg hover:brightness-110 transition-all"
+                      >
+                        Register Now <FiArrowRight size={18} aria-hidden />
+                      </button>
+                    )}
                     <button
                       type="button"
                       className="p-2.5 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300"
