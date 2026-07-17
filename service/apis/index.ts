@@ -17,7 +17,25 @@ http.interceptors.request.use((config) => {
 
 http.interceptors.response.use(
   (response) => response?.data,
-  (error) => Promise.reject(error?.response?.data ?? error),
+  (error) => {
+    const data = error?.response?.data;
+    if (data && typeof data === "object") {
+      return Promise.reject({
+        ...data,
+        statusCode: error.response?.status,
+      });
+    }
+
+    return Promise.reject({
+      message:
+        error?.code === "ECONNABORTED"
+          ? "The request timed out. Please try again."
+          : (error?.message ?? "Network error"),
+      statusCode: 0,
+      code: error?.code,
+      isNetworkError: true,
+    });
+  },
 );
 
 export default http;

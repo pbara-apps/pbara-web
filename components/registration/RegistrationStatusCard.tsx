@@ -3,14 +3,22 @@
 import Link from "next/link";
 import { Button } from "@heroui/react";
 import { motion, useReducedMotion } from "framer-motion";
-import { FiAlertCircle, FiArrowRight, FiCheckCircle, FiClock } from "react-icons/fi";
+import {
+  FiAlertCircle,
+  FiArrowRight,
+  FiCheckCircle,
+  FiClock,
+  FiRefreshCw,
+} from "react-icons/fi";
 import { fadeInUp, motionSafe, mountProps } from "@/lib/animations";
 
-type StatusKind = "unavailable" | "closed" | "success";
+type StatusKind = "unavailable" | "closed" | "success" | "load_failed";
 
 interface RegistrationStatusCardProps {
   kind: StatusKind;
   programTitle?: string;
+  onRetry?: () => void;
+  isRetrying?: boolean;
 }
 
 const copy: Record<
@@ -45,11 +53,20 @@ const copy: Record<
       "Your submission is pending verification. Payment is not confirmed yet — our team will review your proof of payment and entries, then follow up if needed. You may also contact our support team to check your status.",
     cta: "Back to registrations",
   },
+  load_failed: {
+    icon: FiRefreshCw,
+    title: "Unable to load registration",
+    body: () =>
+      "An unexpected error occurred, please try again later. If the problem persists, please contact our support team.",
+    cta: "Try again",
+  },
 };
 
 export function RegistrationStatusCard({
   kind,
   programTitle,
+  onRetry,
+  isRetrying = false,
 }: RegistrationStatusCardProps) {
   const reduced = useReducedMotion();
   const { icon: Icon, title, body, cta } = copy[kind];
@@ -58,14 +75,18 @@ export function RegistrationStatusCard({
       ? "border-emerald-200/80 bg-emerald-50/80 text-emerald-900"
       : kind === "closed"
         ? "border-amber-200/80 bg-amber-50/70 text-amber-950"
-        : "border-slate-200 bg-white text-text-dark";
+        : kind === "load_failed"
+          ? "border-sky-200/80 bg-sky-50/70 text-sky-950"
+          : "border-slate-200 bg-white text-text-dark";
 
   const iconTone =
     kind === "success"
       ? "bg-emerald-100 text-emerald-700"
       : kind === "closed"
         ? "bg-amber-100 text-amber-800"
-        : "bg-slate-100 text-primary";
+        : kind === "load_failed"
+          ? "bg-sky-100 text-sky-800"
+          : "bg-slate-100 text-primary";
 
   return (
     <motion.div
@@ -76,7 +97,11 @@ export function RegistrationStatusCard({
       <div
         className={`mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full ${iconTone}`}
       >
-        <Icon size={26} aria-hidden />
+        <Icon
+          size={26}
+          aria-hidden
+          className={isRetrying ? "animate-spin" : undefined}
+        />
       </div>
       <h1 className="font-heading text-2xl font-bold tracking-tight md:text-3xl">
         {title}
@@ -84,14 +109,36 @@ export function RegistrationStatusCard({
       <p className="mt-3 text-sm leading-relaxed text-text-muted md:text-base">
         {body(programTitle)}
       </p>
-      <Button
-        as={Link}
-        href="/registration"
-        endContent={<FiArrowRight size={16} />}
-        className="mt-8 h-11 bg-primary font-semibold text-white shadow-md"
-      >
-        {cta}
-      </Button>
+      {kind === "load_failed" ? (
+        <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+          <Button
+            type="button"
+            onPress={onRetry}
+            isLoading={isRetrying}
+            startContent={!isRetrying ? <FiRefreshCw size={16} /> : undefined}
+            className="h-11 bg-primary font-semibold text-white shadow-md"
+          >
+            {isRetrying ? "Trying again…" : cta}
+          </Button>
+          <Button
+            as={Link}
+            href="/registration"
+            variant="bordered"
+            className="h-11 border-primary/20 font-semibold text-primary"
+          >
+            Browse registrations
+          </Button>
+        </div>
+      ) : (
+        <Button
+          as={Link}
+          href="/registration"
+          endContent={<FiArrowRight size={16} />}
+          className="mt-8 h-11 bg-primary font-semibold text-white shadow-md"
+        >
+          {cta}
+        </Button>
+      )}
     </motion.div>
   );
 }

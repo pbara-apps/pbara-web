@@ -398,7 +398,8 @@ export function RegistrationStep2({
     }
     if (parts.length === 0) return "Please complete all required fields.";
     if (parts.length === 1) return `Please provide ${parts[0]}.`;
-    if (parts.length === 2) return `Please provide ${parts[0]} and ${parts[1]}.`;
+    if (parts.length === 2)
+      return `Please provide ${parts[0]} and ${parts[1]}.`;
     return `Please provide ${parts.slice(0, -1).join(", ")}, and ${parts[parts.length - 1]}.`;
   }
 
