@@ -16,6 +16,11 @@ import type { EventItem } from "@/types";
 import { parseEventDateParts, formatEventDateLabel } from "@/lib/event-date";
 import { registrationPath } from "@/lib/api/program";
 import { EventInterestModal } from "./EventInterestModal";
+import {
+  errorToast,
+  successToast,
+} from "@/components/shared/toast-notification/toast-notification";
+import { useSubscribeNewsletter } from "@/service/apis/subscriber";
 
 const UPCOMING_IMAGES: Record<string, string> = {
   "1": "https://lh3.googleusercontent.com/aida-public/AB6AXuB99MhOLoBFMOWcAcIzkvFtMkvJUAHCLR8GCyC9xSdhfEGcJPK7oFXucX-1GERDH7anSfiJQ0NRG0hvOHyrPS1PBbiphemSOCRCb9qwEP1UYFBBgafaOd8CB-fWaOAZdRcWFPHx3HabxFwKUHKmcp9dhrO2x-N8_wxQu5DEtUG94hkGdT17bBYJbH6_YsV7KohTidZe3JpjReg65T6KjVggzEVGgB9yewEWVwlv2UqcrzerBuihjhUXKFfbHN7ToRlTOjeGfdP7yDA",
@@ -36,6 +41,28 @@ export function PublicEventsView({
   pastEvents: EventItem[];
 }) {
   const [interestEvent, setInterestEvent] = useState<EventItem | null>(null);
+  const [newsletterEmail, setNewsletterEmail] = useState("");
+  const subscribe = useSubscribeNewsletter();
+
+  async function handleSubscribe(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const email = newsletterEmail.trim();
+    if (!email) return;
+    try {
+      const res = await subscribe.mutateAsync({ email, source: "events-page" });
+      successToast(
+        res?.message ?? "You're subscribed! We'll keep you posted.",
+        "Subscribed",
+      );
+      setNewsletterEmail("");
+    } catch (err) {
+      errorToast(
+        (err as { message?: string })?.message ??
+          "Unable to subscribe right now. Please try again.",
+        "Subscription failed",
+      );
+    }
+  }
 
   return (
     <main className="flex-1">
@@ -309,17 +336,26 @@ export function PublicEventsView({
             </p>
           </div>
           <div className="relative z-10 w-full md:w-auto">
-            <form className="flex flex-col sm:flex-row gap-3">
+            <form
+              className="flex flex-col sm:flex-row gap-3"
+              onSubmit={handleSubscribe}
+            >
               <input
-                className="px-6 py-3 rounded-lg border-none focus:ring-2 focus:ring-accent-gold min-w-[280px] text-slate-900"
+                className="px-6 py-3 rounded-lg border-none focus:ring-2 focus:ring-accent-gold min-w-[280px] text-slate-900 disabled:opacity-70"
                 placeholder="Your email address"
                 type="email"
+                required
+                aria-label="Email for newsletter"
+                value={newsletterEmail}
+                onChange={(e) => setNewsletterEmail(e.target.value)}
+                disabled={subscribe.isPending}
               />
               <button
-                className="bg-accent-gold text-slate-900 font-bold px-8 py-3 rounded-lg hover:brightness-110 transition-all whitespace-nowrap"
+                className="bg-accent-gold text-slate-900 font-bold px-8 py-3 rounded-lg hover:brightness-110 transition-all whitespace-nowrap disabled:opacity-70 disabled:cursor-not-allowed"
                 type="submit"
+                disabled={subscribe.isPending}
               >
-                Keep me posted
+                {subscribe.isPending ? "Subscribing..." : "Keep me posted"}
               </button>
             </form>
           </div>

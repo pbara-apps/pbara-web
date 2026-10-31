@@ -60,8 +60,8 @@ export function DirectorDesk({ data }: { data: DirectorDeskData }) {
             </motion.div>
 
             <div className="absolute bottom-6 left-6 z-20">
-              <h4 className="text-white text-xl font-bold">{data.name}</h4>
-              <p className="text-gold text-sm font-semibold">{data.title}</p>
+              <h4 className="text-white text-xl font-bold bg-primary rounded-full px-4">{data.name}</h4>
+              <span className="text-gold text-sm font-semibold bg-white rounded-full px-4">Director, PBARA</span>
             </div>
           </motion.div>
 
