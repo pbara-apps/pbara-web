@@ -129,10 +129,8 @@ export function RegistrationStep2({
     [churches],
   );
 
-  const sortedRanks = useMemo(
-    () => [...ranks].sort((a, b) => a.name.localeCompare(b.name)),
-    [ranks],
-  );
+  // The API already returns ranks in ladder order (lowest first).
+  const sortedRanks = ranks;
 
   useEffect(() => {
     return () => {
