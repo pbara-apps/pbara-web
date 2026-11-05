@@ -1,200 +1,260 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
-import { motion, useReducedMotion } from "framer-motion";
-import { FiArrowRight, FiCalendar } from "react-icons/fi";
-import { HiOutlineMegaphone } from "react-icons/hi2";
-import { HiOutlineShieldCheck } from "react-icons/hi2";
+import Link from "next/link";
+import { FiArrowUpRight } from "react-icons/fi";
 import { HomeExecutivesCarousel } from "@/components/sections/HomeExecutivesCarousel";
-import type { Executive } from "@/types";
-import type { NewsItem } from "@/types";
 import {
-  buttonHover,
-  buttonTap,
-  cardHover,
-  cardTap,
-  fadeInUp,
-  inViewProps,
-  motionSafe,
-  scalePop,
-  staggerContainer,
-  staggerItem,
-  zoomIn,
-} from "@/lib/animations";
+  ExecutivesSkeleton,
+  useExecutives,
+} from "@/components/sections/CurrentExecutivesGrid";
+import { useChapters } from "@/components/sections/ChaptersDirectory";
+import { Parallax, Reveal, Stagger, StaggerItem } from "@/components/site/motion";
+import { ArrowLink, ButtonLink, Eyebrow } from "@/components/site/primitives";
+import { newsArticlePath } from "@/lib/api/news";
+import type { NewsItem } from "@/types";
 
-interface HomeSectionsProps {
-  executives: Executive[];
-  bulletins: NewsItem[];
-}
+const NEWS_FALLBACK_IMAGE = "/images/ra-parade.jpg";
 
-function bulletinImage(item: NewsItem): string {
-  if (item.image) return item.image;
-  const byCategory: Record<string, string> = {
-    Featured: "/images/image1.jpeg",
-    Report: "/images/image4.jpg",
-    Upcoming: "/images/image5.jpg",
-  };
-  return byCategory[item.category] ?? "/images/ra-logo.png";
-}
+/* ───────────────────────── Leadership ───────────────────────── */
 
-function badgeClasses(category: string): string {
-  if (category === "Upcoming") return "bg-gold text-primary";
-  if (category === "Featured") return "bg-primary text-white";
-  return "bg-primary text-white";
-}
-
-function metaIcon(category: string) {
-  if (category === "Featured") return <FiCalendar size={16} aria-hidden />;
-  if (category === "Report")
-    return <HiOutlineMegaphone size={16} aria-hidden />;
-  return <HiOutlineShieldCheck size={16} aria-hidden />;
-}
-
-export function HomeSections({ executives, bulletins }: HomeSectionsProps) {
-  const reduced = useReducedMotion();
-  const view = inViewProps(reduced);
+export function HomeLeadership() {
+  const { executives, isLoading } = useExecutives();
 
   return (
-    <>
-      {/* ── Executive Council — horizontal carousel ── */}
-      <section className="py-20 bg-surface" aria-labelledby="executive-heading">
-        <div className="max-w-7xl mx-auto px-6">
-          <motion.div
-            className="text-center mb-16 space-y-4"
-            {...view}
-            variants={motionSafe(reduced, fadeInUp)}
-          >
-            <h2
-              id="executive-heading"
-              className="text-primary text-4xl font-black tracking-tight font-heading"
-            >
-              Executive Council
+    <section className="section-y overflow-hidden bg-white" aria-labelledby="leadership-heading">
+      <div className="container-site">
+        <div className="grid gap-12 lg:grid-cols-12">
+          <Reveal className="lg:col-span-4">
+            <Eyebrow index="05">Leadership</Eyebrow>
+            <h2 id="leadership-heading" className="display-md mt-6 text-balance text-ink">
+              The Executive Council
             </h2>
-            <div className="w-24 h-1 bg-gold mx-auto" aria-hidden />
-            <p className="text-text-muted font-medium">
-              Leadership dedicated to the spiritual and social development of
-              youth.
+            <p className="mt-6 max-w-sm text-[17px] leading-relaxed text-text-muted">
+              Officers entrusted with the spiritual and social development of
+              every ambassador in the association.
             </p>
-          </motion.div>
+            <ArrowLink href="/executives" className="mt-6">
+              Meet the full council
+            </ArrowLink>
+          </Reveal>
 
-          <motion.div {...view} variants={motionSafe(reduced, fadeInUp)}>
-            <HomeExecutivesCarousel executives={executives} />
-          </motion.div>
+          <Reveal delay={0.1} className="min-w-0 lg:col-span-8">
+            {isLoading ? (
+              <ExecutivesSkeleton count={3} />
+            ) : (
+              <HomeExecutivesCarousel executives={executives} />
+            )}
+          </Reveal>
         </div>
-      </section>
+      </div>
+    </section>
+  );
+}
 
-      {/* ── Latest Bulletins — staggered cards + image zoom ── */}
-      <section
-        className="py-20 bg-background"
-        id="resources"
-        aria-labelledby="bulletins-heading"
-      >
-        <div className="max-w-7xl mx-auto px-6">
-          <motion.div
-            className="flex flex-col md:flex-row justify-between items-end mb-12 gap-4"
-            {...view}
-            variants={motionSafe(reduced, fadeInUp)}
-          >
-            <div className="space-y-2">
-              <h2
-                id="bulletins-heading"
-                className="text-primary text-4xl font-black tracking-tight uppercase font-heading"
-              >
-                Latest Bulletins
-              </h2>
-              <p className="text-text-muted font-medium">
-                Updates and announcements from across the association.
-              </p>
-            </div>
-            <motion.div
-              variants={motionSafe(reduced, scalePop)}
-              whileHover={reduced ? undefined : buttonHover}
-              whileTap={reduced ? undefined : buttonTap}
-            >
-              <Link
-                href="/news"
-                className="bg-white border border-slate-200 text-primary px-6 py-2 rounded-full font-bold text-sm shadow-sm hover:shadow-md transition-shadow uppercase tracking-wider min-h-[44px] inline-flex items-center justify-center touch-manipulation gap-1"
-              >
-                See All <FiArrowRight size={16} aria-hidden />
-              </Link>
-            </motion.div>
-          </motion.div>
+/* ───────────────────────── Chapters index ───────────────────────── */
 
-          <motion.div
-            className="grid grid-cols-1 lg:grid-cols-3 gap-8"
-            {...view}
-            variants={motionSafe(reduced, staggerContainer)}
-          >
-            {bulletins.slice(0, 3).map((item) => {
-              const href = `/news/${item.slug ?? item.id}`;
-              const imageSrc = bulletinImage(item);
-              const badgeClass = badgeClasses(item.category);
-              const ctaText =
-                item.category === "Featured"
-                  ? "DETAILS & REGISTRATION"
-                  : item.category === "Upcoming"
-                    ? "WORKSHOP DATES"
-                    : "READ MORE";
+const CHAPTER_PREVIEW = 12;
 
-              return (
-                <motion.article
-                  key={item.id}
-                  className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-200 group flex flex-col"
-                  variants={motionSafe(reduced, staggerItem)}
-                  whileHover={reduced ? undefined : cardHover}
-                  whileTap={reduced ? undefined : cardTap}
+export function HomeChapters() {
+  const { chapters, isLoading } = useChapters();
+  const preview = chapters.slice(0, CHAPTER_PREVIEW);
+  const remaining = chapters.length - preview.length;
+
+  return (
+    <section className="grain relative overflow-hidden bg-ink text-white" aria-labelledby="chapters-heading">
+      <div className="container-site section-y relative">
+        <div className="grid gap-10 lg:grid-cols-12 lg:items-end">
+          <Reveal className="lg:col-span-7">
+            <Eyebrow index="06" tone="dark">
+              Chapters
+            </Eyebrow>
+            <h2 id="chapters-heading" className="display-lg mt-6 text-balance">
+              {chapters.length > 0 ? (
+                <>
+                  <span className="text-gold">{chapters.length}</span> chapters.
+                  One brotherhood.
+                </>
+              ) : (
+                "Our chapters. One brotherhood."
+              )}
+            </h2>
+          </Reveal>
+          <Reveal delay={0.1} className="lg:col-span-5">
+            <p className="text-lg leading-relaxed text-white/65">
+              Royal Ambassadors meet in local church chapters across the
+              Pentecost Baptist Association. Find the chapter closest to you.
+            </p>
+            <ButtonLink href="/chapters" variant="gold" className="mt-7">
+              Find a chapter
+            </ButtonLink>
+          </Reveal>
+        </div>
+
+        {isLoading ? (
+          <div className="mt-16 grid gap-px sm:grid-cols-2 lg:grid-cols-3" aria-hidden>
+            {Array.from({ length: 6 }, (_, i) => (
+              <div key={i} className="h-24 animate-pulse border-t border-white/10 bg-white/[0.02]" />
+            ))}
+          </div>
+        ) : (
+          <Stagger as="ol" className="mt-16 grid sm:grid-cols-2 lg:grid-cols-3 lg:gap-x-10">
+            {preview.map((c, i) => (
+              <StaggerItem as="li" key={c.id}>
+                <Link
+                  href={`/chapters?q=${encodeURIComponent(c.chapterName)}`}
+                  className="group flex items-center gap-5 border-t border-white/10 py-6 transition-colors"
                 >
-                  <motion.div
-                    className="h-48 relative overflow-hidden bg-primary/10"
-                    variants={motionSafe(reduced, zoomIn)}
-                  >
-                    <Image
-                      alt={`${item.title} — bulletin`}
-                      src={imageSrc}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
-                      sizes="(max-width: 1024px) 100vw, 33vw"
-                    />
-                    <div
-                      className={`absolute top-4 left-4 text-[10px] font-black px-2 py-1 rounded uppercase tracking-widest ${badgeClass}`}
-                    >
-                      {item.category}
-                    </div>
-                  </motion.div>
+                  <span className="font-mono text-[11px] tabular-nums text-white/35 transition-colors group-hover:text-gold">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-heading text-xl font-bold tracking-[-0.02em] transition-transform duration-500 ease-brand group-hover:translate-x-1 md:text-[22px]">
+                      {c.chapterName}
+                    </span>
+                    <span className="mt-1 block truncate text-sm text-white/45">
+                      {c.churchName}
+                    </span>
+                  </span>
+                  <FiArrowUpRight
+                    className="h-5 w-5 shrink-0 text-white/25 transition-all duration-500 group-hover:rotate-45 group-hover:text-gold"
+                    aria-hidden
+                  />
+                </Link>
+              </StaggerItem>
+            ))}
+          </Stagger>
+        )}
 
-                  <div className="p-8 flex flex-col flex-1">
-                    <div className="flex items-center gap-2 text-gold text-xs font-bold uppercase mb-3">
-                      {metaIcon(item.category)}
-                      <span>
-                        {item.category === "Featured"
-                          ? item.date
-                          : item.category}
-                      </span>
-                    </div>
+        {remaining > 0 ? (
+          <div className="mt-2 border-t border-white/10 pt-8">
+            <Link
+              href="/chapters"
+              className="group inline-flex items-center gap-2 font-semibold text-white/80 transition-colors hover:text-gold"
+            >
+              + {remaining} more chapters in the directory
+              <FiArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:rotate-45" aria-hidden />
+            </Link>
+          </div>
+        ) : null}
+      </div>
+    </section>
+  );
+}
 
-                    <h3 className="text-primary text-xl font-black leading-tight mb-4 group-hover:text-gold transition-colors font-heading">
+/* ───────────────────────── Newsroom ───────────────────────── */
+
+export function HomeNews({ items }: { items: NewsItem[] }) {
+  if (items.length === 0) return null;
+  const [lead, ...rest] = items;
+
+  return (
+    <section className="section-y bg-ivory" aria-labelledby="news-heading">
+      <div className="container-site">
+        <Reveal className="flex flex-col justify-between gap-6 border-b border-line pb-8 md:flex-row md:items-end">
+          <div>
+            <Eyebrow index="07">Newsroom</Eyebrow>
+            <h2 id="news-heading" className="display-md mt-6 text-ink">
+              Latest from the association
+            </h2>
+          </div>
+          <ArrowLink href="/news">All news &amp; announcements</ArrowLink>
+        </Reveal>
+
+        <div className="mt-12 grid gap-12 lg:grid-cols-12 lg:gap-10">
+          <Reveal className="lg:col-span-7">
+            <Link href={newsArticlePath(lead)} className="group block">
+              <div className="relative aspect-[16/10] overflow-hidden rounded-xl bg-mist">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={lead.image || NEWS_FALLBACK_IMAGE}
+                  alt=""
+                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1.4s] ease-brand group-hover:scale-[1.04]"
+                />
+                <span className="eyebrow absolute left-4 top-4 rounded-full bg-white px-3 py-1.5 text-ink">
+                  {lead.category}
+                </span>
+              </div>
+              <p className="eyebrow mt-6 text-text-muted">
+                {lead.date}
+                {lead.readTime ? ` · ${lead.readTime} min read` : ""}
+              </p>
+              <h3 className="mt-3 font-heading text-[28px] font-bold leading-[1.15] tracking-[-0.03em] text-ink transition-colors group-hover:text-primary md:text-[34px] text-balance">
+                {lead.title}
+              </h3>
+              <p className="mt-4 line-clamp-3 max-w-2xl text-[17px] leading-relaxed text-text-muted">
+                {lead.excerpt}
+              </p>
+            </Link>
+          </Reveal>
+
+          <Stagger as="ul" className="lg:col-span-5">
+            {rest.slice(0, 3).map((item) => (
+              <StaggerItem as="li" key={item.id} className="border-b border-line first:pt-0 last:border-0">
+                <Link href={newsArticlePath(item)} className="group grid grid-cols-[1fr_7.5rem] gap-5 py-6 sm:grid-cols-[1fr_9rem]">
+                  <div className="min-w-0">
+                    <p className="eyebrow text-gold">{item.category}</p>
+                    <h3 className="mt-2.5 line-clamp-3 text-lg font-bold leading-snug tracking-[-0.01em] text-ink transition-colors group-hover:text-primary">
                       {item.title}
                     </h3>
-
-                    <p className="text-text-muted text-sm leading-relaxed mb-6 flex-1 line-clamp-3">
-                      {item.excerpt}
-                    </p>
-
-                    <Link
-                      href={href}
-                      className="text-primary font-bold text-sm inline-flex items-center gap-2 hover:gap-3 transition-all min-h-[44px] touch-manipulation"
-                    >
-                      {ctaText}
-                      <FiArrowRight size={16} aria-hidden />
-                    </Link>
+                    <p className="eyebrow mt-3 text-text-muted">{item.date}</p>
                   </div>
-                </motion.article>
-              );
-            })}
-          </motion.div>
+                  <div className="relative aspect-square overflow-hidden rounded-lg bg-mist">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={item.image || NEWS_FALLBACK_IMAGE}
+                      alt=""
+                      loading="lazy"
+                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1.2s] ease-brand group-hover:scale-110"
+                    />
+                  </div>
+                </Link>
+              </StaggerItem>
+            ))}
+          </Stagger>
         </div>
-      </section>
-    </>
+      </div>
+    </section>
+  );
+}
+
+/* ───────────────────────── Closing invitation ───────────────────────── */
+
+export function ClosingCta() {
+  return (
+    <section className="relative isolate overflow-hidden bg-primary text-white" aria-labelledby="cta-heading">
+      <Parallax strength={10}>
+        <Image
+          src="/images/colors-march-in.jpg"
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover opacity-35"
+          style={{ objectPosition: "center 30%" }}
+        />
+      </Parallax>
+      <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(8,9,53,0.55)_0%,rgba(8,9,53,0.95)_75%)]" />
+
+      <div className="container-site relative py-28 text-center md:py-40">
+        <Reveal>
+          <p className="eyebrow text-gold">RA motto</p>
+          <h2 id="cta-heading" className="display-xl mx-auto mt-8 max-w-5xl text-balance">
+            <span className="text-gold">“</span>It is easier to{" "}
+            <em className="font-extrabold italic text-gold">mould</em> boys
+            than to mend men.<span className="text-gold">”</span>
+          </h2>
+          <p className="mx-auto mt-8 max-w-xl text-lg leading-relaxed text-white/70">
+            Royal Ambassadors grow up in their local Baptist church. Find the
+            chapter in your church — or talk to us about starting one.
+          </p>
+          <div className="mt-12 flex flex-col justify-center gap-3 sm:flex-row">
+            <ButtonLink href="/chapters" variant="gold">
+              Find your church&apos;s chapter
+            </ButtonLink>
+           
+          </div>
+        </Reveal>
+      </div>
+    </section>
   );
 }

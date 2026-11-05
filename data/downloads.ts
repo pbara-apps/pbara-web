@@ -1,5 +1,8 @@
 import type { DownloadItem } from "@/types";
 
+// None of these files are in /public/downloads yet. Set `available: true`
+// on an item once its file has been added.
+
 export const downloads: DownloadItem[] = [
   {
     id: "1",

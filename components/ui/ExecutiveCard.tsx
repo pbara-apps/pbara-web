@@ -1,82 +1,43 @@
-import Image from "next/image";
-import { HiOutlineBuildingOffice2 } from "react-icons/hi2";
-import { AvatarPlaceholder } from "./AvatarPlaceholder";
+"use client";
+
 import type { Executive } from "@/types";
-import { cn } from "@heroui/react";
+import { cn } from "@/lib/cn";
+import { PersonPhoto } from "@/components/site/PersonPhoto";
 
 interface ExecutiveCardProps {
   executive: Executive;
-  /** "officer" = executives page (aspect-[3/4], gold border, hover scale). Omit = default card. */
+  /** Kept for backwards compatibility; all cards share the portrait layout. */
   variant?: "default" | "officer";
+  className?: string;
 }
 
-export function ExecutiveCard({
-  executive,
-  variant = "default",
-}: ExecutiveCardProps) {
-  const hasImage = Boolean(executive.image);
-
-  if (variant === "officer") {
-    return (
-      <article className="group h-full flex flex-col bg-white dark:bg-slate-800 p-1 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all overflow-hidden">
-        <div className="relative aspect-[1.2] shrink-0 overflow-hidden rounded-lg mb-2 border-4 border-[#D4AF37]/30">
-          <div
-            className={cn(
-              "absolute inset-0 origin-top bg-cover bg-top -mt-10 transition-transform duration-500 group-hover:scale-105",
-              !executive.image && "grayscale hover:grayscale-0",
-            )}
-            style={{
-              backgroundImage: `url(${executive.image ?? "/images/ra-logo.png"})`,
-            }}
-            role="img"
-            aria-label={`Portrait of ${executive.name}`}
-          />
-        </div>
-        <div className="flex-1 flex flex-col justify-center px-4 py-3 bg-primary rounded-bl-2xl rounded-tr-2xl min-h-[7.5rem]">
-          <h3 className="text-white text-lg font-bold leading-tight line-clamp-2">
-            {executive.name}
-          </h3>
-          <p className="text-white/90 font-semibold text-sm mt-1 uppercase tracking-wider line-clamp-1">
-            {executive.position}
-          </p>
-          <p className="text-slate-100 dark:text-slate-400 text-xs mt-1 line-clamp-1">
-            {executive.church}
-          </p>
-        </div>
-      </article>
-    );
-  }
-
+/** Portrait card: consistent 4:5 frame, position label, name and church. */
+export function ExecutiveCard({ executive, className }: ExecutiveCardProps) {
   return (
-    <article className="group bg-surface rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out overflow-hidden text-center hover:border-t-2 hover:border-t-gold">
-      <div className="relative h-[60%] min-h-[200px] bg-background flex items-center justify-center p-6">
-        {hasImage ? (
-          <Image
-            src={executive.image!}
-            alt={executive.name}
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, 280px"
-          />
-        ) : (
-          <AvatarPlaceholder name={executive.name} size="lg" />
-        )}
+    <article className={cn("group", className)}>
+      <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-mist">
+        <PersonPhoto
+          src={executive.image}
+          name={executive.name}
+          className="grayscale-[30%] transition-[transform,filter] duration-[1.1s] ease-brand group-hover:scale-[1.04] group-hover:grayscale-0"
+        />
+        <div
+          aria-hidden
+          className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-ink/50 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        />
+        <span
+          aria-hidden
+          className="absolute bottom-0 left-0 h-[3px] w-0 bg-gold transition-[width] duration-700 ease-brand group-hover:w-full"
+        />
       </div>
-      <div className="p-4 bg-surface">
-        <h3 className="font-heading font-bold text-text-dark">
+      <div className="pt-4">
+        <p className="eyebrow text-gold">{executive.position || "Officer"}</p>
+        <h3 className="mt-2 text-[17px] font-bold leading-snug tracking-[-0.01em] text-ink">
           {executive.name}
         </h3>
-        <p className="text-gold text-sm uppercase tracking-wider mt-1 small-caps">
-          {executive.position}
-        </p>
-        <p className="text-text-muted text-sm mt-1 flex items-center justify-center gap-1">
-          <HiOutlineBuildingOffice2
-            size={14}
-            className="shrink-0"
-            aria-hidden
-          />
-          {executive.church}
-        </p>
+        {executive.church ? (
+          <p className="mt-1 text-sm text-text-muted">{executive.church}</p>
+        ) : null}
       </div>
     </article>
   );

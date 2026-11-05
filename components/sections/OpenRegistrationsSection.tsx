@@ -1,19 +1,15 @@
 "use client";
 
-import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
-import { FiArrowRight } from "react-icons/fi";
-import { RegistrationProgramCard } from "@/components/registration/RegistrationProgramCard";
+import Image from "next/image";
 import {
-  buttonHover,
-  buttonTap,
-  fadeInUp,
-  inViewProps,
-  motionSafe,
-  scalePop,
-  staggerContainer,
-  staggerItem,
-} from "@/lib/animations";
+  RegistrationProgramCard,
+  formatAmount,
+  formatDeadline,
+} from "@/components/registration/RegistrationProgramCard";
+import { ImageReveal, Reveal } from "@/components/site/motion";
+import { ArrowLink, ButtonLink } from "@/components/site/primitives";
+import { registrationPath } from "@/lib/api/program";
+import { previewText } from "@/lib/format";
 import type { RegistrationProgram } from "@/types";
 
 interface OpenRegistrationsSectionProps {
@@ -22,74 +18,113 @@ interface OpenRegistrationsSectionProps {
   totalCount?: number;
 }
 
+/**
+ * Homepage band that spotlights programs currently open for registration.
+ * Hidden when nothing is open.
+ */
 export function OpenRegistrationsSection({
   programs,
   totalCount,
 }: OpenRegistrationsSectionProps) {
-  const reduced = useReducedMotion();
-  const view = inViewProps(reduced);
-
   if (programs.length === 0) return null;
 
+  const [lead, ...rest] = programs;
   const total = totalCount ?? programs.length;
-  const showViewAll = total > programs.length || total > 1;
+  const deadline = formatDeadline(lead.registrationDeadline);
 
   return (
     <section
-      className="bg-surface py-20"
+      className="bg-white py-20 md:py-24"
       aria-labelledby="open-registrations-heading"
     >
-      <div className="mx-auto max-w-7xl px-6">
-        <motion.div
-          className="mb-12 flex flex-col items-end justify-between gap-4 md:flex-row"
-          {...view}
-          variants={motionSafe(reduced, fadeInUp)}
-        >
-          <div className="space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gold">
-              Open now
-            </p>
-            <h2
-              id="open-registrations-heading"
-              className="font-heading text-4xl font-black tracking-tight text-primary"
-            >
-              Open Registrations
-            </h2>
-            <p className="font-medium text-text-muted">
-              Active programs accepting registration — pay and complete your
-              entry online.
-            </p>
+      <div className="container-site">
+        <div className="grid overflow-hidden rounded-2xl bg-ink text-white lg:grid-cols-12">
+          <div className="relative min-h-[18rem] lg:col-span-5">
+            <ImageReveal className="absolute inset-0">
+              {lead.flyerImageUrl ? (
+                <Image
+                  src={lead.flyerImageUrl}
+                  alt={`${lead.title} flyer`}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 40vw"
+                  className="object-cover"
+                />
+              ) : (
+                <Image
+                  src="/images/ra-parade.jpg"
+                  alt=""
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 40vw"
+                  className="object-cover"
+                />
+              )}
+            </ImageReveal>
           </div>
-          {showViewAll ? (
-            <motion.div
-              variants={motionSafe(reduced, scalePop)}
-              whileHover={reduced ? undefined : buttonHover}
-              whileTap={reduced ? undefined : buttonTap}
-            >
-              <Link
-                href="/registration"
-                className="inline-flex min-h-[44px] touch-manipulation items-center justify-center gap-1 rounded-full border border-slate-200 bg-white px-6 py-2 text-sm font-bold uppercase tracking-wider text-primary shadow-sm transition-shadow hover:shadow-md"
-              >
-                View all <FiArrowRight size={16} aria-hidden />
-              </Link>
-            </motion.div>
-          ) : null}
-        </motion.div>
 
-        <motion.div
-          className="grid grid-cols-1 gap-8 lg:grid-cols-3"
-          {...view}
-          variants={motionSafe(reduced, staggerContainer)}
-        >
-          {programs.map((program) => (
-            <motion.div
-              key={program.id}
-              variants={motionSafe(reduced, staggerItem)}
-            >
-              <RegistrationProgramCard program={program} />
-            </motion.div>
-          ))}
-        </motion.div>
+          <div className="flex flex-col p-8 md:p-12 lg:col-span-7 lg:p-14">
+            <Reveal>
+              <p className="eyebrow flex items-center gap-2.5 text-gold">
+                <span className="relative flex h-2 w-2" aria-hidden>
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-gold opacity-60 motion-reduce:hidden" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-gold" />
+                </span>
+                Registration open
+              </p>
+              <h2
+                id="open-registrations-heading"
+                className="display-md mt-6 text-balance"
+              >
+                {lead.title}
+              </h2>
+              {lead.description ? (
+                <p className="mt-5 line-clamp-4 max-w-xl text-[16px] leading-relaxed text-white/70">
+                  {previewText(lead.description)}
+                </p>
+              ) : null}
+            </Reveal>
+
+            <Reveal delay={0.1} className="mt-auto pt-10">
+              <dl className="grid grid-cols-2 gap-6 border-t border-white/10 pt-6 sm:grid-cols-3">
+                <div>
+                  <dt className="eyebrow text-white/45">Fee</dt>
+                  <dd className="mt-1.5 text-xl font-bold">{formatAmount(lead.amount)}</dd>
+                </div>
+                <div>
+                  <dt className="eyebrow text-white/45">Closes</dt>
+                  <dd className="mt-1.5 text-xl font-bold">{deadline ?? "Open"}</dd>
+                </div>
+                <div className="col-span-2 sm:col-span-1">
+                  <dt className="eyebrow text-white/45">Category</dt>
+                  <dd className="mt-1.5 text-xl font-bold capitalize">{lead.category}</dd>
+                </div>
+              </dl>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+                <ButtonLink href={registrationPath(lead.slug)} variant="gold">
+                  Register now
+                </ButtonLink>
+                {total > 1 ? (
+                  <ButtonLink href="/registration" variant="outline-light">
+                    All {total} open programs
+                  </ButtonLink>
+                ) : null}
+              </div>
+            </Reveal>
+          </div>
+        </div>
+
+        {rest.length > 0 ? (
+          <div className="mt-6 grid gap-6 md:grid-cols-2">
+            {rest.map((p) => (
+              <RegistrationProgramCard key={p.id} program={p} />
+            ))}
+          </div>
+        ) : null}
+
+        {total > programs.length ? (
+          <div className="mt-6">
+            <ArrowLink href="/registration">See every open registration</ArrowLink>
+          </div>
+        ) : null}
       </div>
     </section>
   );

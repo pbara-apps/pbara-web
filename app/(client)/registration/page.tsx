@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { RegistrationProgramCard } from "@/components/registration/RegistrationProgramCard";
+import { PageHero } from "@/components/site/PageHero";
+import { ButtonLink } from "@/components/site/primitives";
 import { fetchOpenPublicPrograms } from "@/lib/api/program";
 
 export const metadata: Metadata = {
@@ -12,54 +13,59 @@ export const metadata: Metadata = {
   },
 };
 
+const STEPS = [
+  { n: "01", title: "Choose a program", body: "Pick an open program below to see its fee and payment details." },
+  { n: "02", title: "Make payment", body: "Pay into the program account and keep your proof of payment." },
+  { n: "03", title: "Submit your entry", body: "Register yourself or your chapter and upload the payment proof." },
+];
+
 export default async function RegisterIndexPage() {
   const programs = await fetchOpenPublicPrograms();
 
   return (
-    <div className="relative overflow-hidden">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-[radial-gradient(ellipse_at_top,_rgba(200,168,75,0.14),_transparent_60%),linear-gradient(180deg,_rgba(27,36,82,0.06),_transparent)]"
+    <>
+      <PageHero
+        tone="light"
+        crumbs={[{ label: "Programs", href: "/events" }, { label: "Registrations" }]}
+        eyebrow="Registrations"
+        title="Open registrations"
+        description="Select a program to view payment details and submit your registration — individually or for your whole chapter."
       />
 
-      <div className="relative mx-auto max-w-7xl px-4 py-14 md:px-6 md:py-20">
-        <header className="mb-12 max-w-2xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gold">
-            Registrations
-          </p>
-          <h1 className="mt-2 font-heading text-3xl font-bold tracking-tight text-primary md:text-4xl">
-            Open registrations
-          </h1>
-          <p className="mt-3 text-base text-text-muted">
-            Select a program to view payment details and submit your
-            registration.
-          </p>
-        </header>
-
-        {programs.length === 0 ? (
-          <div className="rounded-2xl border border-slate-200 bg-white px-8 py-16 text-center shadow-sm">
-            <h2 className="font-heading text-xl font-semibold text-primary">
-              No open registrations right now
-            </h2>
-            <p className="mx-auto mt-3 max-w-md text-sm text-text-muted">
-              When a program opens for registration, it will appear here. You
-              can also check News or contact headquarters for updates.
-            </p>
-            <Link
-              href="/news"
-              className="mt-6 inline-flex min-h-[44px] items-center text-sm font-bold text-primary hover:text-gold"
-            >
-              Browse news
-            </Link>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {programs.map((program) => (
-              <RegistrationProgramCard key={program.id} program={program} />
+      <section className="bg-ivory pb-24 pt-12 md:pb-32">
+        <div className="container-site">
+          <ol className="mb-14 grid gap-px overflow-hidden rounded-xl bg-line md:grid-cols-3">
+            {STEPS.map((s) => (
+              <li key={s.n} className="bg-white p-7">
+                <span className="font-mono text-[11px] text-gold">{s.n}</span>
+                <p className="mt-4 text-lg font-bold text-ink">{s.title}</p>
+                <p className="mt-1.5 text-[15px] text-text-muted">{s.body}</p>
+              </li>
             ))}
-          </div>
-        )}
-      </div>
-    </div>
+          </ol>
+
+          {programs.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-line px-8 py-20 text-center">
+              <h2 className="heading-sm text-ink">No open registrations right now</h2>
+              <p className="mx-auto mt-3 max-w-md text-[15px] text-text-muted">
+                When a program opens for registration, it will appear here. You
+                can also check the newsroom or contact the secretariat for
+                updates.
+              </p>
+              <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+                <ButtonLink href="/news" variant="navy">Browse news</ButtonLink>
+                <ButtonLink href="/contact" variant="outline">Contact us</ButtonLink>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {programs.map((program) => (
+                <RegistrationProgramCard key={program.id} program={program} />
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+    </>
   );
 }

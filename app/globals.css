@@ -3,104 +3,55 @@
 @tailwind utilities;
 
 :root {
-  --color-primary: #1B2452;
-  --color-gold: #C8A84B;
-  --color-gold-light: #E8C96A;
-  --color-background: #F4F6FA;
+  /* Brand palette — sampled from the RA logo */
+  --color-primary: #080935; /* logo navy, deepened */
+  --color-ink: #05061f; /* deeper navy for dark sections */
+  --color-gold: #d4af36; /* logo gold */
+  --color-gold-light: #e4c766;
+  /* Surfaces */
+  --color-background: #f8f7f3; /* warm ivory */
   --color-surface: #ffffff;
-  --color-text-dark: #1a1a2e;
-  --color-text-muted: #6b7280;
-  --font-family-heading: "Outfit", sans-serif;
-  --font-family-body: "Outfit", sans-serif;
+  --color-mist: #f1f1f6;
+  /* Text */
+  --color-text-dark: #05061f;
+  /* Muted text, dark enough to pass WCAG AA on ivory. */
+  --color-text-muted: #61637a;
+  --color-line: rgba(8, 9, 53, 0.12);
+
+  /* RGB channels so Tailwind opacity modifiers (bg-primary/10) work */
+  --rgb-primary: 8 9 53;
+  --rgb-ink: 5 6 31;
+  --rgb-gold: 212 175 54;
+  --rgb-gold-light: 228 199 102;
+  --rgb-background: 248 247 243;
+  --rgb-surface: 255 255 255;
+  --rgb-mist: 241 241 246;
+  --rgb-text-dark: 5 6 31;
+  --rgb-text-muted: 97 99 122;
+
+  --font-family-heading: var(--font-jakarta), "Plus Jakarta Sans", sans-serif;
+  --font-family-body: var(--font-jakarta), "Plus Jakarta Sans", sans-serif;
+  --font-family-mono: var(--font-jetbrains-mono), "JetBrains Mono", monospace;
+
+  --ease-brand: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-@keyframes fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes slide-in {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes border-glow {
-  0%,
-  100% {
-    box-shadow: 0 0 0 1px rgba(200, 168, 75, 0.2);
-  }
-  50% {
-    box-shadow: 0 0 0 1px rgba(200, 168, 75, 0.5);
-  }
-}
-
-@keyframes aurora-1 {
-  0%   { transform: translate(0%, 0%) scale(1); opacity: 0.45; }
-  33%  { transform: translate(8%, -6%) scale(1.08); opacity: 0.6; }
-  66%  { transform: translate(-5%, 8%) scale(0.96); opacity: 0.4; }
-  100% { transform: translate(0%, 0%) scale(1); opacity: 0.45; }
-}
-
-@keyframes aurora-2 {
-  0%   { transform: translate(0%, 0%) scale(1.05); opacity: 0.35; }
-  33%  { transform: translate(-10%, 5%) scale(0.95); opacity: 0.5; }
-  66%  { transform: translate(6%, -8%) scale(1.1); opacity: 0.3; }
-  100% { transform: translate(0%, 0%) scale(1.05); opacity: 0.35; }
-}
-
-@keyframes aurora-3 {
-  0%   { transform: translate(0%, 0%) rotate(0deg) scale(1); opacity: 0.25; }
-  50%  { transform: translate(5%, 5%) rotate(8deg) scale(1.12); opacity: 0.4; }
-  100% { transform: translate(0%, 0%) rotate(0deg) scale(1); opacity: 0.25; }
-}
-
-.aurora-blob-1 {
-  animation: aurora-1 14s ease-in-out infinite;
-}
-
-.aurora-blob-2 {
-  animation: aurora-2 18s ease-in-out infinite;
-}
-
-.aurora-blob-3 {
-  animation: aurora-3 22s ease-in-out infinite;
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 6rem;
 }
 
 body {
   color: var(--color-text-dark);
   background: var(--color-background);
   font-family: var(--font-family-body);
+  font-feature-settings: "ss01", "cv11";
+  text-rendering: optimizeLegibility;
 }
 
-.focus-ring {
-  outline: none;
-}
-
-.focus-ring:focus-visible {
-  box-shadow:
-    0 0 0 2px rgba(255, 255, 255, 0.95),
-    0 0 0 4px rgba(200, 168, 75, 0.55);
+::selection {
+  background: rgba(212,175,54, 0.35);
+  color: var(--color-ink);
 }
 
 .font-heading {
@@ -111,11 +62,151 @@ body {
   font-family: var(--font-family-body);
 }
 
-.accent-gold-line {
-  width: 2rem;
-  height: 0.25rem;
-  background-color: var(--color-gold);
-  border-radius: 0.25rem;
+.focus-ring {
+  outline: none;
+}
+
+.focus-ring:focus-visible {
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.95),
+    0 0 0 4px rgba(212,175,54, 0.7);
+}
+
+@layer components {
+  /* ── Layout ── */
+  .container-site {
+    @apply mx-auto w-full max-w-site px-5 sm:px-8 lg:px-12;
+  }
+
+  .section-y {
+    @apply py-20 md:py-28 lg:py-32;
+  }
+
+  /* ── Typography ── */
+  .display-xl {
+    @apply font-heading font-extrabold;
+    font-size: clamp(2.75rem, 7.2vw, 6.75rem);
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+  }
+
+  .display-lg {
+    @apply font-heading font-extrabold;
+    font-size: clamp(2.25rem, 5vw, 4.5rem);
+    line-height: 1;
+    letter-spacing: -0.035em;
+  }
+
+  .display-md {
+    @apply font-heading font-bold;
+    font-size: clamp(1.875rem, 3.4vw, 3rem);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+  }
+
+  .heading-sm {
+    @apply font-heading text-xl font-bold md:text-2xl;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+
+  .lead {
+    @apply text-lg leading-relaxed md:text-xl;
+  }
+
+  .eyebrow {
+    @apply font-mono text-[11px] font-medium uppercase tracking-[0.18em];
+  }
+
+  /* ── Buttons ── */
+  .btn {
+    @apply relative inline-flex min-h-[48px] items-center justify-center gap-2.5 overflow-hidden rounded-full px-6 text-[14px] font-semibold tracking-[-0.005em] transition-[background-color,color,border-color,box-shadow,transform] duration-300 ease-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-60;
+  }
+
+  .btn-gold {
+    @apply bg-gold text-ink hover:bg-gold-soft hover:shadow-[0_10px_30px_-10px_rgba(212,175,54,0.7)];
+  }
+
+  .btn-navy {
+    @apply bg-primary text-white hover:bg-ink hover:shadow-[0_10px_30px_-12px_rgba(5,6,31,0.6)];
+  }
+
+  .btn-light {
+    @apply bg-white text-ink hover:bg-ivory;
+  }
+
+  .btn-outline-light {
+    @apply border border-white/30 text-white hover:border-white hover:bg-white/10;
+  }
+
+  .btn-outline {
+    @apply border border-primary/20 text-primary hover:border-primary hover:bg-primary hover:text-white;
+  }
+
+  .btn-arrow {
+    @apply transition-transform duration-300 ease-brand group-hover:translate-x-1;
+  }
+
+  /* Text link with animated underline */
+  .link-underline {
+    @apply relative inline-flex items-center gap-2 font-semibold;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 0% 1px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    transition: background-size 0.4s var(--ease-brand);
+  }
+
+  .link-underline:hover {
+    background-size: 100% 1px;
+  }
+
+  /* ── Surfaces ── */
+  .hairline {
+    @apply border-line;
+  }
+
+  .grain {
+    position: relative;
+  }
+
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.05;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Form fields shared by public forms */
+  .field {
+    @apply w-full rounded-lg border border-line bg-white px-4 py-3.5 text-[15px] text-ink outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-text-muted/70 focus:border-primary focus:shadow-[0_0_0_4px_rgba(8,9,53,0.08)] disabled:opacity-60;
+  }
+
+  .field-label {
+    @apply mb-2 block text-[13px] font-semibold text-ink;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-pretty {
+    text-wrap: pretty;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .rich-text-editor .ql-toolbar.ql-snow {
@@ -181,7 +272,9 @@ body {
 }
 
 .rich-text-content h2 {
-  font-size: 1.5rem;
+  font-size: 1.75rem;
+  letter-spacing: -0.02em;
+  margin-top: 2.5rem;
 }
 
 .rich-text-content h3 {
@@ -189,9 +282,9 @@ body {
 }
 
 .rich-text-content p {
-  margin-bottom: 1.25rem;
-  line-height: 1.75;
-  color: var(--color-text-dark);
+  margin-bottom: 1.4rem;
+  line-height: 1.8;
+  color: #1c1e45;
 }
 
 .rich-text-content ul,
@@ -210,11 +303,14 @@ body {
 }
 
 .rich-text-content blockquote {
-  margin: 1.25rem 0;
-  padding-left: 1rem;
-  border-left: 3px solid var(--color-gold);
-  color: var(--color-text-muted);
-  font-style: italic;
+  margin: 2rem 0;
+  padding-left: 1.5rem;
+  border-left: 2px solid var(--color-gold);
+  color: var(--color-primary);
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
 }
 
 .rich-text-content a {
@@ -227,6 +323,10 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   *,
   *::before,
   *::after {

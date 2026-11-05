@@ -91,7 +91,7 @@ export function RegistrationFlow({ slug }: RegistrationFlowProps) {
     <div className="relative overflow-hidden">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-72 bg-[radial-gradient(ellipse_at_top,_rgba(200,168,75,0.14),_transparent_60%),linear-gradient(180deg,_rgba(27,36,82,0.06),_transparent)]"
+        className="pointer-events-none absolute inset-x-0 top-0 h-72 bg-[radial-gradient(ellipse_at_top,_rgba(212,175,54,0.14),_transparent_60%),linear-gradient(180deg,_rgba(8,9,53,0.06),_transparent)]"
       />
 
       <div className="relative mx-auto max-w-6xl px-4 py-12 md:py-16">

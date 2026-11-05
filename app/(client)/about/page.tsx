@@ -1,7 +1,19 @@
 import type { Metadata } from "next";
-import Image from "next/image";
-import { AboutPageContent } from "@/components/sections/AboutPageContent";
-// import { patrons } from "@/data/patrons";
+import {
+  AboutHistory,
+  AboutIntro,
+  AboutObjectives,
+  AboutPhilosophy,
+  AboutPledge,
+} from "@/components/sections/AboutPageContent";
+import { MissionBand } from "@/components/sections/MissionBand";
+import { DirectorDesk } from "@/components/sections/DirectorDesk";
+import { StatsBar } from "@/components/sections/StatsBar";
+import { ClosingCta } from "@/components/sections/HomeSections";
+import { PageHero } from "@/components/site/PageHero";
+import { ButtonLink } from "@/components/site/primitives";
+import { fetchPublicDirectorDesk } from "@/lib/api/director-desk";
+import { fetchPublicHeroStats } from "@/lib/api/hero-stats";
 
 export const metadata: Metadata = {
   title: "About Us",
@@ -24,48 +36,46 @@ export const metadata: Metadata = {
   ],
 };
 
-export default function AboutPage() {
-  // const aboutPatrons = patrons.slice(0, 3);
+export default async function AboutPage() {
+  const [directorDesk, stats] = await Promise.all([
+    fetchPublicDirectorDesk(),
+    fetchPublicHeroStats(),
+  ]);
 
   return (
     <>
-      <section
-        className="relative min-h-[400px] flex flex-col justify-end text-white overflow-hidden"
-        aria-labelledby="about-hero-title"
+      <PageHero
+        crumbs={[{ label: "About us" }]}
+        eyebrow="About the Royal Ambassadors"
+        title={
+          <>
+            Our heritage. Our identity.{" "}
+            <span className="italic text-gold">Our calling.</span>
+          </>
+        }
+        description="Our heritage, vision, and mission to develop godly young men — from a worldwide Baptist movement to the chapters of the Pentecost Baptist Association."
+        image="/images/ra-assembly.jpg"
+        imagePosition="center 30%"
       >
-        <div className="absolute inset-0">
-          <Image
-            src="/images/image1.jpeg"
-            alt=""
-            fill
-            className="object-cover"
-            sizes="100vw"
-            priority
-          />
-          <div
-            className="absolute inset-0 z-10"
-            style={{
-              background:
-                "linear-gradient(to bottom, rgba(27,46,90,0.35) 0%, rgba(27,46,90,0.88) 100%)",
-            }}
-            aria-hidden
-          />
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <ButtonLink href="#mission" variant="gold">
+            Mission &amp; vision
+          </ButtonLink>
+          <ButtonLink href="#history" variant="outline-light">
+            Our history
+          </ButtonLink>
         </div>
+      </PageHero>
 
-        <div className="relative z-20 max-w-7xl mx-auto w-full px-4 py-14 md:py-16">
-          <h1
-            id="about-hero-title"
-            className="font-heading text-4xl md:text-5xl font-bold"
-          >
-            About Us
-          </h1>
-          <p className="text-white/90 mt-2 max-w-2xl text-base md:text-lg">
-            Our heritage, vision, and mission to develop godly young men.
-          </p>
-        </div>
-      </section>
-
-      <AboutPageContent />
+      <AboutIntro />
+      <AboutHistory />
+      <MissionBand id="mission" index="03" />
+      <AboutPhilosophy />
+      <AboutObjectives />
+      <AboutPledge />
+      <StatsBar stats={stats} />
+      <DirectorDesk data={directorDesk} id="director" index="07" />
+      <ClosingCta />
     </>
   );
 }
