@@ -225,9 +225,9 @@ export function Navbar() {
             />
           </span>
           <span className="flex flex-col leading-none">
-            <span
+             <span
               className={cn(
-                "font-heading text-[16px] font-extrabold tracking-[-0.02em] transition-colors",
+                "font-heading text-[18px] font-extrabold tracking-[-0.02em] transition-colors",
                 light ? "text-ink" : "text-white",
               )}
             >
@@ -235,12 +235,14 @@ export function Navbar() {
             </span>
             <span
               className={cn(
-                "mt-1 font-mono text-[9.5px] uppercase tracking-[0.2em] transition-colors",
+                "mt-1 font-mono text-[11px] uppercase tracking-[0.2em] transition-colors",
                 light ? "text-text-muted" : "text-white/60",
               )}
             >
               Pentecost Baptist Assoc.
             </span>
+           
+            
           </span>
         </Link>
 
