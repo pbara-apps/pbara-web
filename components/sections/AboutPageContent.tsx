@@ -1,336 +1,314 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
-import { FiCheckSquare, FiEye, FiShield, FiArrowRight } from "react-icons/fi";
-import { Button, cn } from "@heroui/react";
-import { useState } from "react";
+import { ImageReveal, Reveal, Stagger, StaggerItem } from "@/components/site/motion";
+import { Eyebrow } from "@/components/site/primitives";
+import { RA_TIERS } from "@/components/sections/IdentitySection";
 
-const stats = [
-  { value: "12+", label: "Active Chapters" },
-  { value: "500+", label: "Total Ambassadors" },
-  { value: "25+", label: "Annual Programs" },
+const TIMELINE = [
+  {
+    year: "1908",
+    title: "A vision begins",
+    body: "The vision and work of Royal Ambassadors started in the United States among the Brotherhood Commission of the Southern Baptist Convention.",
+  },
+  {
+    year: "1920s",
+    title: "Arrival in Nigeria",
+    body: "Royal Ambassadors came to Nigeria through Southern Baptist Convention missionaries, as one of the world's leading organisations for boys.",
+  },
+  {
+    year: "1954",
+    title: "Men take up the boys' work",
+    body: "The Women's Missionary Union sponsored the organisation from the beginning until 1954, when it was proposed that the men of the Nigerian Baptist Convention take over the boys' work.",
+  },
+  {
+    year: "1961",
+    title: "Men and Boys Department",
+    body: "A Men and Boys department was proposed to serve both men and boys. It later became the Men's Missionary Union and Youth department.",
+  },
+  {
+    year: "1998",
+    title: "Missionary Organisations Department",
+    body: "The work became part of what is now known as the Missionary Organisations Department.",
+  },
+  {
+    year: "Today",
+    title: "In every association",
+    body: "To the glory of God, RAN now exists in all Baptist associations, conferences and the convention, and is spreading its mission into the West African sub-region.",
+  },
 ];
 
-export function AboutPageContent() {
-  const [showMore, setShowMore] = useState(false); // Default to false, meaning show only the first paragraph
+// Official order, from the RA "Vision, Goals & Cardinal Objectives" document.
+const OBJECTIVES = [
+  "Helping boys in personal spiritual development and discipleship.",
+  "Equipping members for mission action.",
+  "Ensuring educational and career development of boys.",
+  "Promoting social awareness, responsibility and responsiveness.",
+  "Promoting personal and corporate discipline and cohesion.",
+  "Promoting personal commitment demonstrated in stewardship of life, churchmanship and denominational interest, and understanding as well as appreciation of Baptist beliefs and practices.",
+  "Enabling members' personality, potentiality and dignity development.",
+];
 
-  const handleReadMore = () => {
-    setShowMore(!showMore);
-  };
+// The RA pledge — its five lines are also the organisation's founding goals.
+const PLEDGE = [
+  "To become a well-informed, responsible follower of Christ;",
+  "To have a Christ-like concern for all people;",
+  "To carry the message of Christ around the world;",
+  "To work with others in sharing Christ; and",
+  "To keep myself clean and healthy in mind and body.",
+];
 
+export function AboutIntro() {
   return (
-    <div className="max-w-[1100px] mx-auto px-6 py-16">
-      <motion.section
-        className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-10"
-        aria-labelledby="heritage-heading"
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
-      >
-        <div>
-          <div className="w-16 h-1 bg-gold mb-6" aria-hidden />
-          <h2
-            id="heritage-heading"
-            className="font-heading text-3xl mb-6 text-text-dark"
-          >
-            About Royal Ambassadors of Nigeria
-          </h2>
-          <p className="text-text-muted leading-relaxed mb-4 text-justify">
-            Royal Ambassadors is the name of a Baptist worldwide missionary
-            organization for boys between the ages of 10 and 24 – an
-            international organization found in many countries of the world,
-            wherever there are Baptists. It is found on the continents of
-            Africa, Asia, Australia, Europe, North America, and South America.
-          </p>
-          <p className="text-text-muted leading-relaxed text-justify">
-            The organization in Nigeria is Called Royal Ambassadors of
-            Nigeria(RAN). In its mission education and ministry plan, RAN has a
-            foundational Christian education plans for junior RA, boys between
-            the ages 10 and 12; basic discipleship plans for intermediate RA,
-            Boys from age 13 to 16 (or secondary school age); and solid mission
-            education and action plans for senior RA, who are boys within the
-            ages 17 and 24.
-          </p>
-        </div>
-
-        <div className="relative rounded-xl overflow-hidden shadow-2xl h-[400px] bg-primary/10">
-          <Image
-            src="/images/image4.jpg"
-            alt="Royal Ambassadors activities and heritage"
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, 550px"
-          />
-        </div>
-      </motion.section>
-      {showMore && (
-        <motion.section
-          className={cn("mb-24", showMore ? "h-auto" : "h-40 overflow-hidden")}
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-        >
-          <p className="text-text-muted leading-relaxed text-justify">
-            The vision and work of royal ambassadors started in the united
-            states of America in 1908 among the brotherhood commission of the
-            southern Baptist convention, USA; and came to Nigeria as one of the
-            world’s leading organizations for boys through the SBC missionaries
-            in the 1920’s. The women’s missionary Union sponsored the
-            organization from the beginning until 1954 when it was proposed that
-            the men of the Nigerian Baptist convention should take over the
-            boy’s work. The situation that led to the proposal of Men and Boys
-            department in 1961 which served both men and boys, then later became
-            the defunct Men’s Missionary Union and Youth department, now known
-            as Missionary Organizations Department since 1998. Royal Ambassadors
-            National Executive Committee (RANEC) comprises of all elected
-            national officers of the organization only; while the National
-            Executive Council (NEC) includes all Conference RA Directors.
-          </p>
-          <p className="text-text-muted leading-relaxed text-justify">
-            The RA Marshal is the presiding officer in all meetings (of
-            executives or general sessions). But the council cooperates with the
-            MMU NEC through an advisory representative designated RA council
-            Adviser; and operates from the MMU office, Baptist building, Ibadan
-            through a denominational/administrative head of the unit. To the
-            glory of God, RAN now exist in all Baptist associations ,
-            conferences and the convention, and is spreading its missions
-            advancement tentacles to the West African sub-regions.
-          </p>
-        </motion.section>
-      )}
-
-      <div className="flex items-center justify-center gap-2">
-        <div
-          className="w-16 md:w-64 border border-primary rounded-full"
-          aria-hidden
-        />
-        <Button
-          radius="full"
-          variant="bordered"
-          className="text-primary"
-          onPress={handleReadMore}
-        >
-          {showMore ? "Read Less" : "Read More about RAN"}{" "}
-          <FiArrowRight size={18} aria-hidden />
-        </Button>
-        <div
-          className="w-16 md:w-64 border border-primary rounded-full"
-          aria-hidden
-        />
-      </div>
-
-      <div
-        className="w-full flex items-center justify-center my-16"
-        aria-hidden
-      >
-        <div className="flex-grow border-t border-gold/30" />
-        <span className="px-4 text-gold">
-          <FiShield size={22} />
-        </span>
-        <div className="flex-grow border-t border-gold/30" />
-      </div>
-
-      <motion.section
-        className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-24"
-        aria-labelledby="vision-mission-heading"
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
-      >
-        <h2 id="vision-mission-heading" className="sr-only">
-          Vision and Mission
-        </h2>
-
-        <div className="bg-primary/5 border-l-4 border-primary p-10 rounded-r-xl">
-          <div className="text-primary mb-4">
-            <FiEye size={28} aria-hidden />
+    <section className="section-y bg-white" aria-labelledby="about-intro-heading">
+      <div className="container-site">
+        <div className="grid gap-12 lg:grid-cols-12">
+          <Reveal className="lg:col-span-4">
+            <Eyebrow index="01">Who we are</Eyebrow>
+          </Reveal>
+          <div className="lg:col-span-8">
+            <Reveal>
+              <h2
+                id="about-intro-heading"
+                className="font-heading text-[clamp(1.75rem,3.2vw,2.75rem)] font-bold leading-[1.2] tracking-[-0.03em] text-ink text-pretty"
+              >
+                Royal Ambassadors is a worldwide Baptist missionary organisation
+                for boys between the ages of 10 and 24 — found wherever there
+                are Baptists, on six continents.
+              </h2>
+            </Reveal>
+            <Reveal delay={0.1} className="mt-10 grid gap-8 text-[17px] leading-relaxed text-text-muted md:grid-cols-2">
+              <p>
+                The organisation in Nigeria is called the Royal Ambassadors of
+                Nigeria (RAN). The Pentecost Baptist Association Royal
+                Ambassadors carry that work into our local churches and
+                chapters.
+              </p>
+              <p>
+                In its mission education and ministry plan, RAN provides a
+                learning path for every age — from foundational Christian
+                education for juniors to solid mission education and action for
+                seniors.
+              </p>
+            </Reveal>
           </div>
-          <h3 className="font-heading text-2xl mb-4 text-primary">
-            Our Vision
-          </h3>
-          <p className="text-text-dark text-lg italic">
-            Touching the lives of boys... impacting the eternity of men!
-          </p>
         </div>
 
-        <div className="bg-gold/10 border-l-4 border-gold p-10 rounded-r-xl">
-          <div className="text-gold mb-4">
-            <FiCheckSquare size={28} aria-hidden />
-          </div>
-          <h3 className="font-heading text-2xl mb-4 text-gold">Our Mission</h3>
-          <p className="text-text-dark text-lg">
-            &quot;To reach, teach, and win young men for Christ, fostering their
-            growth through spiritual disciplines, mission activities, and
-            character development.&quot;
-          </p>
-        </div>
-      </motion.section>
-
-      <motion.section className="mb-10">
-        <div className="space-y-6">
-          <div className="flex items-center justify-center gap-2">
-            <div
-              className="w-16 border border-primary rounded-full"
-              aria-hidden
+        <div className="mt-20 grid gap-5 md:grid-cols-12">
+          <ImageReveal className="aspect-[4/3] rounded-xl bg-mist md:col-span-7 md:aspect-auto md:min-h-[28rem]">
+            <Image
+              src="/images/image1.jpeg"
+              alt="Royal Ambassadors and auxiliary members at a church ceremony"
+              fill
+              sizes="(max-width: 768px) 100vw, 60vw"
+              className="object-cover"
             />
-            <Button
-              radius="full"
-              variant="bordered"
-              color="primary"
-              className="text-primary"
-            >
-              7 Cardinal Objectives
-            </Button>
-            <div
-              className="w-16 border border-primary rounded-full"
-              aria-hidden
-            />
-          </div>
-          <div className="space-y-6">
-            <div className="grid grid-cols-2 gap-4 relative">
-              <div className="py-6 px-8 rounded-xl bg-primary text-white text-center">
-                Helping boys in personal spiritual development and discipleship.
-              </div>
-              <div className="absolute w-16 h-6 bg-[#f5f6fa] rounded-full left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2" />
-              <div className="py-6 px-8 rounded-xl bg-primary text-white text-center">
-                Ensuring educational and career development of boys.
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4 relative">
-              <div className="py-6 px-8 rounded-xl bg-primary text-white text-center">
-                Promoting personal and corporate discipline and cohesion.
-              </div>
-              <div className="absolute w-16 h-6 bg-[#f5f6fa] rounded-full left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2" />
-              <div className="py-6 px-8 rounded-xl bg-primary text-white text-center">
-                Enabling members personality, potentiality and dignity
-                development.
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4 relative">
-              <div className="py-6 px-8 rounded-xl bg-primary text-white text-center">
-                Equipping members for mission action.
-              </div>
-              <div className="absolute w-16 h-6 bg-[#f5f6fa] rounded-full left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2" />
-              <div className="py-6 px-8 rounded-xl bg-primary text-white text-center">
-                Promoting social awareness, responsibility and responsiveness.
-              </div>
-            </div>
-
-            <div className="flex justify-center items-center mt-6">
-              <div className="p-6 rounded-xl bg-primary text-white text-center">
-                Promoting personal commitment demonstrated in stewardship of
-                life, churchmanship and denominational interest, and
-                understanding as well as an appreciation of Baptist beliefs and
-                practices.
-              </div>
-            </div>
-          </div>
-        </div>
-      </motion.section>
-
-      <motion.section
-        className="mb-24"
-        aria-labelledby="overview-heading"
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
-      >
-        <div className="text-center mb-12">
-          <h2
-            id="overview-heading"
-            className="font-heading text-3xl mb-4 text-text-dark"
-          >
-            Association Overview
-          </h2>
-          <p className="max-w-2xl mx-auto text-text-muted">
-            The Pentecost Baptist Association RA operates under a structured
-            hierarchy designed to foster accountability and excellence.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {stats.map(({ value, label }) => (
-            <div
-              key={label}
-              className="bg-white p-8 rounded-xl shadow-sm border border-primary/10 text-center"
-            >
-              <span className="text-4xl font-bold text-primary block mb-2 font-heading">
-                {value}
-              </span>
-              <span className="text-sm font-semibold text-text-muted uppercase tracking-widest">
-                {label}
-              </span>
-            </div>
-          ))}
-        </div>
-      </motion.section>
-
-      {/* <motion.section
-        className="bg-slate-50 rounded-2xl p-12 mb-16"
-        aria-labelledby="patrons-heading"
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
-      >
-        <div className="flex flex-col items-center mb-12">
-          <h2
-            id="patrons-heading"
-            className="font-heading text-4xl mb-4 text-text-dark"
-          >
-            Our Patrons
-          </h2>
-          <div className="w-24 h-0.5 bg-gold" aria-hidden />
-          <p className="mt-4 text-text-muted text-center max-w-xl italic">
-            Dignified elders and leaders providing spiritual guidance and
-            support to the association.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-          {aboutPatrons.map((patron) => {
-            const imageSrc = patron.image ?? "/images/ra-logo.png";
-            return (
-              <div key={patron.id} className="flex flex-col items-center">
-                <div className="size-40 rounded-full border-4 border-gold p-1 mb-6 bg-white overflow-hidden">
-                  <div className="relative w-full h-full rounded-full overflow-hidden bg-primary/10">
-                    <Image
-                      alt={`${patron.name} — patron`}
-                      src={imageSrc}
-                      fill
-                      className="object-cover"
-                      sizes="160px"
-                    />
-                  </div>
+          </ImageReveal>
+          <Stagger as="ol" className="flex flex-col gap-5 md:col-span-5">
+            {RA_TIERS.map((t) => (
+              <StaggerItem
+                as="li"
+                key={t.name}
+                className="flex flex-1 items-end justify-between gap-6 rounded-xl bg-ivory p-7"
+              >
+                <div>
+                  <p className="text-lg font-bold text-ink">{t.name}</p>
+                  <p className="mt-1 text-sm text-text-muted">{t.focus}</p>
                 </div>
-                <h4 className="font-heading text-xl text-text-dark">
-                  {patron.name}
-                </h4>
-                <p className="text-gold font-medium mb-3">{patron.role}</p>
-                <p className="text-text-muted text-sm text-center">
-                  {patron.description ?? patron.quote}
+                <p className="shrink-0 font-heading text-4xl font-extrabold tracking-[-0.05em] text-primary">
+                  {t.ages}
                 </p>
-              </div>
-            );
-          })}
+              </StaggerItem>
+            ))}
+          </Stagger>
         </div>
-      </motion.section> */}
-
-      <div className="pt-2">
-        <Link
-          href="/contact"
-          className="inline-flex items-center gap-2 text-primary font-bold uppercase tracking-wider text-sm hover:text-gold transition-colors min-h-[44px] touch-manipulation"
-        >
-          Join the Mission
-          <FiArrowRight size={18} aria-hidden />
-        </Link>
       </div>
-    </div>
+    </section>
+  );
+}
+
+export function AboutHistory() {
+  return (
+    <section id="history" className="section-y bg-ivory" aria-labelledby="history-heading">
+      <div className="container-site">
+        <div className="grid gap-14 lg:grid-cols-12">
+          <div className="lg:col-span-4">
+            <div className="lg:sticky lg:top-28">
+              <Reveal>
+                <Eyebrow index="02">Our heritage</Eyebrow>
+                <h2 id="history-heading" className="display-md mt-6 text-balance text-ink">
+                  More than a century of raising boys for Christ.
+                </h2>
+                <p className="mt-6 text-[16px] leading-relaxed text-text-muted">
+                  The Royal Ambassadors National Executive Committee (RANEC)
+                  comprises all elected national officers, while the National
+                  Executive Council (NEC) includes all Conference RA Directors.
+                  The RA Marshal presides over all meetings, and the council
+                  cooperates with the MMU NEC through a designated RA Council
+                  Adviser, operating from the MMU office, Baptist Building,
+                  Ibadan.
+                </p>
+              </Reveal>
+            </div>
+          </div>
+
+          <ol className="relative lg:col-span-8">
+            <span aria-hidden className="absolute bottom-2 left-[7px] top-2 w-px bg-line md:left-[9.5rem]" />
+            {TIMELINE.map((item, i) => (
+              <Reveal
+                as="li"
+                key={item.year}
+                delay={i * 0.04}
+                className="relative grid gap-3 pb-12 pl-10 last:pb-0 md:grid-cols-[8rem_1fr] md:gap-12 md:pl-0"
+              >
+                <span
+                  aria-hidden
+                  className="absolute left-0 top-2 h-[15px] w-[15px] rounded-full border-[3px] border-ivory bg-gold ring-1 ring-gold md:left-[9.5rem] md:-translate-x-[7px]"
+                />
+                <p className="font-heading text-3xl font-extrabold tracking-[-0.04em] text-primary md:text-right">
+                  {item.year}
+                </p>
+                <div className="md:pl-8">
+                  <h3 className="text-lg font-bold text-ink">{item.title}</h3>
+                  <p className="mt-2 text-[16px] leading-relaxed text-text-muted">
+                    {item.body}
+                  </p>
+                </div>
+              </Reveal>
+            ))}
+          </ol>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function AboutObjectives() {
+  return (
+    <section id="objectives" className="section-y bg-white" aria-labelledby="objectives-heading">
+      <div className="container-site">
+        <div className="grid gap-8 border-b border-line pb-10 lg:grid-cols-12 lg:items-end">
+          <Reveal className="lg:col-span-7">
+            <Eyebrow index="05">What we work towards</Eyebrow>
+            <h2 id="objectives-heading" className="display-lg mt-6 text-ink">
+              Seven cardinal objectives
+            </h2>
+          </Reveal>
+          <Reveal delay={0.1} className="lg:col-span-5">
+            <p className="text-lg leading-relaxed text-text-muted">
+              Every program, camp and chapter meeting is shaped by these seven
+              aims of the Royal Ambassadors of Nigeria.
+            </p>
+          </Reveal>
+        </div>
+
+        <Stagger as="ol" className="grid md:grid-cols-2">
+          {OBJECTIVES.map((text, i) => (
+            <StaggerItem
+              as="li"
+              key={text}
+              className={`group flex gap-6 border-b border-line py-8 md:py-10 ${
+                i % 2 === 0 ? "md:pr-10" : "md:border-l md:pl-10"
+              } ${i === OBJECTIVES.length - 1 ? "md:col-span-2 md:border-l-0 md:pl-0" : ""}`}
+            >
+              <span className="w-16 shrink-0 font-heading text-5xl font-extrabold leading-none tracking-[-0.05em] text-gold/70 transition-colors duration-500 group-hover:text-gold">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <p className="pt-1 text-lg font-semibold leading-snug text-ink md:text-xl">
+                {text}
+              </p>
+            </StaggerItem>
+          ))}
+        </Stagger>
+      </div>
+    </section>
+  );
+}
+
+export function AboutPhilosophy() {
+  return (
+    <section id="philosophy" className="section-y bg-ivory" aria-labelledby="philosophy-heading">
+      <div className="container-site">
+        <div className="grid gap-14 lg:grid-cols-12 lg:gap-12">
+          <Reveal className="lg:col-span-7">
+            <Eyebrow index="04">Our King&apos;s command</Eyebrow>
+            <h2 id="philosophy-heading" className="sr-only">
+              Our philosophy
+            </h2>
+            <figure className="mt-8">
+              <blockquote className="font-heading text-[clamp(1.75rem,3.2vw,2.75rem)] font-bold leading-[1.2] tracking-[-0.03em] text-ink text-pretty">
+                <span className="text-gold">“</span>Therefore go and make
+                disciples of all nations, baptizing them in the name of the
+                Father and of the Son and of the Holy Spirit, and teaching them
+                to obey everything I have commanded you. And surely I am with
+                you always, to the very end of the age.
+                <span className="text-gold">”</span>
+              </blockquote>
+              <figcaption className="eyebrow mt-6 text-text-muted">
+                <span className="text-gold">Matthew 28:19–20</span> · NIV
+              </figcaption>
+            </figure>
+          </Reveal>
+
+          <Reveal delay={0.1} className="lg:col-span-5 lg:pt-16">
+            <p className="eyebrow text-gold">Our philosophy</p>
+            <div className="mt-5 space-y-5 text-[17px] leading-relaxed text-text-muted">
+              <p>
+                The foundation, vision and ministries of RAN are responses to
+                the Lord&apos;s command to make disciples of{" "}
+                <span className="font-semibold text-ink">all</span> nations.
+              </p>
+              <p>
+                We minister to boys because it is easier to catch them young.
+                Today&apos;s boys are the men of tomorrow — the ones who will
+                carry the social and spiritual responsibility of leading
+                families, communities and nations. They must not be left in
+                the wrong hands.
+              </p>
+            </div>
+          </Reveal>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function AboutPledge() {
+  return (
+    <section id="pledge" className="grain relative overflow-hidden bg-ink text-white" aria-labelledby="pledge-heading">
+      <div className="container-site section-y relative">
+        <div className="grid gap-14 lg:grid-cols-12">
+          <Reveal className="lg:col-span-4">
+            <Eyebrow index="06" tone="dark">
+              The Royal Ambassador Pledge
+            </Eyebrow>
+            <h2 id="pledge-heading" className="display-md mt-6 text-balance">
+              As a Royal Ambassador I will do my best:
+            </h2>
+            <p className="mt-6 max-w-sm text-[15px] leading-relaxed text-white/60">
+              Every ambassador makes this pledge. Its five commitments are also
+              the founding goals of the Royal Ambassadors.
+            </p>
+          </Reveal>
+
+          <Stagger as="ol" className="lg:col-span-8">
+            {PLEDGE.map((line, i) => (
+              <StaggerItem
+                as="li"
+                key={line}
+                className="group flex items-baseline gap-6 border-t border-white/10 py-7 last:border-b md:gap-10"
+              >
+                <span className="w-10 shrink-0 font-mono text-[12px] text-gold">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span className="font-heading text-[clamp(1.375rem,2.4vw,2rem)] font-bold leading-snug tracking-[-0.025em] transition-colors duration-500 group-hover:text-gold">
+                  {line}
+                </span>
+              </StaggerItem>
+            ))}
+          </Stagger>
+        </div>
+      </div>
+    </section>
   );
 }

@@ -1,75 +1,47 @@
 "use client";
 
 import type { PastOfficer } from "@/types";
-import { cn } from "@heroui/react";
+import { Stagger, StaggerItem } from "@/components/site/motion";
 
 interface PastOfficersTableProps {
   officers: PastOfficer[];
 }
 
+/** Past officers grouped by term of service, as an editorial roll of honour. */
 export function PastOfficersTable({ officers }: PastOfficersTableProps) {
+  const terms = new Map<string, PastOfficer[]>();
+  for (const o of officers) {
+    const key = `${o.yearStart}–${o.yearEnd}`;
+    terms.set(key, [...(terms.get(key) ?? []), o]);
+  }
+
   return (
-    <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm">
-      <table
-        className="min-w-full divide-y divide-slate-200 dark:divide-slate-700"
-        aria-label="Past officers"
-      >
-        <thead className="bg-primary/5 dark:bg-primary/10">
-          <tr>
-            <th
-              className="px-6 py-4 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider"
-              scope="col"
-            >
-              Year of Service
-            </th>
-            <th
-              className="px-6 py-4 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider"
-              scope="col"
-            >
-              Name
-            </th>
-            <th
-              className="px-6 py-4 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider"
-              scope="col"
-            >
-              Post
-            </th>
-            <th
-              className="px-6 py-4 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider"
-              scope="col"
-            >
-              Status
-            </th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-slate-200 dark:divide-slate-700 bg-white dark:bg-slate-800">
-          {officers.map((o) => (
-            <tr key={o.id} className="hover:bg-primary/5 transition-colors">
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-900 dark:text-slate-100">
-                {o.yearStart} — {o.yearEnd}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-700 dark:text-slate-300">
-                {o.name}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-primary font-medium">
-                {o.post}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-xs">
-                <span
-                  className={cn(
-                    "px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded-full",
-                    o.status === "Completed"
-                      ? "bg-green-100 dark:bg-green-700"
-                      : "bg-red-100 dark:bg-red-700",
-                  )}
-                >
-                  {o.status === "Completed" ? "Completed" : "Active"}
+    <div className="space-y-14">
+      {Array.from(terms.entries()).map(([term, list]) => (
+        <div key={term} className="grid gap-6 md:grid-cols-12">
+          <div className="md:col-span-3">
+            <p className="eyebrow text-text-muted">Term of service</p>
+            <p className="mt-2 font-heading text-4xl font-extrabold tracking-[-0.05em] text-primary">
+              {term}
+            </p>
+          </div>
+          <Stagger as="ul" className="md:col-span-9">
+            {list.map((o) => (
+              <StaggerItem
+                as="li"
+                key={o.id}
+                className="group grid grid-cols-1 gap-1 border-t border-line py-5 sm:grid-cols-[1fr_auto_auto] sm:items-center sm:gap-8"
+              >
+                <span className="text-lg font-bold text-ink transition-transform duration-500 ease-brand group-hover:translate-x-1">
+                  {o.name}
                 </span>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                <span className="eyebrow text-gold">{o.post}</span>
+                <span className="eyebrow text-text-muted">{o.status}</span>
+              </StaggerItem>
+            ))}
+          </Stagger>
+        </div>
+      ))}
     </div>
   );
 }

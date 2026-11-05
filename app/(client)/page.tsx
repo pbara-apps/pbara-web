@@ -1,10 +1,17 @@
 import type { Metadata } from "next";
 import { HeroSection } from "@/components/sections/HeroSection";
 import { StatsBar } from "@/components/sections/StatsBar";
+import { IdentitySection } from "@/components/sections/IdentitySection";
+import { MissionBand } from "@/components/sections/MissionBand";
+import { ProgramsShowcase } from "@/components/sections/ProgramsShowcase";
 import { DirectorDesk } from "@/components/sections/DirectorDesk";
-import { HomeSections } from "@/components/sections/HomeSections";
 import { OpenRegistrationsSection } from "@/components/sections/OpenRegistrationsSection";
-import { executives } from "@/data/executives";
+import {
+  ClosingCta,
+  HomeChapters,
+  HomeLeadership,
+  HomeNews,
+} from "@/components/sections/HomeSections";
 import { newsItems as fallbackNews } from "@/data/news";
 import { fetchPublicDirectorDesk } from "@/lib/api/director-desk";
 import { fetchPublicHeroStats } from "@/lib/api/hero-stats";
@@ -29,25 +36,22 @@ export default async function HomePage() {
   ]);
   const newsItems = news.length > 0 ? news : fallbackNews;
 
-  const bulletins = [
-    newsItems.find((n) => n.category === "Featured") ?? newsItems[0],
-    newsItems.find((n) => n.category === "Report") ?? newsItems[1],
-    newsItems.find((n) => n.category === "Upcoming") ?? newsItems[2],
-  ].filter(Boolean) as typeof newsItems;
-
-  const previewPrograms = openPrograms.slice(0, 3);
-
   return (
     <>
-      <HeroSection stats={heroStats} />
-      <StatsBar />
-      <DirectorDesk data={directorDesk} />
-
+      <HeroSection />
+      <StatsBar stats={heroStats} />
+      <IdentitySection />
+      <MissionBand />
+      <ProgramsShowcase />
       <OpenRegistrationsSection
-        programs={previewPrograms}
+        programs={openPrograms.slice(0, 3)}
         totalCount={openPrograms.length}
       />
-      <HomeSections executives={executives} bulletins={bulletins} />
+      <DirectorDesk data={directorDesk} compact />
+      <HomeLeadership />
+      <HomeChapters />
+      <HomeNews items={newsItems.slice(0, 4)} />
+      <ClosingCta />
     </>
   );
 }

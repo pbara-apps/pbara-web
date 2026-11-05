@@ -1,6 +1,9 @@
 import type { Config } from "tailwindcss";
 import { heroui } from "@heroui/react";
 
+/** Colour backed by an RGB-channel CSS variable, so opacity modifiers work. */
+const c = (name: string) => `rgb(var(--rgb-${name}) / <alpha-value>)`;
+
 const config: Config = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -11,18 +14,43 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: "var(--color-primary)",
-        gold: "var(--color-gold)",
-        "accent-gold": "var(--color-gold)",
-        "navy-deep": "var(--color-primary)",
-        background: "var(--color-background)",
-        surface: "var(--color-surface)",
-        "text-dark": "var(--color-text-dark)",
-        "text-muted": "var(--color-text-muted)",
+        // Brand
+        primary: c("primary"),
+        navy: c("primary"),
+        "navy-deep": c("primary"),
+        ink: c("ink"),
+        gold: c("gold"),
+        "gold-soft": c("gold-light"),
+        "accent-gold": c("gold"),
+        // Surfaces
+        background: c("background"),
+        ivory: c("background"),
+        surface: c("surface"),
+        mist: c("mist"),
+        // Text
+        "text-dark": c("text-dark"),
+        "text-muted": c("text-muted"),
+        line: "var(--color-line)",
       },
       fontFamily: {
-        heading: ["var(--font-family-heading)", "serif"],
+        heading: ["var(--font-family-heading)", "sans-serif"],
         body: ["var(--font-family-body)", "sans-serif"],
+        mono: ["var(--font-family-mono)", "monospace"],
+      },
+      maxWidth: {
+        site: "82rem",
+      },
+      transitionTimingFunction: {
+        brand: "cubic-bezier(0.22, 1, 0.36, 1)",
+      },
+      keyframes: {
+        "scroll-cue": {
+          "0%": { transform: "translateY(-100%)" },
+          "100%": { transform: "translateY(200%)" },
+        },
+      },
+      animation: {
+        "scroll-cue": "scroll-cue 2.4s cubic-bezier(0.65,0,0.35,1) infinite",
       },
     },
   },

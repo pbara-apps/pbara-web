@@ -1,8 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { FiMapPin, FiPhone, FiMail, FiSend } from "react-icons/fi";
-import { Button, Spinner } from "@heroui/react";
+import Link from "next/link";
+import { FiCheckCircle, FiMail, FiMapPin, FiSend } from "react-icons/fi";
+import { Spinner } from "@heroui/react";
+import { org_email } from "@/data/contact";
+import { Breadcrumbs } from "@/components/site/PageHero";
+import { Reveal } from "@/components/site/motion";
+import { SocialLinks, hasSocialLinks } from "@/components/site/SocialLinks";
 import type { FormEvent } from "react";
 import {
   errorToast,
@@ -51,259 +56,137 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-16">
-      <header className="mb-12">
-        <h1 className="font-heading text-3xl md:text-4xl font-bold text-text-dark">
-          Contact Our Headquarters
-        </h1>
-        <p className="text-text-muted mt-2 max-w-2xl">
-          Connect with the Royal Ambassadors leadership. Whether you&apos;re a
-          counselor, a parent, or an interested youth, we&apos;re here to guide
-          you.
-        </p>
-      </header>
+    <div className="bg-ivory">
+      <div className="container-site pt-12 md:pt-16">
+        <Breadcrumbs items={[{ label: "Contact" }]} />
+      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-        <section aria-labelledby="form-heading">
-          <h2 id="form-heading" className="sr-only">
+      <div className="container-site grid gap-6 pb-24 pt-10 md:pb-32 md:pt-14 lg:grid-cols-12 lg:gap-8">
+        {/* Info panel */}
+        <aside className="grain relative overflow-hidden rounded-2xl bg-ink p-8 text-white md:p-12 lg:col-span-5">
+          <Reveal>
+            <p className="eyebrow text-gold">Contact the secretariat</p>
+            <h1 className="display-lg mt-6 text-balance">
+              Let&apos;s talk.
+            </h1>
+            <p className="mt-6 max-w-md text-lg leading-relaxed text-white/70">
+              Whether you&apos;re a counsellor, a parent, or an interested
+              youth, the Royal Ambassadors leadership is here to guide you.
+            </p>
+          </Reveal>
+
+          <dl className="mt-24 space-y-8 border-t border-white/10 pt-10">
+            <div>
+              <dt className="eyebrow text-white/45">Email</dt>
+              <dd className="mt-2">
+                <a
+                  href={`mailto:${org_email}`}
+                  className="group inline-flex items-center gap-2 text-xl font-semibold text-white transition-colors hover:text-gold"
+                >
+                  <FiMail className="h-5 w-5 text-gold" aria-hidden />
+                  {org_email}
+                </a>
+              </dd>
+            </div>
+            <div>
+              <dt className="eyebrow text-white/45">Location</dt>
+              <dd className="mt-2 flex items-center gap-2 text-xl font-semibold">
+                <FiMapPin className="h-5 w-5 text-gold" aria-hidden />
+                Lagos, Nigeria
+              </dd>
+            </div>
+            {hasSocialLinks ? (
+              <div>
+                <dt className="eyebrow text-white/45">Follow our mission</dt>
+                <dd className="mt-3">
+                  <SocialLinks />
+                </dd>
+              </div>
+            ) : null}
+            
+          </dl>
+        </aside>
+
+        {/* Form */}
+        <section aria-labelledby="form-heading" className="rounded-2xl bg-white p-8 ring-1 ring-line md:p-12 lg:col-span-7">
+          <h2 id="form-heading" className="heading-sm text-ink">
             Send a message
           </h2>
-          <form
-            onSubmit={handleSubmit}
-            className="bg-white rounded-2xl shadow-lg p-8 space-y-6"
-          >
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div>
-                <label
-                  htmlFor="first-name"
-                  className="block text-sm font-medium text-text-dark mb-1"
-                >
-                  First Name
-                </label>
-                <input
-                  id="first-name"
-                  type="text"
-                  placeholder="John"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-gold focus:border-gold outline-none"
-                  required
-                  disabled={submitted}
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="last-name"
-                  className="block text-sm font-medium text-text-dark mb-1"
-                >
-                  Last Name
-                </label>
-                <input
-                  id="last-name"
-                  type="text"
-                  placeholder="Doe"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-gold focus:border-gold outline-none"
-                  required
-                  disabled={submitted}
-                />
-              </div>
-            </div>
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-text-dark mb-1"
-              >
-                Email Address
-              </label>
-              <input
-                id="email"
-                type="email"
-                placeholder="john.doe@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-gold focus:border-gold outline-none"
-                required
-                disabled={submitted}
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="phone"
-                className="block text-sm font-medium text-text-dark mb-1"
-              >
-                Phone (optional)
-              </label>
-              <input
-                id="phone"
-                type="tel"
-                placeholder="+234 800 000 0000"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-gold focus:border-gold outline-none"
-                disabled={submitted}
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="subject"
-                className="block text-sm font-medium text-text-dark mb-1"
-              >
-                Subject
-              </label>
-              <select
-                id="subject"
-                value={subject}
-                onChange={(e) => setSubject(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-gold focus:border-gold outline-none bg-white"
-                required
-                disabled={submitted}
-              >
-                {subjectOptions.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label
-                htmlFor="message"
-                className="block text-sm font-medium text-text-dark mb-1"
-              >
-                Your Message
-              </label>
-              <textarea
-                id="message"
-                rows={5}
-                placeholder="How can we assist you today?"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-gold focus:border-gold outline-none resize-y"
-                required
-                disabled={submitted}
-              />
-            </div>
-            {submitted ? (
-              <p className="text-gold font-medium">
-                Thank you. Your message has been sent.
-              </p>
-            ) : (
-              <Button
-                type="submit"
-                isLoading={submitMessage.isPending}
-                spinner={<Spinner size="sm" color="white" />}
-                className="w-full bg-primary text-white font-semibold py-6 flex items-center justify-center gap-2"
-              >
-                <FiSend size={18} className="shrink-0" /> Send Message →
-              </Button>
-            )}
-          </form>
-        </section>
+          <p className="mt-2 text-[15px] text-text-muted">
+            Fill in the form and the secretariat will get back to you.
+          </p>
 
-        <aside className="space-y-6">
-          <div className="bg-white rounded-xl border p-6 flex gap-4">
-            <div className="bg-gray-200 rounded-lg p-2 w-12 h-12 flex items-center justify-center">
-              <FiPhone
-                size={28}
-                className="text-primary shrink-0"
-                aria-hidden
-              />
-            </div>
-            <div>
-              <h3 className="font-heading font-bold text-text-dark">Call Us</h3>
-              <p className="text-text-muted text-sm mt-1">
-                <a href="tel:+2348012345678" className="hover:text-gold">
-                  +234 (0) 801 234 5678
-                </a>
-                <br />
-                <a href="tel:+2349012345678" className="hover:text-gold">
-                  +234 (0) 901 234 5678
-                </a>
+          {submitted ? (
+            <div className="mt-10 flex flex-col items-start gap-4 rounded-xl bg-ivory p-8">
+              <FiCheckCircle className="h-8 w-8 text-gold" aria-hidden />
+              <p className="text-xl font-bold text-ink">Thank you. Your message has been sent.</p>
+              <p className="text-text-muted">
+                We&apos;ll reply to <span className="font-semibold text-ink">{email}</span> as soon as we can.
               </p>
+              <Link href="/" className="btn btn-navy group mt-2">
+                Back to home
+              </Link>
             </div>
-          </div>
-          <div className="bg-white rounded-xl border p-6 flex gap-4">
-            <div className="bg-gray-200 rounded-lg p-2 w-12 h-12 flex items-center justify-center">
-              <FiMail size={28} className="text-primary shrink-0" aria-hidden />
-            </div>
-            <div>
-              <h3 className="font-heading font-bold text-text-dark">
-                Email Us
-              </h3>
-              <p className="text-text-muted text-sm mt-1">
-                <a
-                  href="mailto:pbara2024@gmail.com"
-                  className="hover:text-gold"
-                >
-                  pbara2024@gmail.com
-                </a>
-                <br />
-                <a href="mailto:admin@pba-ra.org" className="hover:text-gold">
-                  admin@pba-ra.org
-                </a>
-              </p>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl border p-6">
-            <h3 className="font-heading font-bold text-text-dark">
-              Follow Our Mission
-            </h3>
-            <div className="flex gap-3 mt-3" aria-label="Social media">
-              <a
-                href="https://facebook.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-12 h-12 min-w-[44px] min-h-[44px] rounded-full bg-primary text-white flex items-center justify-center hover:bg-gold hover:text-primary transition-colors"
-                aria-label="Facebook"
-              >
-                <svg
-                  className="w-[22px] h-[22px]"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                </svg>
-              </a>
-              <a
-                href="https://twitter.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-12 h-12 min-w-[44px] min-h-[44px] rounded-full bg-primary text-white flex items-center justify-center hover:bg-gold hover:text-primary transition-colors"
-                aria-label="Twitter"
-              >
-                <svg
-                  className="w-[22px] h-[22px]"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231z" />
-                </svg>
-              </a>
-              <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-12 h-12 min-w-[44px] min-h-[44px] rounded-full bg-primary text-white flex items-center justify-center hover:bg-gold hover:text-primary transition-colors"
-                aria-label="Instagram"
-              >
-                <svg
-                  className="w-[22px] h-[22px]"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073z" />
-                </svg>
-              </a>
-            </div>
-          </div>
-          <div className="bg-gray-200 rounded-xl aspect-video flex items-center justify-center text-text-muted">
-            <span className="flex items-center gap-2">
-              <FiMapPin size={18} /> View Map
-            </span>
-          </div>
-        </aside>
+          ) : (
+            <form onSubmit={handleSubmit} className="mt-10 space-y-6">
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <div>
+                  <label htmlFor="first-name" className="field-label">First name</label>
+                  <input id="first-name" type="text" autoComplete="given-name" placeholder="John" value={firstName} onChange={(e) => setFirstName(e.target.value)} className="field" required />
+                </div>
+                <div>
+                  <label htmlFor="last-name" className="field-label">Last name</label>
+                  <input id="last-name" type="text" autoComplete="family-name" placeholder="Doe" value={lastName} onChange={(e) => setLastName(e.target.value)} className="field" required />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <div>
+                  <label htmlFor="email" className="field-label">Email address</label>
+                  <input id="email" type="email" autoComplete="email" placeholder="john.doe@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="field" required />
+                </div>
+                <div>
+                  <label htmlFor="phone" className="field-label">
+                    Phone <span className="font-normal text-text-muted">(optional)</span>
+                  </label>
+                  <input id="phone" type="tel" autoComplete="tel" placeholder="+234 800 000 0000" value={phone} onChange={(e) => setPhone(e.target.value)} className="field" />
+                </div>
+              </div>
+              <fieldset>
+                <legend className="field-label">Subject</legend>
+                <div className="flex flex-wrap gap-2">
+                  {subjectOptions.map((opt) => (
+                    <label
+                      key={opt}
+                      className="cursor-pointer rounded-full border border-line px-4 py-2.5 text-sm font-semibold text-text-muted transition-colors hover:border-ink hover:text-ink has-[:checked]:border-ink has-[:checked]:bg-ink has-[:checked]:text-white has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-gold"
+                    >
+                      <input
+                        type="radio"
+                        name="subject"
+                        value={opt}
+                        checked={subject === opt}
+                        onChange={() => setSubject(opt)}
+                        className="sr-only"
+                      />
+                      {opt}
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+              <div>
+                <label htmlFor="message" className="field-label">Your message</label>
+                <textarea id="message" rows={6} placeholder="How can we assist you today?" value={message} onChange={(e) => setMessage(e.target.value)} className="field resize-y" required />
+              </div>
+              <button type="submit" disabled={submitMessage.isPending} className="btn btn-navy group w-full sm:w-auto">
+                {submitMessage.isPending ? (
+                  <Spinner size="sm" color="white" />
+                ) : (
+                  <FiSend className="h-4 w-4" aria-hidden />
+                )}
+                {submitMessage.isPending ? "Sending…" : "Send message"}
+              </button>
+            </form>
+          )}
+        </section>
       </div>
     </div>
   );

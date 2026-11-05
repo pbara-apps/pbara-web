@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { ChaptersDirectory } from "@/components/sections/ChaptersDirectory";
+import { PageHero } from "@/components/site/PageHero";
 
 export const metadata: Metadata = {
   title: "Chapters and Units",
@@ -18,24 +20,21 @@ export const metadata: Metadata = {
 
 export default function ChaptersPage() {
   return (
-    <main className="flex-1 max-w-[1200px] mx-auto w-full px-6 py-10 md:py-16">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-        <div className="flex flex-col gap-3">
-          <div className="flex items-center gap-2 text-accent-gold font-bold uppercase tracking-widest text-xs">
-            <span className="h-px w-8 bg-accent-gold" aria-hidden />
-            Association Network
-          </div>
-          <h1 className="text-navy-deep dark:text-white text-4xl md:text-5xl font-black tracking-tight">
-            Our Chapters and Units
-          </h1>
-          <p className="text-slate-600 dark:text-slate-400 text-lg max-w-2xl">
-            Discover the dedicated Royal Ambassador local units fostering
-            leadership and spiritual growth across our Baptist Association.
-          </p>
+    <>
+      <PageHero
+        tone="light"
+        crumbs={[{ label: "Chapters" }]}
+        eyebrow="Association network"
+        title="Our chapters and units"
+        description="Royal Ambassador chapters meet in local churches across the Pentecost Baptist Association, fostering leadership and spiritual growth. Search the directory to find one near you."
+      />
+      <section className="bg-ivory pb-24 pt-10 md:pb-32">
+        <div className="container-site">
+          <Suspense fallback={<div className="h-20" />}>
+            <ChaptersDirectory />
+          </Suspense>
         </div>
-      </div>
-
-      <ChaptersDirectory />
-    </main>
+      </section>
+    </>
   );
 }

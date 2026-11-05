@@ -31,6 +31,7 @@ type RawChapter = {
   id?: string;
   name: string;
   chapter: string;
+  address?: string;
   counsellor?: string;
   status: "active" | "inactive";
   image?: string | null;
@@ -123,6 +124,7 @@ export function mapPublicChapter(raw: RawChapter): Chapter {
     chapterName: raw.chapter,
     churchName: raw.name,
     commander: raw.counsellor ?? "—",
+    address: raw.address?.trim() || undefined,
     unit: "general",
     status: raw.status,
     image: raw.image ?? undefined,

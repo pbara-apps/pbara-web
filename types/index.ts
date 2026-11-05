@@ -35,6 +35,8 @@ export interface Chapter {
   churchName: string;
   image?: string;
   commander: string;
+  /** Street address / location, when provided in the admin portal. */
+  address?: string;
   unit: "general" | "junior" | "senior";
   status: "active" | "inactive";
 }
@@ -83,6 +85,8 @@ export interface DownloadItem {
   fileType: string;
   fileUrl: string;
   icon: string;
+  /** Set to true once the file exists at `fileUrl`; otherwise shown as "coming soon". */
+  available?: boolean;
 }
 
 export type RegistrationMode = "single" | "bulk" | "both";

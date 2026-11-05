@@ -1,122 +1,186 @@
 "use client";
 
-import { Spinner } from "@heroui/react";
-import { useState } from "react";
-import Link from "next/link";
-import { HiOutlineBuildingOffice2 } from "react-icons/hi2";
+import { useMemo, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { FiSearch, FiX } from "react-icons/fi";
 import { ChapterCard } from "@/components/ui/ChapterCard";
+import { Reveal } from "@/components/site/motion";
+import { ButtonLink } from "@/components/site/primitives";
 import { chapters as fallbackChapters } from "@/data/chapters";
 import { useGetPublicChapters } from "@/service/apis/church";
+import { formatChurchName } from "@/lib/format";
+import { cn } from "@/lib/cn";
 import type { Chapter } from "@/types";
 
-type UnitFilter = "all" | "primary" | "junior" | "senior";
-
-function filterChapters(chaptersList: Chapter[], filter: UnitFilter): Chapter[] {
-  if (filter === "all") return chaptersList;
-  return chaptersList.filter((c) => c.unit === filter);
+/** Chapters from the admin portal (bundled list only if the API fails). */
+export function useChapters() {
+  const { data, isLoading, isError } = useGetPublicChapters();
+  const chapters = useMemo<Chapter[]>(() => {
+    const source =
+      data && data.length > 0 ? data : isError ? fallbackChapters : (data ?? []);
+    return source.map((c) => ({ ...c, churchName: formatChurchName(c.churchName) }));
+  }, [data, isError]);
+  return { chapters, isLoading: isLoading && !data };
 }
 
-const TABS: { key: UnitFilter; label: string }[] = [
-  { key: "all", label: "All Chapters" },
-];
+type StatusFilter = "all" | "active" | "inactive";
+
+function matchesQuery(c: Chapter, q: string) {
+  if (!q) return true;
+  const hay = [c.chapterName, c.churchName, c.address, c.commander]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+  return q
+    .toLowerCase()
+    .split(/\s+/)
+    .every((part) => hay.includes(part));
+}
 
 export function ChaptersDirectory() {
-  const [filter, setFilter] = useState<UnitFilter>("all");
-  const { data, isLoading, isError } = useGetPublicChapters();
-  const source =
-    data && data.length > 0 ? data : isError ? fallbackChapters : data ?? [];
-  const filtered = filterChapters(source, filter);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [query, setQuery] = useState(searchParams.get("q") ?? "");
+  const [status, setStatus] = useState<StatusFilter>("all");
+  const { chapters, isLoading } = useChapters();
+
+  const hasInactive = chapters.some((c) => c.status === "inactive");
+  const filtered = chapters.filter(
+    (c) => matchesQuery(c, query.trim()) && (status === "all" || c.status === status),
+  );
+
+  const updateQuery = (value: string) => {
+    setQuery(value);
+    const params = new URLSearchParams(searchParams.toString());
+    if (value.trim()) params.set("q", value.trim());
+    else params.delete("q");
+    router.replace(`${pathname}${params.toString() ? `?${params}` : ""}`, {
+      scroll: false,
+    });
+  };
 
   return (
     <>
-      <div
-        className="mb-10 border-b border-slate-200 dark:border-slate-800"
-        role="tablist"
-        aria-label="Filter chapters by unit type"
-      >
-        <div className="flex flex-wrap gap-8">
-          {TABS.map(({ key, label }) => {
-            const isActive = filter === key;
-            return (
-              <button
-                key={key}
-                type="button"
-                role="tab"
-                aria-selected={isActive}
-                onClick={() => setFilter(key)}
-                className={`flex flex-col items-center justify-center border-b-[3px] pb-3 transition-colors ${
-                  isActive
-                    ? "border-primary text-navy-deep dark:text-white"
-                    : "border-transparent text-slate-500 dark:text-slate-400 hover:text-primary"
-                }`}
-              >
-                <span className="text-sm font-bold uppercase tracking-wider">
-                  {label}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {isLoading && !data ? (
-        <div className="flex justify-center py-16">
-          <Spinner color="primary" size="lg" />
-        </div>
-      ) : filtered.length === 0 ? (
-        <p className="rounded-xl border border-slate-200 bg-slate-50 px-6 py-10 text-center text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-400">
-          Chapters will appear here once registered in the admin portal.
-        </p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filtered.map((chapter) => (
-            <ChapterCard key={chapter.id} chapter={chapter} />
-          ))}
-        </div>
-      )}
-
-      <div className="mt-20">
-        <div className="flex flex-col items-center justify-center gap-8 px-6 py-16 rounded-xl bg-navy-deep text-white text-center relative overflow-hidden">
-          <div
-            className="absolute inset-0 opacity-10 pointer-events-none"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at 2px 2px, white 1px, transparent 0)",
-              backgroundSize: "24px 24px",
-            }}
-            aria-hidden
-          />
-          <div className="relative z-10 flex flex-col gap-4 items-center">
-            <HiOutlineBuildingOffice2
-              size={48}
-              className="text-accent-gold shrink-0"
+      {/* Toolbar */}
+      <div className="sticky top-[72px] z-30 -mx-5 border-b border-line bg-ivory/90 px-5 py-4 backdrop-blur-xl sm:-mx-8 sm:px-8 lg:mx-0 lg:rounded-xl lg:border lg:px-4">
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <label className="relative block w-full md:max-w-md">
+            <span className="sr-only">Search chapters</span>
+            <FiSearch
+              className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted"
               aria-hidden
             />
-            <h2 className="tracking-tight text-3xl md:text-4xl font-black max-w-[720px]">
-              Don&apos;t see your chapter?
-            </h2>
-            <p className="text-slate-300 text-lg font-normal max-w-[600px]">
-              If your local church has an RA unit but it is not listed here,
-              please contact the Association Commander to register your unit
-              today.
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => updateQuery(e.target.value)}
+              placeholder="Search by chapter, church or location"
+              className="field rounded-full pl-11 pr-11"
+            />
+            {query ? (
+              <button
+                type="button"
+                onClick={() => updateQuery("")}
+                aria-label="Clear search"
+                className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-text-muted hover:bg-mist hover:text-ink"
+              >
+                <FiX className="h-4 w-4" aria-hidden />
+              </button>
+            ) : null}
+          </label>
+
+          <div className="flex items-center justify-between gap-4 md:justify-end">
+            {hasInactive ? (
+              <div className="flex rounded-full bg-white p-1 ring-1 ring-line" role="group" aria-label="Filter by status">
+                {(["all", "active", "inactive"] as StatusFilter[]).map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    aria-pressed={status === s}
+                    onClick={() => setStatus(s)}
+                    className={cn(
+                      "rounded-full px-4 py-2 text-[13px] font-semibold capitalize transition-colors",
+                      status === s ? "bg-ink text-white" : "text-text-muted hover:text-ink",
+                    )}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+            <p className="eyebrow whitespace-nowrap text-text-muted" aria-live="polite">
+              {isLoading
+                ? "Loading…"
+                : `${filtered.length} of ${chapters.length} chapters`}
             </p>
-          </div>
-          <div className="relative z-10 flex flex-wrap justify-center gap-4">
-            <Link
-              href="/contact"
-              className="flex min-w-[180px] cursor-pointer items-center justify-center rounded-lg h-12 px-8 bg-accent-gold text-navy-deep text-base font-bold shadow-lg hover:shadow-accent-gold/30 transition-all"
-            >
-              <span>Register Chapter</span>
-            </Link>
-            <Link
-              href="/contact"
-              className="flex min-w-[180px] cursor-pointer items-center justify-center rounded-lg h-12 px-8 border-2 border-slate-600 text-white text-base font-bold hover:bg-slate-800 transition-all"
-            >
-              <span>Contact Admin</span>
-            </Link>
           </div>
         </div>
       </div>
+
+      {/* Results */}
+      <div className="mt-10">
+        {isLoading ? (
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3" aria-hidden>
+            {Array.from({ length: 6 }, (_, i) => (
+              <div key={i} className="h-64 animate-pulse rounded-xl bg-mist" />
+            ))}
+          </div>
+        ) : chapters.length === 0 ? (
+          <p className="rounded-xl border border-dashed border-line px-6 py-14 text-center text-sm text-text-muted">
+            Chapters will appear here once registered in the admin portal.
+          </p>
+        ) : filtered.length === 0 ? (
+          <div className="rounded-xl border border-dashed border-line px-6 py-16 text-center">
+            <p className="heading-sm text-ink">No chapters match “{query}”</p>
+            <p className="mt-2 text-sm text-text-muted">
+              Try a different spelling, or clear the search to see every chapter.
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                updateQuery("");
+                setStatus("all");
+              }}
+              className="btn btn-outline mt-6"
+            >
+              Clear filters
+            </button>
+          </div>
+        ) : (
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3" key={`${query}-${status}`}>
+            {filtered.map((chapter, i) => (
+              <Reveal key={chapter.id} className="h-full" y={20} delay={(i % 3) * 0.06}>
+                <ChapterCard
+                  chapter={chapter}
+                  index={chapters.indexOf(chapter) + 1}
+                />
+              </Reveal>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Invitation */}
+      <Reveal className="mt-24">
+        <div className="grain relative grid overflow-hidden rounded-2xl bg-ink px-8 py-14 text-white md:grid-cols-12 md:items-end md:px-14 md:py-16">
+          <div className="md:col-span-8">
+            <p className="eyebrow text-gold">Not listed?</p>
+            <h2 className="display-md mt-5 max-w-2xl text-balance">
+              Don&apos;t see your chapter?
+            </h2>
+            <p className="mt-5 max-w-xl text-lg leading-relaxed text-white/65">
+              If your local church has an RA unit that is not listed here,
+              contact the association secretariat to register your chapter.
+            </p>
+          </div>
+          <div className="mt-10 flex flex-col gap-3 md:col-span-4 md:mt-0 md:items-end">
+            <ButtonLink href="/contact" variant="gold">
+              Get in touch with secretariat
+            </ButtonLink>
+          </div>
+        </div>
+      </Reveal>
     </>
   );
 }

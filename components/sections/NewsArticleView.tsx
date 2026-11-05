@@ -1,6 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
-import { FiArrowLeft, FiClock } from "react-icons/fi";
+import { FiArrowLeft, FiArrowUpRight } from "react-icons/fi";
+import { Breadcrumbs } from "@/components/site/PageHero";
+import { ReadingProgress, ShareLinks } from "@/components/sections/ArticleChrome";
 import sanitizeHtml from "sanitize-html";
 import { newsArticlePath } from "@/lib/api/news";
 import type { NewsDetail, NewsItem } from "@/types";
@@ -10,9 +11,7 @@ interface NewsArticleViewProps {
   related: NewsItem[];
 }
 
-function articleImageSrc(image?: string) {
-  return image || "/images/ra-logo.png";
-}
+const FALLBACK_IMAGE = "/images/ra-parade.jpg";
 
 function isHtmlContent(content: string) {
   return /<[a-z][\s\S]*>/i.test(content.trim());
@@ -68,146 +67,148 @@ export function NewsArticleView({ article, related }: NewsArticleViewProps) {
   const isHtml = isHtmlContent(content);
   const safeHtml = isHtml ? sanitizeArticleHtml(content) : "";
   const paragraphs = isHtml ? [] : contentParagraphs(content);
-  const imageSrc = articleImageSrc(article.image);
-  const imageAlt = article.image
-    ? `${article.title} — Royal Ambassadors`
-    : "Royal Ambassadors logo used as placeholder for article image";
+  const path = newsArticlePath(article);
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-6 py-10 md:px-10 lg:px-20">
-      <Link
-        href="/news"
-        className="mb-8 inline-flex items-center gap-2 text-sm font-semibold text-primary transition-colors hover:text-gold"
-      >
-        <FiArrowLeft size={16} aria-hidden />
-        Back to all news
-      </Link>
+    <>
+      <ReadingProgress />
+      <article className="bg-ivory">
+        {/* Header */}
+        <header className="container-site pt-12 md:pt-16">
+          <Breadcrumbs items={[{ label: "Newsroom", href: "/news" }, { label: article.category }]} />
+          <div className="mx-auto mt-14 max-w-4xl text-center md:mt-20">
+            <p className="eyebrow flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-text-muted">
+              <Link href={`/news?category=${encodeURIComponent(article.category)}`} className="text-gold hover:text-ink">
+                {article.category}
+              </Link>
+              <span aria-hidden>·</span>
+              <time>{article.date}</time>
+              {article.readTime != null ? (
+                <>
+                  <span aria-hidden>·</span>
+                  <span>{article.readTime} min read</span>
+                </>
+              ) : null}
+            </p>
+            <h1 className="mt-7 font-heading text-[clamp(2.25rem,5.4vw,4.5rem)] font-extrabold leading-[1.02] tracking-[-0.04em] text-ink text-balance">
+              {article.title}
+            </h1>
+            <p className="mx-auto mt-7 max-w-2xl text-xl leading-relaxed text-text-muted text-pretty">
+              {article.excerpt}
+            </p>
+            <p className="mt-8 text-sm text-text-muted">
+              By <span className="font-semibold text-ink">{article.author || "RA Editorial"}</span>
+            </p>
+          </div>
+        </header>
 
-      <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,3fr)_minmax(280px,1fr)] lg:gap-12">
-        <article>
-          <div className="relative mb-8 aspect-[21/9] w-full overflow-hidden rounded-2xl bg-primary/5">
-            <Image
-              src={imageSrc}
-              alt={imageAlt}
-              fill
-              priority
-              className="object-cover"
-              sizes="(max-width: 1024px) 100vw, 70vw"
+        {/* Image */}
+        <div className="container-site mt-14 md:mt-20">
+          <div className="relative mx-auto aspect-[16/9] max-w-6xl overflow-hidden rounded-xl bg-mist">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={article.image || FALLBACK_IMAGE}
+              alt={article.image ? `${article.title} — Royal Ambassadors` : ""}
+              className="absolute inset-0 h-full w-full object-cover"
             />
           </div>
+        </div>
 
-          <div className="mb-4 flex flex-wrap items-center gap-3 text-sm">
-            <span className="rounded bg-primary/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-widest text-primary">
-              {article.category}
-            </span>
-            <span className="text-text-muted">{article.date}</span>
-            {article.readTime != null && (
-              <span className="flex items-center gap-1 text-text-muted">
-                <FiClock size={14} aria-hidden />
-                {article.readTime} min read
-              </span>
-            )}
-          </div>
+        {/* Body */}
+        <div className="container-site pb-24 pt-14 md:pb-32 md:pt-20">
+          <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[1fr_minmax(0,42rem)_1fr]">
+            <aside className="hidden lg:block">
+              <div className="sticky top-28 space-y-4">
+                <p className="eyebrow text-text-muted">Share</p>
+                <div className="[&>div]:flex-col [&>div]:items-start">
+                  <ShareLinks title={article.title} path={path} />
+                </div>
+              </div>
+            </aside>
 
-          <h1 className="font-heading text-3xl font-bold tracking-tight text-text-dark md:text-4xl lg:text-5xl">
-            {article.title}
-          </h1>
+            <div className="min-w-0">
+              {isHtml ? (
+                <div
+                  className="rich-text-content text-[18px]"
+                  dangerouslySetInnerHTML={{ __html: safeHtml }}
+                />
+              ) : paragraphs.length > 0 ? (
+                <div className="space-y-6 text-[18px] leading-[1.8] text-[#1c1e45]">
+                  {paragraphs.map((paragraph, i) => (
+                    <p
+                      key={`${i}-${paragraph.slice(0, 24)}`}
+                      className={
+                        i === 0
+                          ? "first-letter:float-left first-letter:mr-3 first-letter:mt-1 first-letter:font-heading first-letter:text-7xl first-letter:font-extrabold first-letter:leading-[0.8] first-letter:text-primary whitespace-pre-line"
+                          : "whitespace-pre-line"
+                      }
+                    >
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-[18px] leading-[1.8] text-[#1c1e45]">{article.excerpt}</p>
+              )}
 
-          {article.author && (
-            <p className="mt-4 text-sm font-medium text-text-muted">
-              By {article.author}
-            </p>
-          )}
-
-          <p className="mt-6 text-lg leading-relaxed text-text-muted">
-            {article.excerpt}
-          </p>
-
-          <div className="mt-8 max-w-none">
-            {isHtml ? (
-              <div
-                className="rich-text-content text-base"
-                dangerouslySetInnerHTML={{ __html: safeHtml }}
-              />
-            ) : paragraphs.length > 0 ? (
-              paragraphs.map((paragraph) => (
-                <p
-                  key={paragraph.slice(0, 48)}
-                  className="mb-5 text-base leading-relaxed text-text-dark"
+              <div className="mt-14 flex flex-wrap items-center justify-between gap-6 border-t border-line pt-8">
+                <Link
+                  href="/news"
+                  className="group inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-ink"
                 >
-                  {paragraph}
-                </p>
-              ))
-            ) : (
-              <p className="text-base leading-relaxed text-text-dark">
-                {article.excerpt}
-              </p>
-            )}
+                  <FiArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" aria-hidden />
+                  Back to the newsroom
+                </Link>
+                <div className="lg:hidden">
+                  <ShareLinks title={article.title} path={path} />
+                </div>
+              </div>
+            </div>
+            <div className="hidden lg:block" />
           </div>
-        </article>
+        </div>
+      </article>
 
-        <aside className="lg:pt-2">
-          <div className="sticky top-24 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-            <h2 className="mb-5 text-lg font-bold text-text-dark">
-              Related News
+      {/* Related */}
+      <section className="bg-white py-20 md:py-28" aria-labelledby="related-heading">
+        <div className="container-site">
+          <div className="flex items-end justify-between gap-6 border-b-2 border-ink pb-4">
+            <h2 id="related-heading" className="eyebrow text-ink">
+              Related stories
             </h2>
-
-            {related.length === 0 ? (
-              <p className="text-sm text-text-muted">
-                No related articles in this category yet.
-              </p>
-            ) : (
-              <ul className="space-y-5">
-                {related.map((item) => {
-                  const href = newsArticlePath(item);
-                  const thumb = articleImageSrc(item.image);
-
-                  return (
-                    <li key={item.id}>
-                      <Link
-                        href={href}
-                        className="group flex gap-3 rounded-xl transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/60"
-                      >
-                        <div className="relative h-16 w-20 shrink-0 overflow-hidden rounded-lg bg-primary/5">
-                          <Image
-                            src={thumb}
-                            alt={
-                              item.image
-                                ? `${item.title} thumbnail`
-                                : "Royal Ambassadors logo"
-                            }
-                            fill
-                            className="object-cover"
-                            sizes="80px"
-                          />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-primary">
-                            {item.category}
-                          </p>
-                          <h3 className="line-clamp-2 text-sm font-semibold text-text-dark transition-colors group-hover:text-primary">
-                            {item.title}
-                          </h3>
-                          <p className="mt-1 text-xs text-text-muted">
-                            {item.date}
-                          </p>
-                        </div>
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-
-            <Link
-              href="/news"
-              className="mt-6 inline-flex w-full items-center justify-center rounded-lg border border-primary/15 bg-primary/[0.03] px-4 py-2.5 text-sm font-semibold text-primary transition-colors hover:border-primary hover:bg-primary hover:text-white"
-            >
-              View all news
+            <Link href="/news" className="eyebrow text-primary hover:text-ink">
+              All news
             </Link>
           </div>
-        </aside>
-      </div>
-    </div>
+
+          {related.length === 0 ? (
+            <p className="py-10 text-text-muted">No related articles in this category yet.</p>
+          ) : (
+            <ul className="mt-10 grid gap-x-8 gap-y-12 md:grid-cols-3">
+              {related.slice(0, 3).map((item) => (
+                <li key={item.id}>
+                  <Link href={newsArticlePath(item)} className="group block">
+                    <div className="relative aspect-[16/10] overflow-hidden rounded-xl bg-mist">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={item.image || FALLBACK_IMAGE}
+                        alt=""
+                        loading="lazy"
+                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1.4s] ease-brand group-hover:scale-[1.04]"
+                      />
+                    </div>
+                    <p className="eyebrow mt-5 text-gold">{item.category} <span className="text-text-muted">· {item.date}</span></p>
+                    <h3 className="mt-2.5 flex items-start justify-between gap-4 text-lg font-bold leading-snug text-ink transition-colors group-hover:text-primary">
+                      {item.title}
+                      <FiArrowUpRight className="mt-1 h-4 w-4 shrink-0 text-text-muted transition-transform duration-300 group-hover:rotate-45" aria-hidden />
+                    </h3>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </section>
+    </>
   );
 }
