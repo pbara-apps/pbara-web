@@ -240,8 +240,8 @@ export default function ContactPage() {
                   pbara2024@gmail.com
                 </a>
                 <br />
-                <a href="mailto:admin@pba-ra.org" className="hover:text-gold">
-                  admin@pba-ra.org
+                <a href="mailto:admin@pbara.org" className="hover:text-gold">
+                  admin@pbara.org
                 </a>
               </p>
             </div>
