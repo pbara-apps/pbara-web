@@ -71,13 +71,13 @@ export function ExecutivesSkeleton({ count = 4 }: { count?: number }) {
 export function DirectorFeature({ director }: { director: Executive }) {
   return (
     <article className="grid overflow-hidden rounded-xl bg-ink text-white md:grid-cols-12">
-      <ImageReveal className="aspect-[4/5] md:col-span-5 md:aspect-auto md:min-h-[30rem]">
+      <ImageReveal className="aspect-square md:col-span-5 md:aspect-auto md:min-h-[30rem]">
         <PersonPhoto src={director.image} name={director.name} />
       </ImageReveal>
-      <div className="flex flex-col justify-between gap-10 p-8 md:col-span-7 md:p-12">
+      <div className="flex flex-col justify-between gap-6 p-6 md:col-span-7 md:gap-10 md:p-12">
         <p className="eyebrow text-gold">Director · Executive council</p>
         <div>
-          <h3 className="display-md text-balance">{director.name}</h3>
+          <h3 className="display-md text-[clamp(1.75rem,8vw,2.25rem)] text-balance md:text-[clamp(1.875rem,3.4vw,3rem)]">{director.name}</h3>
           {director.church ? (
             <p className="mt-4 text-white/60">{director.church}</p>
           ) : null}
@@ -108,13 +108,13 @@ export function CurrentExecutivesGrid() {
   const others = executives.filter((e) => e !== director);
 
   return (
-    <div className="space-y-16">
+    <div className="space-y-10 md:space-y-16">
       {director ? (
         <Reveal>
           <DirectorFeature director={director} />
         </Reveal>
       ) : null}
-      <Stagger className="grid grid-cols-2 gap-x-5 gap-y-12 md:grid-cols-3 lg:grid-cols-4">
+      <Stagger className="grid grid-cols-2 gap-x-3 gap-y-8 min-[400px]:gap-x-5 md:grid-cols-3 md:gap-y-12 lg:grid-cols-4">
         {others.map((exec) => (
           <StaggerItem key={exec.id}>
             <ExecutiveCard executive={exec} />

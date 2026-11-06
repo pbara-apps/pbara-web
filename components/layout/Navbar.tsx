@@ -205,7 +205,7 @@ export function Navbar() {
       )}
     >
       <nav
-        className="container-site relative flex h-[72px] items-center justify-between gap-6"
+        className="container-site relative flex h-[72px] items-center justify-between gap-3 sm:gap-6"
         aria-label="Main navigation"
       >
         {/* Brand */}
@@ -227,7 +227,7 @@ export function Navbar() {
           <span className="flex flex-col leading-none">
              <span
               className={cn(
-                "font-heading text-[18px] font-extrabold tracking-[-0.02em] transition-colors",
+                "font-heading text-[16px] font-extrabold tracking-[-0.02em] transition-colors min-[360px]:text-[18px]",
                 light ? "text-ink" : "text-white",
               )}
             >
@@ -235,7 +235,7 @@ export function Navbar() {
             </span>
             <span
               className={cn(
-                "mt-1 font-mono text-[11px] uppercase tracking-[0.2em] transition-colors",
+                "mt-1 font-mono text-[10px] uppercase tracking-[0.14em] transition-colors min-[360px]:text-[11px] min-[360px]:tracking-[0.2em]",
                 light ? "text-text-muted" : "text-white/60",
               )}
             >

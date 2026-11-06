@@ -61,9 +61,9 @@ export default function ContactPage() {
         <Breadcrumbs items={[{ label: "Contact" }]} />
       </div>
 
-      <div className="container-site grid gap-6 pb-24 pt-10 md:pb-32 md:pt-14 lg:grid-cols-12 lg:gap-8">
+      <div className="container-site grid gap-4 pb-16 pt-6 sm:gap-6 md:pb-32 md:pt-14 lg:grid-cols-12 lg:gap-8">
         {/* Info panel */}
-        <aside className="grain relative overflow-hidden rounded-2xl bg-ink p-8 text-white md:p-12 lg:col-span-5">
+        <aside className="grain relative overflow-hidden rounded-2xl bg-ink p-6 text-white sm:p-8 md:p-12 lg:col-span-5">
           <Reveal>
             <p className="eyebrow text-gold">Contact the secretariat</p>
             <h1 className="display-lg mt-6 text-balance">
@@ -75,7 +75,7 @@ export default function ContactPage() {
             </p>
           </Reveal>
 
-          <dl className="mt-24 space-y-8 border-t border-white/10 pt-10">
+          <dl className="mt-10 space-y-6 border-t border-white/10 pt-8 md:mt-24 md:space-y-8 md:pt-10">
             <div>
               <dt className="eyebrow text-white/45">Email</dt>
               <dd className="mt-2">
@@ -108,7 +108,7 @@ export default function ContactPage() {
         </aside>
 
         {/* Form */}
-        <section aria-labelledby="form-heading" className="rounded-2xl bg-white p-8 ring-1 ring-line md:p-12 lg:col-span-7">
+        <section aria-labelledby="form-heading" className="rounded-2xl bg-white p-5 ring-1 ring-line sm:p-8 md:p-12 lg:col-span-7">
           <h2 id="form-heading" className="heading-sm text-ink">
             Send a message
           </h2>
@@ -128,7 +128,7 @@ export default function ContactPage() {
               </Link>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="mt-10 space-y-6">
+            <form onSubmit={handleSubmit} className="mt-7 space-y-5 md:mt-10 md:space-y-6">
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 <div>
                   <label htmlFor="first-name" className="field-label">First name</label>

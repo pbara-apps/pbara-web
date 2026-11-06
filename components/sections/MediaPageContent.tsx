@@ -135,13 +135,13 @@ export function MediaPageContent() {
         </div>
       </div>
 
-      <section className="min-h-[60vh] bg-ivory pb-24 pt-12 md:pb-32">
+      <section className="min-h-[60vh] bg-ivory pb-16 pt-6 md:pb-32 md:pt-12">
         <div className="container-site">
           {/* Photos */}
           {tab === "photos" && (
             <div role="tabpanel" aria-label="Photos">
               {categories.length > 2 ? (
-                <div className="mb-10 flex flex-wrap gap-2" role="group" aria-label="Filter photos by category">
+                <div className="no-scrollbar -mx-5 mb-6 flex gap-2 overflow-x-auto px-5 sm:-mx-8 sm:px-8 md:mx-0 md:mb-10 md:flex-wrap md:overflow-visible md:px-0" role="group" aria-label="Filter photos by category">
                   {categories.map((c) => (
                     <button
                       key={c}
@@ -149,7 +149,7 @@ export function MediaPageContent() {
                       aria-pressed={category === c}
                       onClick={() => setCategory(c)}
                       className={cn(
-                        "rounded-full border px-4 py-2 text-[13px] font-semibold transition-colors",
+                        "min-h-[40px] shrink-0 rounded-full border px-4 py-2 text-[13px] font-semibold transition-colors",
                         category === c
                           ? "border-ink bg-ink text-white"
                           : "border-line bg-white text-text-muted hover:border-ink hover:text-ink",
@@ -162,15 +162,46 @@ export function MediaPageContent() {
               ) : null}
 
               {photosLoading ? (
-                <div className="columns-1 gap-4 sm:columns-2 lg:columns-3" aria-hidden>
+                <div className="columns-2 gap-2 md:gap-4 lg:columns-3" aria-hidden>
                   {[320, 220, 280, 240, 300, 200].map((h, i) => (
-                    <div key={i} className="mb-4 animate-pulse rounded-xl bg-mist" style={{ height: h }} />
+                    <div key={i} className="mb-2 animate-pulse rounded-xl bg-mist md:mb-4" style={{ height: h * 0.7 }} />
                   ))}
                 </div>
               ) : shownPhotos.length === 0 ? (
                 <EmptyState text="Photos will appear here once published from the admin portal." />
               ) : (
-                <div className="columns-1 gap-4 sm:columns-2 lg:columns-3" key={category}>
+                <>
+                {/* Phones: lead photo full width, the rest in a tight two-column mosaic. */}
+                <div className="md:hidden" key={`m-${category}`}>
+                  <Reveal y={16}>
+                    <PhotoPreviewCard
+                      src={shownPhotos[0].src}
+                      alt={shownPhotos[0].alt}
+                      title={shownPhotos[0].title}
+                      variant="feature"
+                      onOpen={() => setViewer({ set: "photos", index: 0 })}
+                    />
+                  </Reveal>
+                  {shownPhotos.length > 1 ? (
+                    <div className="mt-2 columns-2 gap-2">
+                      {shownPhotos.slice(1).map((img, i) => (
+                        <div key={img.id} className="mb-2 break-inside-avoid">
+                          <PhotoPreviewCard
+                            src={img.src}
+                            alt={img.alt}
+                            title={img.title}
+                            variant="tile"
+                            onOpen={() => setViewer({ set: "photos", index: i + 1 })}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
+                  <p className="eyebrow mt-6 text-center text-text-muted">
+                    Tap a photo to view · swipe to browse
+                  </p>
+                </div>
+                <div className="hidden columns-2 gap-4 md:block lg:columns-3" key={category}>
                   {shownPhotos.map((img, idx) => (
                     <Reveal key={img.id} className="mb-4 break-inside-avoid" y={20} delay={Math.min(idx, 6) * 0.04}>
                       <PhotoPreviewCard
@@ -182,6 +213,7 @@ export function MediaPageContent() {
                     </Reveal>
                   ))}
                 </div>
+                </>
               )}
             </div>
           )}
@@ -217,7 +249,7 @@ export function MediaPageContent() {
 
           {/* Downloads */}
           {tab === "downloads" && (
-            <div role="tabpanel" aria-label="Downloads" className="grid gap-10 lg:grid-cols-12">
+            <div role="tabpanel" aria-label="Downloads" className="grid gap-6 md:gap-10 lg:grid-cols-12">
               <div className="lg:col-span-4">
                 <h2 className="display-md text-ink">Resources &amp; downloads</h2>
                 <p className="mt-5 text-[16px] leading-relaxed text-text-muted">
@@ -263,11 +295,11 @@ function ResourceRow({ item }: { item: DownloadItem }) {
   const Icon = RESOURCE_ICONS[item.icon] ?? FiFileText;
   const inner = (
     <>
-      <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-white text-primary ring-1 ring-line transition-colors group-hover:bg-gold group-hover:text-ink group-hover:ring-gold">
+      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white text-primary md:h-14 md:w-14 ring-1 ring-line transition-colors group-hover:bg-gold group-hover:text-ink group-hover:ring-gold">
         <Icon className="h-6 w-6" aria-hidden />
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block text-lg font-bold text-ink">{item.title}</span>
+        <span className="block text-[16px] font-bold text-ink md:text-lg">{item.title}</span>
         <span className="block text-sm text-text-muted">{item.description}</span>
       </span>
       <span className="eyebrow hidden text-text-muted sm:block">{item.fileType}</span>
@@ -280,10 +312,10 @@ function ResourceRow({ item }: { item: DownloadItem }) {
   );
 
   if (!item.available) {
-    return <div className="flex items-center gap-5 py-6">{inner}</div>;
+    return <div className="flex items-center gap-4 py-5 md:gap-5 md:py-6">{inner}</div>;
   }
   return (
-    <a href={item.fileUrl} download className="group flex items-center gap-5 py-6" aria-label={`Download ${item.title}`}>
+    <a href={item.fileUrl} download className="group flex items-center gap-4 py-5 md:gap-5 md:py-6" aria-label={`Download ${item.title}`}>
       {inner}
     </a>
   );

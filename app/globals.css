@@ -79,7 +79,7 @@ body {
   }
 
   .section-y {
-    @apply py-20 md:py-28 lg:py-32;
+    @apply py-16 sm:py-20 md:py-28 lg:py-32;
   }
 
   /* ── Typography ── */
@@ -116,6 +116,14 @@ body {
 
   .eyebrow {
     @apply font-mono text-[11px] font-medium uppercase tracking-[0.18em];
+  }
+
+  /* Mobile section header: index + label left, action right */
+  .m-display {
+    @apply font-heading font-extrabold;
+    font-size: clamp(2rem, 9.6vw, 2.75rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
   }
 
   /* ── Buttons ── */

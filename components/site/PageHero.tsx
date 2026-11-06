@@ -97,7 +97,7 @@ export function PageHero({
       <header className="relative overflow-hidden bg-ivory pt-12 md:pt-16">
         <div className="container-site">
           <Breadcrumbs items={crumbs} />
-          <div className="mt-10 grid gap-8 pb-12 md:mt-14 md:pb-16 lg:grid-cols-12 lg:items-end lg:gap-12">
+          <div className="mt-8 grid gap-6 pb-10 md:mt-14 md:gap-8 md:pb-16 lg:grid-cols-12 lg:items-end lg:gap-12">
             <div className="lg:col-span-7">
               {eyebrow ? (
                 <motion.p {...enter(0)} className="eyebrow mb-5 text-gold">
@@ -106,7 +106,7 @@ export function PageHero({
               ) : null}
               <motion.h1
                 {...enter(0.05)}
-                className="display-lg text-balance text-ink"
+                className="display-lg text-[clamp(2.15rem,10.4vw,3rem)] text-balance text-ink md:text-[clamp(2.25rem,5vw,4.5rem)]"
               >
                 {title}
               </motion.h1>
@@ -114,7 +114,7 @@ export function PageHero({
             {(description || children) && (
               <motion.div {...enter(0.15)} className="lg:col-span-5 lg:pb-2">
                 {description ? (
-                  <p className="text-lg leading-relaxed text-text-muted text-pretty">
+                  <p className="text-[16px] leading-relaxed text-text-muted text-pretty md:text-lg">
                     {description}
                   </p>
                 ) : null}
@@ -124,8 +124,8 @@ export function PageHero({
           </div>
         </div>
         {image ? (
-          <div className="container-site pb-4">
-            <ImageReveal className="aspect-[16/9] rounded-xl bg-mist md:aspect-[21/8]">
+          <div className="container-site pb-4 max-sm:px-0 max-sm:pb-0">
+            <ImageReveal className="aspect-[4/3] bg-mist sm:aspect-[16/9] sm:rounded-xl md:aspect-[21/8]">
               <Image
                 src={image}
                 alt={imageAlt}
@@ -147,7 +147,7 @@ export function PageHero({
   }
 
   return (
-    <header className="grain relative isolate overflow-hidden bg-ink text-white">
+    <header className="grain relative isolate flex flex-col overflow-hidden bg-ink text-white max-md:min-h-[min(78svh,42rem)] md:block">
       {image ? (
         <>
           <Parallax strength={6}>
@@ -157,13 +157,18 @@ export function PageHero({
               fill
               priority
               sizes="100vw"
-              className="object-cover opacity-60"
+              className="object-cover opacity-80 md:opacity-60"
               style={{ objectPosition: imagePosition }}
             />
           </Parallax>
           <div
             aria-hidden
-            className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,6,31,0.96)_0%,rgba(5,6,31,0.82)_45%,rgba(5,6,31,0.35)_100%)]"
+            className="absolute inset-0 hidden bg-[linear-gradient(90deg,rgba(5,6,31,0.96)_0%,rgba(5,6,31,0.82)_45%,rgba(5,6,31,0.35)_100%)] md:block"
+          />
+          {/* Phones: photo shows at the top, copy sits on the darkened lower half. */}
+          <div
+            aria-hidden
+            className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,6,31,0.7)_0%,rgba(5,6,31,0.25)_20%,rgba(5,6,31,0.8)_45%,rgba(5,6,31,0.96)_68%,#05061f_100%)] md:hidden"
           />
           <div
             aria-hidden
@@ -172,28 +177,28 @@ export function PageHero({
         </>
       ) : null}
 
-      <div className="container-site relative pb-16 pt-12 md:pb-24 md:pt-16">
+      <div className="container-site relative flex flex-1 flex-col pb-10 pt-8 md:block md:pb-24 md:pt-16">
         <Breadcrumbs items={crumbs} tone="dark" />
-        <div className="mt-16 grid gap-10 md:mt-24 lg:grid-cols-12 lg:items-end">
+        <div className="mt-auto grid gap-8 pt-24 md:mt-24 md:gap-10 md:pt-0 lg:grid-cols-12 lg:items-end">
           <div className={aside ? "lg:col-span-7" : "lg:col-span-9"}>
             {eyebrow ? (
               <motion.p {...enter(0)} className="eyebrow mb-5 text-gold">
                 {eyebrow}
               </motion.p>
             ) : null}
-            <motion.h1 {...enter(0.05)} className="display-lg text-balance">
+            <motion.h1 {...enter(0.05)} className="display-lg text-[clamp(2.15rem,10.4vw,3rem)] text-balance md:text-[clamp(2.25rem,5vw,4.5rem)]">
               {title}
             </motion.h1>
             {description ? (
               <motion.p
                 {...enter(0.15)}
-                className="mt-6 max-w-2xl text-lg leading-relaxed text-white/75 text-pretty"
+                className="mt-5 max-w-2xl text-[16px] leading-relaxed text-white/80 text-pretty md:mt-6 md:text-lg md:text-white/75"
               >
                 {description}
               </motion.p>
             ) : null}
             {children ? (
-              <motion.div {...enter(0.25)} className="mt-9">
+              <motion.div {...enter(0.25)} className="mt-7 md:mt-9">
                 {children}
               </motion.div>
             ) : null}
