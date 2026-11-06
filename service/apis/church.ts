@@ -17,3 +17,20 @@ export const useGetPublicChapters = () =>
       );
     },
   });
+
+/** A church's current counsellor, as shown on the public leadership page. */
+export type PublicCounsellor = {
+  id: string;
+  name: string;
+  photo: string | null;
+  church: { id: string; name: string };
+};
+
+export const useGetPublicCounsellors = () =>
+  useQuery({
+    queryKey: ["counsellors", "public"] as const,
+    queryFn: async () => {
+      const res = await http.get("/church/counsellors/public");
+      return (res.data ?? []) as PublicCounsellor[];
+    },
+  });

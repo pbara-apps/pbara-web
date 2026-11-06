@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PastOfficersTable } from "@/components/ui/PastOfficersTable";
 import { CurrentExecutivesGrid } from "@/components/sections/CurrentExecutivesGrid";
+import { ChapterCounsellorsGrid } from "@/components/sections/ChapterCounsellorsGrid";
 import { PatronsSection } from "@/components/sections/CurrentPatronsGrid";
 import { PageHero } from "@/components/site/PageHero";
 import { ButtonLink, Eyebrow } from "@/components/site/primitives";
@@ -15,10 +16,10 @@ export const metadata: Metadata = {
     "Meet the dedicated officers and patrons guiding the Royal Ambassadors of Pentecost Baptist Association. Our leadership is committed to fostering spiritual growth and discipline.",
   openGraph: {
     title: "Executive Leadership | PBA Royal Ambassadors",
-    description: "Current executive officers, past officers, and our patrons.",
+    description: "Current executive officers, chapter counsellors, past officers, and our patrons.",
     url: "https://pbara.org.ng/executives",
   },
-  keywords: ["Leadership", "Executive", "Patrons", "Officers", "PBA RA"],
+  keywords: ["Leadership", "Executive", "Patrons", "Officers", "Counsellors", "PBA RA"],
 };
 
 export default function ExecutivesPage() {
@@ -58,10 +59,26 @@ export default function ExecutivesPage() {
         </div>
       </section>
 
-      <section className="section-y bg-white" aria-labelledby="past-heading">
+      <section id="chapter-counsellors" className="section-y bg-white" aria-labelledby="counsellors-heading">
+        <div className="container-site">
+          <div className="mb-12 max-w-2xl">
+            <Eyebrow index="02">In every church</Eyebrow>
+            <h2 id="counsellors-heading" className="display-md mt-5 text-ink">
+              Chapter Counsellors
+            </h2>
+            <p className="mt-4 text-[15px] leading-relaxed text-text-muted">
+              Each church has a counsellor who guides its Royal Ambassadors chapters, supports their
+              presidents and secretaries, and keeps the association connected to every congregation.
+            </p>
+          </div>
+          <ChapterCounsellorsGrid />
+        </div>
+      </section>
+
+      <section className="section-y bg-ivory" aria-labelledby="past-heading">
         <div className="container-site">
           <div className="mb-14">
-            <Eyebrow index="02">Roll of honour</Eyebrow>
+            <Eyebrow index="03">Roll of honour</Eyebrow>
             <h2 id="past-heading" className="display-md mt-5 text-ink">
               Past officers
             </h2>
