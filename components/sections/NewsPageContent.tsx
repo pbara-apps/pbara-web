@@ -42,17 +42,26 @@ function Thumb({ item, className }: { item: NewsItem; className?: string }) {
   );
 }
 
-function Meta({ item, className }: { item: NewsItem; className?: string }) {
+function Meta({
+  item,
+  className,
+  compact = false,
+}: {
+  item: NewsItem;
+  className?: string;
+  /** Hide the read time on phones so the line fits once. */
+  compact?: boolean;
+}) {
   return (
     <p className={cn("eyebrow flex flex-wrap items-center gap-x-3 gap-y-1 text-text-muted", className)}>
       <span className="text-gold">{item.category}</span>
       <span aria-hidden>·</span>
       <time>{item.date}</time>
       {item.readTime ? (
-        <>
+        <span className={cn("flex items-center gap-x-3", compact && "max-md:hidden")}>
           <span aria-hidden>·</span>
           <span>{item.readTime} min read</span>
-        </>
+        </span>
       ) : null}
     </p>
   );
@@ -149,18 +158,18 @@ export function NewsPageContent({ news }: NewsPageContentProps) {
   return (
     <>
       {/* Masthead */}
-      <header className="bg-ivory pt-12 md:pt-16">
+      <header className="bg-ivory pt-8 md:pt-16">
         <div className="container-site">
           <Breadcrumbs items={[{ label: "Newsroom" }]} />
-          <div className="mt-10 flex flex-col justify-between gap-6 border-b-2 border-ink pb-6 md:mt-14 md:flex-row md:items-end">
+          <div className="mt-8 flex flex-col justify-between gap-4 border-b-2 border-ink pb-5 md:mt-14 md:flex-row md:items-end md:gap-6 md:pb-6">
             <Reveal>
               <p className="eyebrow text-gold">The PBA RA Bulletin</p>
-              <h1 className="mt-4 font-heading text-[clamp(3.5rem,11vw,9rem)] font-extrabold leading-[0.85] tracking-[-0.055em] text-ink">
+              <h1 className="mt-3 font-heading text-[clamp(3.25rem,17vw,9rem)] font-extrabold leading-[0.85] tracking-[-0.055em] text-ink md:mt-4 md:text-[clamp(3.5rem,11vw,9rem)]">
                 Newsroom
               </h1>
             </Reveal>
             <Reveal delay={0.1} className="max-w-sm md:text-right">
-              <p className="text-[16px] leading-relaxed text-text-muted">
+              <p className="text-[15px] leading-relaxed text-text-muted md:text-[16px]">
                 Official announcements, program updates, and leadership insights
                 from the Royal Ambassadors.
               </p>
@@ -194,7 +203,7 @@ export function NewsPageContent({ news }: NewsPageContentProps) {
                     }}
                     aria-pressed={active}
                     className={cn(
-                      "flex items-center gap-2 rounded-full px-4 py-2 text-[14px] font-semibold transition-colors",
+                      "flex min-h-[40px] items-center gap-2 rounded-full px-4 py-2 text-[14px] font-semibold transition-colors",
                       active ? "bg-ink text-white" : "text-text-muted hover:bg-white hover:text-ink",
                     )}
                   >
@@ -215,7 +224,7 @@ export function NewsPageContent({ news }: NewsPageContentProps) {
         </div>
       </nav>
 
-      <section id="news-list" className="scroll-mt-36 bg-ivory pb-24 pt-12 md:pb-32 md:pt-16">
+      <section id="news-list" className="scroll-mt-36 bg-ivory pb-16 pt-6 md:pb-32 md:pt-16">
         <div className="container-site">
           {filtered.length === 0 && (
             <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-line px-6 py-20 text-center">
@@ -233,19 +242,19 @@ export function NewsPageContent({ news }: NewsPageContentProps) {
           {/* Lead story */}
           {featured && (
             <Reveal>
-              <article className="group relative grid gap-8 lg:grid-cols-12 lg:gap-12">
-                <Thumb item={featured} className="aspect-[16/10] rounded-xl lg:col-span-7" />
+              <article className="group relative grid gap-5 md:gap-8 lg:grid-cols-12 lg:gap-12">
+                <Thumb item={featured} className="-mx-5 aspect-square max-h-[26rem] sm:-mx-8 md:mx-0 md:aspect-[16/10] md:max-h-none md:rounded-xl lg:col-span-7" />
                 <div className="flex flex-col lg:col-span-5 lg:py-4">
                   <p className="eyebrow text-text-muted">Lead story</p>
-                  <h2 className="mt-5 font-heading text-[clamp(1.75rem,2.6vw,2.5rem)] font-extrabold leading-[1.08] tracking-[-0.035em] text-ink text-balance">
+                  <h2 className="mt-3 font-heading text-[clamp(1.45rem,6.6vw,2.5rem)] font-extrabold leading-[1.08] tracking-[-0.035em] text-ink text-balance md:mt-5 md:text-[clamp(1.75rem,2.6vw,2.5rem)]">
                     <Link href={newsArticlePath(featured)} className="after:absolute after:inset-0">
                       {featured.title}
                     </Link>
                   </h2>
-                  <p className="mt-5 text-[17px] leading-relaxed text-text-muted">
+                  <p className="mt-4 line-clamp-4 text-[16px] leading-relaxed text-text-muted md:mt-5 md:line-clamp-none md:text-[17px]">
                     {featured.excerpt}
                   </p>
-                  <div className="mt-auto pt-8">
+                  <div className="mt-auto pt-6 md:pt-8">
                     <Meta item={featured} />
                     <p className="mt-4 border-t border-line pt-4 text-sm text-text-muted">
                       By <span className="font-semibold text-ink">{featured.author || "RA Editorial"}</span>
@@ -260,23 +269,25 @@ export function NewsPageContent({ news }: NewsPageContentProps) {
           {gridItems.length > 0 ? (
             <Stagger
               className={cn(
-                "grid gap-x-8 gap-y-14 md:grid-cols-2",
-                featured && "mt-16 border-t border-line pt-14 md:mt-20",
+                "grid gap-x-8 md:grid-cols-2 md:gap-y-14",
+                featured && "mt-10 border-t-2 border-ink md:mt-20 md:border-t md:border-line md:pt-14",
               )}
             >
               {gridItems.map((item) => (
                 <StaggerItem key={item.id}>
-                  <article className="group relative">
-                    <Thumb item={item} className="aspect-[16/10] rounded-xl" />
-                    <Meta item={item} className="mt-6" />
-                    <h3 className="mt-3 font-heading text-2xl font-bold leading-tight tracking-[-0.025em] text-ink transition-colors group-hover:text-primary text-balance">
-                      <Link href={newsArticlePath(item)} className="after:absolute after:inset-0">
-                        {item.title}
-                      </Link>
-                    </h3>
-                    <p className="mt-3 line-clamp-2 text-[16px] leading-relaxed text-text-muted">
-                      {item.excerpt}
-                    </p>
+                  <article className="group relative grid grid-cols-[6rem_1fr] items-start gap-4 border-b border-line py-5 md:block md:border-0 md:py-0">
+                    <Thumb item={item} className="aspect-square rounded-lg md:aspect-[16/10] md:rounded-xl" />
+                    <div className="min-w-0">
+                      <Meta item={item} compact className="text-[10px] md:mt-6 md:text-[11px]" />
+                      <h3 className="mt-1.5 line-clamp-3 font-heading text-[17px] font-bold leading-snug tracking-[-0.02em] text-ink transition-colors group-hover:text-primary text-balance md:mt-3 md:line-clamp-none md:text-2xl md:leading-tight md:tracking-[-0.025em]">
+                        <Link href={newsArticlePath(item)} className="after:absolute after:inset-0">
+                          {item.title}
+                        </Link>
+                      </h3>
+                      <p className="mt-3 hidden line-clamp-2 text-[16px] leading-relaxed text-text-muted md:block">
+                        {item.excerpt}
+                      </p>
+                    </div>
                   </article>
                 </StaggerItem>
               ))}
@@ -285,16 +296,17 @@ export function NewsPageContent({ news }: NewsPageContentProps) {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <nav className="mt-16 flex items-center justify-between border-t border-line pt-8" aria-label="News pagination">
+            <nav className="mt-10 flex items-center justify-between gap-2 border-t border-line pt-6 md:mt-16 md:pt-8" aria-label="News pagination">
               <button
                 type="button"
                 onClick={() => handlePageChange(safePage - 1)}
                 disabled={safePage <= 1}
-                className="btn btn-outline"
+                aria-label="Newer stories"
+                className="btn btn-outline max-sm:w-12 max-sm:px-0"
               >
-                <FiArrowLeft className="h-4 w-4" aria-hidden /> Newer
+                <FiArrowLeft className="h-4 w-4" aria-hidden /> <span className="hidden sm:inline">Newer</span>
               </button>
-              <ol className="flex items-center gap-1">
+              <ol className="no-scrollbar flex min-w-0 items-center gap-1 overflow-x-auto">
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                   <li key={page}>
                     <button
@@ -316,15 +328,16 @@ export function NewsPageContent({ news }: NewsPageContentProps) {
                 type="button"
                 onClick={() => handlePageChange(safePage + 1)}
                 disabled={safePage >= totalPages}
-                className="btn btn-outline"
+                aria-label="Older stories"
+                className="btn btn-outline max-sm:w-12 max-sm:px-0"
               >
-                Older <FiArrowRight className="h-4 w-4" aria-hidden />
+                <span className="hidden sm:inline">Older</span> <FiArrowRight className="h-4 w-4" aria-hidden />
               </button>
             </nav>
           )}
 
           {/* Headlines + CTA */}
-          <div className="mt-24 grid gap-10 lg:grid-cols-12">
+          <div className="mt-14 grid gap-10 md:mt-24 lg:grid-cols-12">
             {railItems.length > 0 ? (
               <Reveal className="lg:col-span-7">
                 <div className="flex items-center justify-between border-b-2 border-ink pb-4">
@@ -338,8 +351,8 @@ export function NewsPageContent({ news }: NewsPageContentProps) {
                 <ol>
                   {railItems.map((item, idx) => (
                     <li key={item.id} className="border-b border-line">
-                      <Link href={newsArticlePath(item)} className="group flex items-center gap-6 py-5">
-                        <span className="font-heading text-3xl font-extrabold tabular-nums tracking-[-0.04em] text-gold/60 transition-colors group-hover:text-gold">
+                      <Link href={newsArticlePath(item)} className="group flex items-center gap-4 py-4 md:gap-6 md:py-5">
+                        <span className="font-heading text-2xl font-extrabold tabular-nums tracking-[-0.04em] text-gold/60 transition-colors group-hover:text-gold md:text-3xl">
                           {String(idx + 1).padStart(2, "0")}
                         </span>
                         <span className="min-w-0 flex-1">
@@ -359,7 +372,7 @@ export function NewsPageContent({ news }: NewsPageContentProps) {
             ) : null}
 
             <Reveal delay={0.1} className={railItems.length > 0 ? "lg:col-span-5" : "lg:col-span-12"}>
-              <div className="flex h-full flex-col justify-between gap-10 rounded-2xl bg-ink p-8 text-white md:p-10">
+              <div className="flex h-full flex-col justify-between gap-8 rounded-2xl bg-ink p-6 text-white md:gap-10 md:p-10">
                 <div>
                   <p className="eyebrow text-gold">Stay in the loop</p>
                   <p className="mt-5 font-heading text-[28px] font-bold leading-tight tracking-[-0.03em]">

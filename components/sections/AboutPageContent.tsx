@@ -70,14 +70,14 @@ export function AboutIntro() {
             <Reveal>
               <h2
                 id="about-intro-heading"
-                className="font-heading text-[clamp(1.75rem,3.2vw,2.75rem)] font-bold leading-[1.2] tracking-[-0.03em] text-ink text-pretty"
+                className="font-heading text-[clamp(1.45rem,6.4vw,1.75rem)] font-bold leading-[1.22] tracking-[-0.03em] text-ink text-pretty md:text-[clamp(1.75rem,3.2vw,2.75rem)]"
               >
                 Royal Ambassadors is a worldwide Baptist missionary organisation
                 for boys between the ages of 10 and 24 — found wherever there
                 are Baptists, on six continents.
               </h2>
             </Reveal>
-            <Reveal delay={0.1} className="mt-10 grid gap-8 text-[17px] leading-relaxed text-text-muted md:grid-cols-2">
+            <Reveal delay={0.1} className="mt-7 grid gap-5 text-[16px] leading-relaxed text-text-muted md:mt-10 md:grid-cols-2 md:gap-8 md:text-[17px]">
               <p>
                 The organisation in Nigeria is called the Royal Ambassadors of
                 Nigeria (RAN). The Pentecost Baptist Association Royal
@@ -94,8 +94,8 @@ export function AboutIntro() {
           </div>
         </div>
 
-        <div className="mt-20 grid gap-5 md:grid-cols-12">
-          <ImageReveal className="aspect-[4/3] rounded-xl bg-mist md:col-span-7 md:aspect-auto md:min-h-[28rem]">
+        <div className="mt-12 grid gap-3 md:mt-20 md:grid-cols-12 md:gap-5">
+          <ImageReveal className="-mx-5 aspect-[4/3] bg-mist sm:-mx-8 md:col-span-7 md:mx-0 md:aspect-auto md:min-h-[28rem] md:rounded-xl">
             <Image
               src="/images/image1.jpeg"
               alt="Royal Ambassadors and auxiliary members at a church ceremony"
@@ -104,18 +104,18 @@ export function AboutIntro() {
               className="object-cover"
             />
           </ImageReveal>
-          <Stagger as="ol" className="flex flex-col gap-5 md:col-span-5">
+          <Stagger as="ol" className="flex flex-col gap-2 md:col-span-5 md:gap-5">
             {RA_TIERS.map((t) => (
               <StaggerItem
                 as="li"
                 key={t.name}
-                className="flex flex-1 items-end justify-between gap-6 rounded-xl bg-ivory p-7"
+                className="flex flex-1 items-center justify-between gap-6 rounded-xl bg-ivory p-5 md:items-end md:p-7"
               >
                 <div>
                   <p className="text-lg font-bold text-ink">{t.name}</p>
                   <p className="mt-1 text-sm text-text-muted">{t.focus}</p>
                 </div>
-                <p className="shrink-0 font-heading text-4xl font-extrabold tracking-[-0.05em] text-primary">
+                <p className="shrink-0 font-heading text-3xl font-extrabold tracking-[-0.05em] text-primary md:text-4xl">
                   {t.ages}
                 </p>
               </StaggerItem>

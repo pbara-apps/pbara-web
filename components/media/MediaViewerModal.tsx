@@ -104,7 +104,7 @@ export function MediaViewerModal({
           </div>
 
           <div
-            className="relative flex min-h-0 flex-1 items-center justify-center px-4 md:px-24"
+            className="relative flex min-h-0 flex-1 items-center justify-center px-0 sm:px-4 md:px-24"
             onClick={(e) => {
               if (e.target === e.currentTarget) onClose();
             }}
@@ -117,6 +117,20 @@ export function MediaViewerModal({
                 exit={{ opacity: 0, scale: 0.98 }}
                 transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
                 className="flex max-h-full w-full items-center justify-center"
+                // Touch: swipe sideways to move through the set, down to close.
+                drag={showVideo ? false : canNavigate ? true : "y"}
+                dragSnapToOrigin
+                dragElastic={0.5}
+                dragMomentum={false}
+                onDragEnd={(_, info) => {
+                  const { offset, velocity } = info;
+                  if (Math.abs(offset.y) > Math.abs(offset.x)) {
+                    if (offset.y > 110 || velocity.y > 600) onClose();
+                    return;
+                  }
+                  if (offset.x < -60 || velocity.x < -500) go(1);
+                  else if (offset.x > 60 || velocity.x > 500) go(-1);
+                }}
               >
                 {showVideo ? (
                   <video
@@ -133,7 +147,8 @@ export function MediaViewerModal({
                   <img
                     src={current.url}
                     alt={current.alt ?? current.title}
-                    className="max-h-[78vh] w-auto max-w-full rounded-lg object-contain"
+                    draggable={false}
+                    className="max-h-[72svh] w-auto max-w-full select-none rounded-lg object-contain md:max-h-[78vh]"
                   />
                 )}
               </motion.div>
@@ -145,7 +160,7 @@ export function MediaViewerModal({
                   type="button"
                   onClick={() => go(-1)}
                   aria-label="Previous"
-                  className="absolute left-3 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 backdrop-blur-md transition-colors hover:bg-white hover:text-ink md:left-8"
+                  className="absolute left-3 top-1/2 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 backdrop-blur-md transition-colors hover:bg-white hover:text-ink md:left-8 md:flex"
                 >
                   <FiChevronLeft className="h-5 w-5" aria-hidden />
                 </button>
@@ -153,7 +168,7 @@ export function MediaViewerModal({
                   type="button"
                   onClick={() => go(1)}
                   aria-label="Next"
-                  className="absolute right-3 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 backdrop-blur-md transition-colors hover:bg-white hover:text-ink md:right-8"
+                  className="absolute right-3 top-1/2 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 backdrop-blur-md transition-colors hover:bg-white hover:text-ink md:right-8 md:flex"
                 >
                   <FiChevronRight className="h-5 w-5" aria-hidden />
                 </button>
@@ -161,9 +176,44 @@ export function MediaViewerModal({
             ) : null}
           </div>
 
-          <p className="mx-auto max-w-3xl px-6 py-6 text-center text-[15px] font-medium text-white/80">
-            {current.title}
-          </p>
+          <div className="mx-auto w-full max-w-3xl px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-4 md:px-6 md:py-6">
+            <p className="text-center text-[15px] font-medium text-white/80">{current.title}</p>
+            {/* Phones: thumb-reachable controls below the image. */}
+            {canNavigate ? (
+              <div className="mt-4 flex items-center justify-between gap-4 md:hidden">
+                <button
+                  type="button"
+                  onClick={() => go(-1)}
+                  aria-label="Previous"
+                  className="flex h-12 w-12 items-center justify-center rounded-full border border-white/15 active:bg-white active:text-ink"
+                >
+                  <FiChevronLeft className="h-5 w-5" aria-hidden />
+                </button>
+                <div className="flex flex-1 justify-center gap-1.5" aria-hidden>
+                  {list.length <= 12
+                    ? list.map((_, k) => (
+                        <span
+                          key={k}
+                          className={`h-1.5 rounded-full transition-all duration-300 ${k === i ? "w-5 bg-gold" : "w-1.5 bg-white/30"}`}
+                        />
+                      ))
+                    : (
+                        <span className="relative h-[2px] w-full max-w-[10rem] overflow-hidden rounded-full bg-white/20">
+                          <span className="absolute inset-y-0 left-0 bg-gold transition-[width] duration-300" style={{ width: `${((i + 1) / list.length) * 100}%` }} />
+                        </span>
+                      )}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => go(1)}
+                  aria-label="Next"
+                  className="flex h-12 w-12 items-center justify-center rounded-full border border-white/15 active:bg-white active:text-ink"
+                >
+                  <FiChevronRight className="h-5 w-5" aria-hidden />
+                </button>
+              </div>
+            ) : null}
+          </div>
         </motion.div>
       ) : null}
     </AnimatePresence>,

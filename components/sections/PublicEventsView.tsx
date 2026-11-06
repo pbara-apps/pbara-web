@@ -166,6 +166,25 @@ function EventImage({ event }: { event: EventItem }) {
   );
 }
 
+/** Phones: date block that overlaps the bottom edge of the spotlight image. */
+function SpotlightDate({ event }: { event: EventItem }) {
+  const { day, month, year } = parseEventDateParts(event.date, event.endDate);
+  return (
+    <div className="absolute -bottom-6 left-5 flex items-stretch overflow-hidden rounded-xl shadow-[0_20px_40px_-20px_rgba(5,6,31,0.6)] sm:left-8 md:hidden">
+      <div className="flex flex-col items-center justify-center bg-gold px-4 py-2.5 text-ink">
+        <span className="font-heading text-[30px] font-extrabold leading-none tracking-[-0.05em]">{day}</span>
+        <span className="eyebrow mt-1 text-[9px] tracking-[0.14em]">{month}</span>
+      </div>
+      <div className="flex flex-col justify-center bg-ink px-4 text-white">
+        <span className="eyebrow text-[9px] text-white/55">Next up</span>
+        <span className="mt-1 text-[13px] font-semibold">
+          {formatEventDateLabel(event.date, event.endDate) || year}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 /* ── Page ── */
 export function PublicEventsView({
   upcomingEvents,
@@ -218,14 +237,14 @@ export function PublicEventsView({
       {/* Upcoming */}
       <section className="section-y bg-ivory" aria-labelledby="upcoming-heading">
         <div className="container-site">
-          <Reveal className="mb-12 flex flex-col justify-between gap-4 border-b border-line pb-8 md:flex-row md:items-end">
+          <Reveal className="mb-8 flex flex-col justify-between gap-3 border-b border-line pb-6 md:mb-12 md:flex-row md:items-end md:gap-4 md:pb-8">
             <div>
               <Eyebrow index="01">Upcoming</Eyebrow>
               <h2 id="upcoming-heading" className="display-md mt-5 text-ink">
                 Upcoming programs
               </h2>
             </div>
-            <p className="max-w-md text-[16px] text-text-muted">
+            <p className="max-w-md text-[15px] text-text-muted md:text-[16px]">
               Join our scheduled activities and developmental sessions.
             </p>
           </Reveal>
@@ -240,19 +259,32 @@ export function PublicEventsView({
               {/* Lead event */}
               <article
                 id={eventAnchor(lead)}
-                className="group grid scroll-mt-28 overflow-hidden rounded-2xl bg-white ring-1 ring-line lg:grid-cols-12"
+                className="group -mx-5 grid scroll-mt-28 overflow-hidden bg-white sm:-mx-8 md:mx-0 md:rounded-2xl md:ring-1 md:ring-line lg:grid-cols-12"
               >
-                <ImageReveal className="aspect-[4/3] bg-primary lg:col-span-6 lg:aspect-auto lg:min-h-[32rem]">
-                  <EventImage event={lead} />
-                </ImageReveal>
-                <div className="flex flex-col p-8 md:p-12 lg:col-span-6">
-                  <EventMeta event={lead} />
-                  <h3 className="display-md mt-6 text-balance text-ink">{lead.title}</h3>
-                  <p className="mt-5 line-clamp-[8] whitespace-pre-line text-[16px] leading-relaxed text-text-muted">
+                <div className="relative lg:col-span-6">
+                  <ImageReveal className="aspect-[4/3] bg-primary max-md:aspect-square max-md:max-h-[28rem] max-md:w-full lg:aspect-auto lg:h-full lg:min-h-[32rem]">
+                    <EventImage event={lead} />
+                  </ImageReveal>
+                  {/* Phones: spotlight badge with the date, overlapping the image. */}
+                  <SpotlightDate event={lead} />
+                </div>
+                <div className="flex flex-col p-5 pt-10 sm:p-8 sm:pt-12 md:p-12 lg:col-span-6">
+                  <div className="hidden md:block">
+                    <EventMeta event={lead} />
+                  </div>
+                  <p className="eyebrow text-gold md:hidden">Spotlight · {lead.category}</p>
+                  <h3 className="display-md mt-3 text-[clamp(1.75rem,8vw,2.25rem)] text-balance text-ink md:mt-6 md:text-[clamp(1.875rem,3.4vw,3rem)]">{lead.title}</h3>
+                  {lead.venue ? (
+                    <p className="mt-3 flex items-center gap-1.5 text-[14px] text-text-muted md:hidden">
+                      <FiMapPin className="h-3.5 w-3.5 shrink-0 text-gold" aria-hidden />
+                      {lead.venue}
+                    </p>
+                  ) : null}
+                  <p className="mt-4 line-clamp-4 whitespace-pre-line text-[15px] leading-relaxed text-text-muted md:mt-5 md:line-clamp-[8] md:text-[16px]">
                     {lead.description}
                   </p>
-                  <div className="mt-auto flex items-center gap-3 pt-10">
-                    <RegisterAction event={lead} onInterest={setInterestEvent} />
+                  <div className="mt-auto flex items-center gap-3 pt-7 md:pt-10">
+                    <RegisterAction event={lead} onInterest={setInterestEvent} className="max-md:flex-1" />
                     <ShareButton event={lead} />
                   </div>
                 </div>
@@ -260,34 +292,39 @@ export function PublicEventsView({
 
               {/* Remaining upcoming */}
               {moreUpcoming.length > 0 ? (
-                <Stagger as="ol" className="mt-6 divide-y divide-line overflow-hidden rounded-2xl bg-white ring-1 ring-line">
+                <>
+                <p className="eyebrow mb-2 mt-12 text-ink md:hidden">Coming up next</p>
+                <Stagger as="ol" className="relative mt-0 overflow-hidden md:mt-6 md:divide-y md:divide-line md:rounded-2xl md:bg-white md:ring-1 md:ring-line">
+                  {/* Phones: vertical timeline rail */}
+                  <span aria-hidden className="absolute bottom-6 left-[1.6rem] top-6 w-px bg-line md:hidden" />
                   {moreUpcoming.map((event) => {
                     const { day, month, year } = parseEventDateParts(event.date, event.endDate);
                     return (
                       <StaggerItem
                         as="li"
                         key={event.id}
-                        className="group grid scroll-mt-28 gap-6 p-6 md:grid-cols-[7rem_1fr_auto] md:items-center md:gap-10 md:p-8"
+                        className="group relative grid scroll-mt-28 grid-cols-[3.25rem_1fr] gap-x-4 gap-y-4 py-5 md:grid-cols-[7rem_1fr_auto] md:items-center md:gap-10 md:p-8"
                       >
-                        <div id={eventAnchor(event)} className="flex items-baseline gap-2 md:block">
-                          <p className="font-heading text-5xl font-extrabold leading-none tracking-[-0.05em] text-primary">
+                        <div id={eventAnchor(event)} className="relative z-[1] flex h-[3.25rem] flex-col items-center justify-center rounded-xl bg-primary text-white md:block md:h-auto md:rounded-none md:bg-transparent md:text-left md:text-inherit">
+                          <p className="font-heading text-[22px] font-extrabold leading-none tracking-[-0.04em] md:text-5xl md:tracking-[-0.05em] md:text-primary">
                             {day}
                           </p>
-                          <p className="eyebrow mt-2 text-text-muted">
-                            {month} {year}
+                          <p className="eyebrow mt-0.5 text-[9px] tracking-[0.12em] text-gold md:mt-2 md:text-[11px] md:tracking-[0.18em] md:text-text-muted">
+                            {month}
+                            <span className="hidden md:inline"> {year}</span>
                           </p>
                         </div>
                         <div className="min-w-0">
-                          <p className="eyebrow text-gold">{event.category}</p>
-                          <h3 className="mt-2 text-xl font-bold leading-snug text-ink">
+                          <p className="eyebrow text-[10px] text-gold md:text-[11px]">{event.category}</p>
+                          <h3 className="mt-1.5 text-[17px] font-bold leading-snug text-ink md:mt-2 md:text-xl">
                             {event.title}
                           </h3>
-                          <p className="mt-2 flex items-center gap-1.5 text-sm text-text-muted">
+                          <p className="mt-1.5 flex items-center gap-1.5 text-[13px] text-text-muted md:mt-2 md:text-sm">
                             <FiMapPin className="h-3.5 w-3.5 shrink-0" aria-hidden />
                             {event.venue}
                           </p>
                         </div>
-                        <div className="flex items-center gap-3">
+                        <div className="col-start-2 flex items-center gap-3 md:col-start-auto">
                           <RegisterAction event={event} onInterest={setInterestEvent} />
                           <ShareButton event={event} />
                         </div>
@@ -295,6 +332,7 @@ export function PublicEventsView({
                     );
                   })}
                 </Stagger>
+                </>
               ) : null}
             </>
           )}
@@ -305,7 +343,7 @@ export function PublicEventsView({
       {past.length > 0 ? (
         <section className="section-y bg-white" aria-labelledby="archive-heading">
           <div className="container-site">
-            <Reveal className="mb-12 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+            <Reveal className="mb-6 flex flex-col justify-between gap-3 md:mb-12 md:flex-row md:items-end md:gap-4">
               <div>
                 <Eyebrow index="02">Archive</Eyebrow>
                 <h2 id="archive-heading" className="display-md mt-5 text-ink">
@@ -315,38 +353,43 @@ export function PublicEventsView({
               <ArrowLink href="/media">Browse the media gallery</ArrowLink>
             </Reveal>
 
-            <Stagger className="grid gap-x-6 gap-y-12 md:grid-cols-2 lg:grid-cols-3">
+            <Stagger className="grid border-t border-line md:grid-cols-2 md:gap-x-6 md:gap-y-12 md:border-0 lg:grid-cols-3">
               {past.slice(0, archiveCount).map((event) => (
                 <StaggerItem key={event.id}>
-                  <article id={eventAnchor(event)} className="group scroll-mt-28">
-                    <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-mist">
+                  <article id={eventAnchor(event)} className="group grid scroll-mt-28 grid-cols-[6rem_1fr] items-start gap-4 border-b border-line py-4 md:block md:border-0 md:py-0">
+                    <div className="relative aspect-square overflow-hidden rounded-lg bg-mist md:aspect-[4/3] md:rounded-xl">
                       <EventImage event={event} />
-                      <span className="eyebrow absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1.5 text-ink">
+                      <span className="eyebrow absolute left-4 top-4 hidden rounded-full bg-white/95 px-3 py-1.5 text-ink md:inline">
                         {formatEventDateLabel(event.date, event.endDate)}
                       </span>
                     </div>
-                    <p className="eyebrow mt-5 text-gold">{event.category}</p>
-                    <h3 className="mt-2 text-xl font-bold leading-snug text-ink">{event.title}</h3>
-                    <p className="mt-2 line-clamp-3 text-[15px] leading-relaxed text-text-muted">
-                      {previewText(event.description)}
-                    </p>
-                    {event.venue ? (
-                      <p className="mt-3 flex items-center gap-1.5 text-sm text-text-muted">
-                        <FiMapPin className="h-3.5 w-3.5 shrink-0" aria-hidden />
-                        {event.venue}
+                    <div className="min-w-0">
+                      <p className="eyebrow text-[10px] text-gold md:mt-5 md:text-[11px]">
+                        {event.category}
+                        <span className="text-text-muted md:hidden"> · {formatEventDateLabel(event.date, event.endDate)}</span>
                       </p>
-                    ) : null}
+                      <h3 className="mt-1.5 line-clamp-3 text-[16px] font-bold leading-snug text-ink md:mt-2 md:line-clamp-none md:text-xl">{event.title}</h3>
+                      <p className="mt-2 hidden line-clamp-3 text-[15px] leading-relaxed text-text-muted md:block">
+                        {previewText(event.description)}
+                      </p>
+                      {event.venue ? (
+                        <p className="mt-1.5 flex items-center gap-1.5 text-[13px] text-text-muted md:mt-3 md:text-sm">
+                          <FiMapPin className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                          <span className="truncate">{event.venue}</span>
+                        </p>
+                      ) : null}
+                    </div>
                   </article>
                 </StaggerItem>
               ))}
             </Stagger>
 
             {past.length > archiveCount ? (
-              <div className="mt-14 text-center">
+              <div className="mt-8 text-center md:mt-14">
                 <button
                   type="button"
                   onClick={() => setArchiveCount((n) => n + ARCHIVE_PAGE)}
-                  className="btn btn-outline"
+                  className="btn btn-outline max-md:w-full"
                 >
                   Show more past events
                 </button>
@@ -357,16 +400,16 @@ export function PublicEventsView({
       ) : null}
 
       {/* Newsletter */}
-      <section className="bg-ivory pb-24 pt-4 md:pb-32" aria-labelledby="newsletter-heading">
+      <section className="bg-ivory pb-16 pt-4 md:pb-32" aria-labelledby="newsletter-heading">
         <div className="container-site">
           <Reveal>
-            <div className="grain relative grid gap-10 overflow-hidden rounded-2xl bg-primary px-8 py-14 text-white md:px-14 md:py-16 lg:grid-cols-12 lg:items-center">
+            <div className="grain relative grid gap-8 overflow-hidden rounded-2xl bg-primary px-6 py-10 text-white md:gap-10 md:px-14 md:py-16 lg:grid-cols-12 lg:items-center">
               <div className="lg:col-span-6">
                 <p className="eyebrow text-gold">Newsletter</p>
                 <h2 id="newsletter-heading" className="display-md mt-5">
                   Never miss an update
                 </h2>
-                <p className="mt-5 max-w-lg text-lg leading-relaxed text-white/70">
+                <p className="mt-4 max-w-lg text-[16px] leading-relaxed text-white/70 md:mt-5 md:text-lg">
                   Get the latest announcements, program schedules and
                   motivational content delivered to your inbox.
                 </p>

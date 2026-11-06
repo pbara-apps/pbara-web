@@ -28,7 +28,7 @@ export default function ChaptersPage() {
         title="Our chapters and units"
         description="Royal Ambassador chapters meet in local churches across the Pentecost Baptist Association, fostering leadership and spiritual growth. Search the directory to find one near you."
       />
-      <section className="bg-ivory pb-24 pt-10 md:pb-32">
+      <section className="bg-ivory pb-16 pt-6 md:pb-32 md:pt-10">
         <div className="container-site">
           <Suspense fallback={<div className="h-20" />}>
             <ChaptersDirectory />

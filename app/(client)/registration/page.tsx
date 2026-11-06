@@ -32,20 +32,20 @@ export default async function RegisterIndexPage() {
         description="Select a program to view payment details and submit your registration — individually or for your whole chapter."
       />
 
-      <section className="bg-ivory pb-24 pt-12 md:pb-32">
+      <section className="bg-ivory pb-16 pt-6 md:pb-32 md:pt-12">
         <div className="container-site">
-          <ol className="mb-14 grid gap-px overflow-hidden rounded-xl bg-line md:grid-cols-3">
+          <ol className="mb-10 grid gap-px overflow-hidden rounded-xl bg-line md:mb-14 md:grid-cols-3">
             {STEPS.map((s) => (
-              <li key={s.n} className="bg-white p-7">
-                <span className="font-mono text-[11px] text-gold">{s.n}</span>
-                <p className="mt-4 text-lg font-bold text-ink">{s.title}</p>
-                <p className="mt-1.5 text-[15px] text-text-muted">{s.body}</p>
+              <li key={s.n} className="grid grid-cols-[2rem_1fr] bg-white px-5 py-4 md:block md:p-7">
+                <span className="pt-1 font-mono text-[11px] text-gold md:pt-0">{s.n}</span>
+                <p className="text-[16px] font-bold text-ink md:mt-4 md:text-lg">{s.title}</p>
+                <p className="col-start-2 mt-1 text-[14px] text-text-muted md:mt-1.5 md:text-[15px]">{s.body}</p>
               </li>
             ))}
           </ol>
 
           {programs.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-line px-8 py-20 text-center">
+            <div className="rounded-2xl border border-dashed border-line px-6 py-12 text-center md:px-8 md:py-20">
               <h2 className="heading-sm text-ink">No open registrations right now</h2>
               <p className="mx-auto mt-3 max-w-md text-[15px] text-text-muted">
                 When a program opens for registration, it will appear here. You
